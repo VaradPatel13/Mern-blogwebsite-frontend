@@ -26,7 +26,7 @@ const HeroSection = () => {
                 </span>
               </h1>
               <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-                Bolify is a modern, fast, and beautiful platform to write, publish, and discover amazing stories that inspire the world.
+                MindLoom is a modern, fast, and beautiful platform to write, publish, and discover amazing stories that inspire the world.
               </p>
             </div>
             

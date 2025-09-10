@@ -15,7 +15,7 @@ const Footer = () => {
         {/* Brand / Logo */}
         <div>
           <h2 className="text-2xl font-bold bg-gradient-to-r from-amber-500 to-orange-600 bg-clip-text text-transparent">
-            Bolify
+            MindLoom
           </h2>
           <p className="mt-3 text-gray-600">
             A place where stories, ideas, and knowledge come alive.
@@ -38,7 +38,7 @@ const Footer = () => {
         <div>
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Connect</h3>
           <div className="flex space-x-5 text-gray-600">
-            <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-amber-600 transition">
+            <a href="https://github.com/VaradPatel13/Mern-blogwebsite-frontend" target="_blank" rel="noreferrer" className="hover:text-amber-600 transition">
               <Github size={22} />
             </a>
             <a href="https://twitter.com" target="_blank" rel="noreferrer" className="hover:text-amber-600 transition">
@@ -47,7 +47,7 @@ const Footer = () => {
             <a href="https://instagram.com" target="_blank" rel="noreferrer" className="hover:text-amber-600 transition">
               <Instagram size={22} />
             </a>
-            <a href="mailto:info@bolify.com" className="hover:text-amber-600 transition">
+            <a href="mailto:varadpatelo355@gmail.com" className="hover:text-amber-600 transition">
               <Mail size={22} />
             </a>
           </div>
@@ -57,7 +57,7 @@ const Footer = () => {
       {/* Bottom bar */}
       <div className="relative border-t border-amber-200/70 py-4 text-center text-gray-600 text-sm">
         © {new Date().getFullYear()}{" "}
-        <span className="font-semibold text-amber-600">Bolify</span>. All rights reserved.
+        <span className="font-semibold text-amber-600">MindLoom</span>. All rights reserved.
       </div>
     </footer>
   );

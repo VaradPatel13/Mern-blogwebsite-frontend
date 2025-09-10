@@ -13,7 +13,7 @@ const LandingNavbar = () => {
         
         {/* Brand */}
         <Link to="/" className="text-2xl md:text-3xl font-bold text-amber-900">
-          Bolify
+          MindLoom
         </Link>
         
         {/* Desktop Navigation */}

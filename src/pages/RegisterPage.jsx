@@ -106,7 +106,7 @@ const RegisterPage = () => {
           {/* Left Side - Branding (hidden on mobile) */}
           <div className="hidden md:flex flex-col justify-center items-center bg-gradient-to-br from-amber-500 to-amber-700 text-white p-10 space-y-6">
             <div className="text-center">
-              <h2 className="text-4xl font-extrabold mb-4">Welcome to Bolify</h2>
+              <h2 className="text-4xl font-extrabold mb-4">Welcome to MindLoom</h2>
               <p className="text-lg text-amber-100">
                 Share your stories, connect with others, and grow your journey.
               </p>
@@ -138,7 +138,7 @@ const RegisterPage = () => {
                 Create an Account
               </CardTitle>
               <CardDescription className="text-gray-600 dark:text-gray-300">
-                Join Bolify today and start your journey ✨
+                Join MindLoom today and start your journey ✨
               </CardDescription>
             </CardHeader>
 
