@@ -11,32 +11,32 @@ const LandingPage = () => {
   const [loadingStep, setLoadingStep] = useState('loader');
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
 
-  // Rotating quotes about writing, blogging, and creativity
-  const inspirationalQuotes = [
-    "Words have power to inspire change",
-    "Every story begins with a single word",
-    "Write your truth, share your voice",
-    "Creativity flows through every keystroke",
-    "Blog your way to meaningful connections",
-    "Ideas become reality through writing",
-    "Your story matters, tell it boldly",
-    "Writing is thinking on paper",
-    "Create content that sparks conversations",
-    "Transform thoughts into digital legacy"
-  ];
+  // // Rotating quotes about writing, blogging, and creativity
+  // const inspirationalQuotes = [
+  //   "Words have power to inspire change",
+  //   "Every story begins with a single word",
+  //   "Write your truth, share your voice",
+  //   "Creativity flows through every keystroke",
+  //   "Blog your way to meaningful connections",
+  //   "Ideas become reality through writing",
+  //   "Your story matters, tell it boldly",
+  //   "Writing is thinking on paper",
+  //   "Create content that sparks conversations",
+  //   "Transform thoughts into digital legacy"
+  // ];
 
-  useEffect(() => {
-    // Select random quote on component mount
-    setCurrentQuoteIndex(Math.floor(Math.random() * inspirationalQuotes.length));
+  // useEffect(() => {
+  //   // Select random quote on component mount
+  //   setCurrentQuoteIndex(Math.floor(Math.random() * inspirationalQuotes.length));
 
-    const timer1 = setTimeout(() => setLoadingStep('lustre'), 2000);
-    const timer2 = setTimeout(() => setLoadingStep('content'), 4000);
+  //   const timer1 = setTimeout(() => setLoadingStep('lustre'), 2000);
+  //   const timer2 = setTimeout(() => setLoadingStep('content'), 4000);
 
-    return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-    };
-  }, []);
+  //   return () => {
+  //     clearTimeout(timer1);
+  //     clearTimeout(timer2);
+  //   };
+  // }, []);
 
   // Main Content with improved responsive structure
   const renderContent = () => (
