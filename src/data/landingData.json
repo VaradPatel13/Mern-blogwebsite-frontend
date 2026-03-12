@@ -1,0 +1,96 @@
+{
+  "categories": [
+    "Technology",
+    "Culture",
+    "Design",
+    "Science",
+    "Politics",
+    "Business",
+    "Health"
+  ],
+  "featuredPost": {
+    "title": "The Silent Architecture of the Modern Web: How Edge Networks Changed Everything",
+    "excerpt": "We barely notice the milliseconds it takes to load a webpage, yet beneath the surface lies a terrifyingly sprawling global infrastructure of edge nodes, caching layers, and fiber-optic cables that dictate our digital reality.",
+    "category": "Technology",
+    "author": "Sarah Jenkins",
+    "date": "Oct 24, 2026",
+    "readTime": "12 min read",
+    "image": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=1200"
+  },
+  "secondaryPosts": [
+    {
+      "title": "Mapping the Human Brain is Harder Than We Thought",
+      "excerpt": "Neurologists have uncovered a new layer of complexity in synaptic relationships that challenges our fundamental understanding of cognitive processing.",
+      "category": "Science",
+      "author": "Dr. Aris Thorne",
+      "date": "Oct 23, 2026",
+      "readTime": "8 min read",
+      "image": "https://images.unsplash.com/photo-1559757175-5700dde675bc?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      "title": "The Resurgence of Brutalist Architecture in Digital Spaces",
+      "excerpt": "Why high-end brands are abandoning soft curves and gradients for harsh borders, raw data formats, and monospaced typography.",
+      "category": "Design",
+      "author": "Marcus Volkov",
+      "date": "Oct 21, 2026",
+      "readTime": "5 min read",
+      "image": "https://i.pinimg.com/originals/47/9e/de/479ede3e40b376e253877ae2ae03a97c.jpg"
+    }
+  ],
+  "latestPosts": [
+    {
+      "title": "Global Trade Routes in a Decoupling World",
+      "excerpt": "As geopolitical tensions rise, the traditional model of globalized trade is being replaced by regional 'friend-shoring' and reshoring.",
+      "category": "Business",
+      "author": "Elena Rossi",
+      "date": "Oct 20",
+      "readTime": "10 min",
+      "image": "https://images.unsplash.com/photo-1593642532973-d31b6557fa68?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      "title": "The Ethics of Gene Editing in 2026",
+      "excerpt": "With CRISPR technology becoming more accessible, the ethical boundaries of human enhancement are being tested like never before.",
+      "category": "Health",
+      "author": "James Chen",
+      "date": "Oct 19",
+      "readTime": "15 min",
+      "image": "https://images.unsplash.com/photo-1576086213369-97a306dca664?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      "title": "The Geopolitical Shift: Power in the Post-Digital Age",
+      "excerpt": "National security is no longer just about borders and boots; it's about silicon, software, and sovereign data clouds.",
+      "category": "Politics",
+      "author": "Sofia Mendez",
+      "date": "Oct 18",
+      "readTime": "7 min",
+      "image": "https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      "title": "Why Silicon Valley is Obsessed with Stoicism",
+      "excerpt": "The ancient Greek philosophy has found an unlikely resurgence among tech founders and venture capitalists looking for emotional resilience.",
+      "category": "Culture",
+      "author": "Marcus Aurelius",
+      "date": "Oct 17",
+      "readTime": "9 min",
+      "image": "https://images.unsplash.com/photo-1563291074-2bf8677ac0e5?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      "title": "The Problem with Endless Scrolling",
+      "excerpt": "How infinite interfaces are rewiring our attention spans and what designers are doing to build humane software.",
+      "category": "Design",
+      "author": "Elena Rossi",
+      "date": "Oct 16",
+      "readTime": "5 min",
+      "image": "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      "title": "Minimalism in the 21st Century",
+      "excerpt": "Is the minimalist aesthetic a genuine philosophical choice or just another luxury commodity for the elite?",
+      "category": "Culture",
+      "author": "Marie Kondo",
+      "date": "Oct 15",
+      "readTime": "11 min",
+      "image": "https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&q=80&w=600"
+    }
+  ]
+}

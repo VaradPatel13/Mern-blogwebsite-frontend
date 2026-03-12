@@ -31,25 +31,25 @@ const MainNavbar = () => {
         <div className="h-20 flex items-center justify-between">
 
           {/* Left Side: Brand & Search */}
-          <div className="flex items-center gap-8 w-1/2">
-            <Link to="/home" className="text-3xl font-black font-serif tracking-tight text-slate-900 shrink-0">
+          <div className="flex items-center gap-4 lg:gap-8 flex-1">
+            <Link to="/home" className="text-2xl md:text-3xl font-black font-serif tracking-tighter text-slate-900 shrink-0">
               MindLoom.
             </Link>
 
-            <form onSubmit={handleSearch} className="hidden lg:flex relative w-full max-w-sm group">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-teal-600 transition-colors pointer-events-none" />
+            <form onSubmit={handleSearch} className="hidden lg:flex relative w-full max-w-xs group">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 group-focus-within:text-teal-600 transition-colors pointer-events-none" />
               <input
                 type="text"
-                placeholder="Search articles, authors, topics..."
+                placeholder="Search stories..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-full font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-600/20 focus:border-teal-600 transition-all"
+                className="w-full pl-9 pr-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-full font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-600/10 focus:border-teal-500 transition-all"
               />
             </form>
           </div>
 
           {/* Right Side: Actions & Profile */}
-          <div className="flex items-center justify-end gap-5">
+          <div className="flex items-center justify-end gap-3 md:gap-5">
             {isAuthenticated ? (
               <>
                 <Link

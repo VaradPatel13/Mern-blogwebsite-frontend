@@ -4,6 +4,7 @@ import { registerUser, loginWithGoogle } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
 import { GoogleLogin } from "@react-oauth/google";
 import { Mail, Lock, Eye, EyeOff, Loader2, ArrowLeft, User, AtSign } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 
 // UI Components
 import { Button } from "@/components/ui/button";
@@ -73,87 +74,63 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex bg-slate-50 font-sans selection:bg-teal-100 selection:text-teal-900">
+    <div className="min-h-screen w-full flex bg-white font-sans selection:bg-teal-100 selection:text-teal-900 overflow-x-hidden">
+      <Helmet>
+        <title>Sign Up | MindLoom</title>
+        <meta name="description" content="Join MindLoom today to start your journey as an independent writer. Create your account and join a global network of thinkers." />
+      </Helmet>
 
-      {/* Absolute positioned Back Link for mobile */}
-      <Link to="/" className="lg:hidden absolute top-4 left-4 z-50 text-xs font-semibold text-slate-900 hover:text-teal-700 transition-colors flex items-center gap-1.5 bg-white/80 backdrop-blur-md py-1.5 px-3 rounded-full shadow-sm">
-        <ArrowLeft size={14} /> Back
+      {/* Back Link */}
+      <Link to="/" className="absolute top-6 left-6 z-50 text-xs font-bold text-slate-400 hover:text-slate-900 transition-colors flex items-center gap-1.5 py-2 px-4 rounded-full border border-slate-100 bg-white/50 backdrop-blur-sm lg:bg-transparent lg:border-none lg:text-slate-200 lg:hover:text-white">
+        <ArrowLeft size={14} strokeWidth={2.5} /> Back to Homepage
       </Link>
 
-      {/* Left Side - Immersive Image & Branding (Hidden on mobile) */}
-      <div className="hidden lg:flex lg:w-[45%] xl:w-1/2 relative overflow-hidden bg-slate-900">
+      {/* Left Side - Editorial Branding */}
+      <div className="hidden lg:flex lg:w-[40%] xl:w-[45%] relative bg-slate-900 items-center justify-center p-12 overflow-hidden text-center">
         <img
           src="https://images.unsplash.com/photo-1455390582262-044cdead27d4?auto=format&fit=crop&q=80&w=1400"
           alt="Vintage typewriter"
-          className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-overlay"
+          className="absolute inset-0 w-full h-full object-cover opacity-40"
         />
-        {/* Deep gradient overlay to ensure text is readable */}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent"></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-900/80 to-transparent"></div>
-
-        <div className="relative z-10 w-full h-full flex flex-col justify-between p-12">
-          <div>
-            <Link to="/" className="inline-flex items-center gap-1.5 text-slate-200 hover:text-teal-300 transition-colors text-sm group">
-              <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-              <span className="font-semibold tracking-wide">Return to Homepage</span>
-            </Link>
-          </div>
-
-          <div className="max-w-md">
-            <h1 className="text-4xl font-serif font-bold text-white mb-4 leading-tight">
-              MindLoom.
-            </h1>
-            <p className="text-xl font-serif text-slate-300 mb-8 italic">
-              "Join a thriving network of independent writers, journalists, and thinkers publishing directly to their readers."
-            </p>
-            <div className="flex items-center gap-3">
-              {/* Decorative dots to imply network/community */}
-              <div className="flex -space-x-2">
-                {[1, 2, 3].map((i) => (
-                  <img key={i} src={`https://i.pravatar.cc/100?img=${i + 10}`} alt="Member" className="w-10 h-10 rounded-full border-2 border-slate-900 shadow-sm" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+        
+        <div className="relative z-10 max-w-sm">
+          <h1 className="text-6xl font-serif font-bold text-white mb-6 tracking-tight">
+            MindLoom.
+          </h1>
+          <div className="w-12 h-1 bg-teal-500 mx-auto mb-8 rounded-full"></div>
+          <p className="text-xl font-serif text-slate-300 leading-relaxed italic">
+            "Join a global circle of writers committed to clarity and insight."
+          </p>
+          <div className="mt-10 flex items-center justify-center gap-4">
+             <div className="flex -space-x-2">
+                {[12, 45, 67].map(i => (
+                  <img key={i} src={`https://i.pravatar.cc/100?u=${i}`} className="w-8 h-8 rounded-full border-2 border-slate-900" alt="Member" />
                 ))}
-              </div>
-              <div className="ml-2">
-                <div className="font-bold text-white text-base tracking-tight">10,000+ Writers</div>
-                <div className="text-teal-400 font-semibold text-xs uppercase tracking-widest">Global Network</div>
-              </div>
-            </div>
+             </div>
+             <p className="text-slate-400 text-xs font-bold tracking-widest uppercase">12k+ Writers Linked</p>
           </div>
         </div>
       </div>
 
-      {/* Right Side - Detailed Register Form */}
-      <div className="w-full lg:w-[55%] xl:w-1/2 flex items-center justify-center p-6 sm:p-10 bg-white relative overflow-y-auto">
-        <div className="w-full max-w-[380px] my-auto py-8">
+      {/* Right Side - Register Form */}
+      <div className="w-full lg:w-[60%] xl:w-[55%] flex items-center justify-center p-8 sm:p-12">
+        <div className="w-full max-w-[450px] animate-in fade-in slide-in-from-bottom-4 duration-700">
 
-          <div className="mb-8 hidden lg:block">
-            {/* Minimal Brand logo for extra polish */}
-            <div className="w-8 h-8 bg-slate-900 rounded-md flex items-center justify-center text-white font-serif font-bold text-lg mb-6 shadow-sm">
-              M
-            </div>
-            <h2 className="text-2xl font-bold text-slate-900 mb-1.5 tracking-tight">Create an account</h2>
-            <p className="text-slate-500 font-medium text-sm">
-              Start building your publication today.
-            </p>
+          <div className="mb-10 text-left">
+            <h2 className="text-3xl font-serif font-bold text-slate-900 mb-2">Create Account</h2>
+            <p className="text-slate-500 font-medium tracking-tight">Begin your publishing journey today.</p>
           </div>
 
-          {/* Mobile Header (visible only on small screens) */}
-          <div className="mb-8 lg:hidden mt-8 text-center">
-            <h2 className="text-2xl font-bold text-slate-900 mb-1.5 tracking-tight">Join MindLoom</h2>
-            <p className="text-slate-500 font-medium text-sm">Create your writer account</p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-
-            <div className="grid grid-cols-2 gap-3">
-              {/* Full Name Input */}
-              <div className="space-y-1.5">
-                <label htmlFor="fullName" className="block text-xs font-bold text-slate-700 uppercase tracking-wide">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label htmlFor="fullName" className="block text-sm font-semibold text-slate-700">
                   Full Name
                 </label>
                 <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-teal-600 transition-colors">
-                    <User size={16} strokeWidth={2.5} />
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                    <User size={18} strokeWidth={2} />
                   </div>
                   <input
                     id="fullName"
@@ -162,19 +139,18 @@ const RegisterPage = () => {
                     value={formData.fullName}
                     onChange={handleChange}
                     required
-                    className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50/50 border border-slate-200 rounded-lg font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-600/20 focus:border-teal-600 transition-all"
+                    className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:bg-white transition-all shadow-sm"
                   />
                 </div>
               </div>
 
-              {/* Username Input */}
-              <div className="space-y-1.5">
-                <label htmlFor="username" className="block text-xs font-bold text-slate-700 uppercase tracking-wide">
+              <div className="space-y-2">
+                <label htmlFor="username" className="block text-sm font-semibold text-slate-700">
                   Username
                 </label>
                 <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-teal-600 transition-colors">
-                    <AtSign size={16} strokeWidth={2.5} />
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                    <AtSign size={18} strokeWidth={2} />
                   </div>
                   <input
                     id="username"
@@ -183,20 +159,19 @@ const RegisterPage = () => {
                     value={formData.username}
                     onChange={handleChange}
                     required
-                    className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50/50 border border-slate-200 rounded-lg font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-600/20 focus:border-teal-600 transition-all"
+                    className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:bg-white transition-all shadow-sm"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Email Input */}
-            <div className="space-y-1.5 pt-1">
-              <label htmlFor="email" className="block text-xs font-bold text-slate-700 uppercase tracking-wide">
+            <div className="space-y-2 pt-1">
+              <label htmlFor="email" className="block text-sm font-semibold text-slate-700">
                 Email Address
               </label>
               <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-teal-600 transition-colors">
-                  <Mail size={16} strokeWidth={2.5} />
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                  <Mail size={18} strokeWidth={2} />
                 </div>
                 <input
                   id="email"
@@ -205,19 +180,18 @@ const RegisterPage = () => {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full pl-10 pr-3.5 py-2.5 text-sm bg-slate-50/50 border border-slate-200 rounded-lg font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-600/20 focus:border-teal-600 transition-all"
+                  className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:bg-white transition-all shadow-sm"
                 />
               </div>
             </div>
 
-            {/* Password Input */}
-            <div className="space-y-1.5 pt-1">
-              <label htmlFor="password" className="block text-xs font-bold text-slate-700 uppercase tracking-wide">
+            <div className="space-y-2 pt-1">
+              <label htmlFor="password" className="block text-sm font-semibold text-slate-700">
                 Password
               </label>
               <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-teal-600 transition-colors">
-                  <Lock size={16} strokeWidth={2.5} />
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                  <Lock size={18} strokeWidth={2} />
                 </div>
                 <input
                   id="password"
@@ -226,76 +200,68 @@ const RegisterPage = () => {
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="w-full pl-10 pr-10 py-2.5 text-sm bg-slate-50/50 border border-slate-200 rounded-lg font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-600/20 focus:border-teal-600 transition-all"
+                  className="w-full pl-12 pr-12 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:bg-white transition-all shadow-sm"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition-colors focus:outline-none"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 transition-colors focus:outline-none"
                 >
-                  {showPassword ? <EyeOff size={16} strokeWidth={2.5} /> : <Eye size={16} strokeWidth={2.5} />}
+                  {showPassword ? <EyeOff size={18} strokeWidth={2} /> : <Eye size={18} strokeWidth={2} />}
                 </button>
               </div>
             </div>
 
-            {/* Error Message */}
             {error && (
-              <div className="p-3 bg-red-50 border-l-4 border-red-500 rounded-r-md mt-4">
-                <p className="text-xs font-bold text-red-700">{error}</p>
+              <div className="p-4 bg-red-50 border border-red-100 rounded-xl text-xs font-bold text-red-600 leading-tight">
+                {error}
               </div>
             )}
 
-            {/* Submit Button */}
             <Button
               type="submit"
-              className="w-full py-5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg transition-all shadow-md hover:shadow-lg hover:-translate-y-px mt-6 flex items-center justify-center gap-2 text-sm"
+              className="w-full py-6 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition-all shadow-sm hover:shadow-md mt-2"
               disabled={loading}
             >
               {loading ? (
-                <>
-                  <Loader2 size={16} className="animate-spin" />
-                  <span>Creating Account...</span>
-                </>
+                <div className="flex items-center justify-center gap-2">
+                  <Loader2 size={18} className="animate-spin" />
+                  <span>Creating account...</span>
+                </div>
               ) : (
                 "Create Account"
               )}
             </Button>
           </form>
 
-          {/* Social Login Divider */}
-          <div className="mt-8 relative flex items-center py-4">
-            <div className="flex-grow border-t border-slate-200"></div>
-            <span className="flex-shrink-0 mx-3 text-slate-400 text-xs font-bold uppercase tracking-widest">
-              Or
+          <div className="mt-8 relative flex items-center py-2">
+            <div className="flex-grow border-t border-slate-100"></div>
+            <span className="flex-shrink-0 mx-4 text-xs font-bold text-slate-400 uppercase tracking-widest">
+              or
             </span>
-            <div className="flex-grow border-t border-slate-200"></div>
+            <div className="flex-grow border-t border-slate-100"></div>
           </div>
 
-          {/* Google Login */}
-          <div className="mt-4 flex justify-center w-full">
-            <div className="w-full [&>div]:w-full [&>div>div]:w-full flex justify-center">
+          <div className="mt-6">
+            <div className="w-full flex justify-center">
               <GoogleLogin
                 onSuccess={handleGoogleSuccess}
                 onError={() => setError("Google registration failed.")}
                 useOneTap
                 theme="outline"
                 size="large"
-                text="signup_with"
-                shape="rectangular"
-                width="100%"
+                shape="pill"
+                width="450"
               />
             </div>
           </div>
 
-          {/* Login Link */}
-          <p className="mt-10 text-center text-sm text-slate-600 font-medium pb-4">
-            Already have an account?{" "}
-            <Link to="/login" className="font-bold text-teal-700 hover:text-teal-800 transition-colors underline decoration-2 underline-offset-4 pointer-events-auto">
-              Sign in
+          <p className="mt-10 text-center text-sm font-medium text-slate-500">
+            Already a member?{" "}
+            <Link to="/login" className="text-teal-600 font-bold hover:text-teal-700 transition-colors">
+              Sign In
             </Link>
           </p>
-
         </div>
       </div>
     </div>

@@ -43,56 +43,56 @@ const BlogPostCard = ({ post }) => {
   };
 
   return (
-    <Link to={`/blog/${post.slug}`} className="block group mb-12 pb-12 border-b border-gray-100 last:border-0 hover:opacity-[0.98] transition-opacity">
-      <article className="grid grid-cols-1 md:grid-cols-[1fr_240px] gap-8 items-start">
+    <Link to={`/blog/${post.slug}`} className="block group py-10 first:pt-0 last:pb-0 border-b border-gray-100 last:border-0 hover:opacity-[0.98] transition-opacity">
+      <article className="flex flex-col md:flex-row gap-6 md:gap-10 items-start">
 
         {/* Content Side */}
-        <div className="flex flex-col h-full">
+        <div className="flex-1 min-w-0">
           {/* Author Meta */}
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-2.5 mb-3 text-xs font-semibold">
             <img 
               src={post.author?.avatar || post.createdBy?.avatar || "https://i.pravatar.cc/100"} 
               alt="Author" 
-              className="w-8 h-8 rounded-full object-cover" 
+              className="w-6 h-6 rounded-full object-cover grayscale-[0.2]" 
             />
-            <span className="text-sm font-medium text-black">{post.author?.fullName || post.createdBy?.fullName || 'Anonymous'}</span>
+            <span className="text-slate-900">{post.author?.fullName || post.createdBy?.fullName || 'Anonymous'}</span>
           </div>
 
           {/* Title */}
-          <h2 className="text-2xl md:text-3xl font-black text-black leading-[1.1] tracking-[-0.03em] mb-4 group-hover:underline decoration-1 underline-offset-[6px] transition-all line-clamp-2">
+          <h2 className="text-xl md:text-2xl font-black text-slate-900 leading-tight mb-3 group-hover:underline decoration-1 underline-offset-[4px] transition-all line-clamp-3">
             {post.title || 'Untitled'}
           </h2>
 
           {/* Excerpt */}
-          <p className="text-[#6B6B6B] font-medium text-[16px] leading-[1.6] mb-6 line-clamp-2">
+          <p className="text-slate-500 font-medium text-sm md:text-base leading-relaxed mb-6 line-clamp-3">
             {snippet}
           </p>
 
           {/* Footer Meta */}
           <div className="flex items-center justify-between mt-auto">
-            <div className="flex items-center text-[13px] text-[#6B6B6B] font-medium">
+            <div className="flex items-center text-[12px] text-slate-400 font-bold uppercase tracking-wider">
               <span>
                 {hoursRead > 0 
                   ? `${hoursRead}h ${remainingMinutes > 0 ? `${remainingMinutes}m` : ''}` 
                   : `${minutesRead} min`} read
               </span>
-              <span className="mx-3 opacity-40">·</span>
-              <span>{post.category?.name || 'General'}</span>
+              <span className="mx-2.5 opacity-30">·</span>
+              <span className="text-teal-700">{post.category?.name || 'General'}</span>
             </div>
 
-            <div className="flex items-center gap-4 text-gray-400">
-              <button onClick={handleBookmark} className={`hover:text-black transition-colors z-10 ${isBookmarked ? 'text-[#D4AF37]' : ''}`} title="Save">
-                <Bookmark size={18} className={isBookmarked ? 'fill-[#D4AF37]' : ''} />
+            <div className="flex items-center gap-5 text-slate-300">
+              <button onClick={handleBookmark} className={`hover:text-slate-900 transition-colors z-10 ${isBookmarked ? 'text-teal-600' : ''}`} title="Save">
+                <Bookmark size={16} className={isBookmarked ? 'fill-teal-600' : ''} />
               </button>
-              <button onClick={handleShare} className="hover:text-black transition-colors z-10" title="Share">
-                <Share2 size={18} />
+              <button onClick={handleShare} className="hover:text-slate-900 transition-colors z-10" title="Share">
+                <Share2 size={16} />
               </button>
             </div>
           </div>
         </div>
 
         {/* Image Side */}
-        <div className="hidden md:block w-full aspect-[4/3] bg-gray-50 rounded-sm overflow-hidden relative shrink-0 shadow-sm border border-gray-100/50">
+        <div className="w-full md:w-[200px] lg:w-[240px] aspect-[16/9] md:aspect-[4/3] bg-slate-50 rounded-sm overflow-hidden relative shrink-0">
           <img
             src={post.coverImage || "https://images.unsplash.com/photo-1559757175-5700dde675bc?auto=format&fit=crop&q=80&w=400"}
             alt={post.title}

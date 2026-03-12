@@ -98,19 +98,21 @@ const HomePage = () => {
       </Helmet>
 
       {/* Editorial Category Navigation */}
-      <div className="sticky top-20 z-40 bg-white/70 backdrop-blur-md border-b border-gray-100 mb-10 -mx-6 lg:-mx-16">
-        <CategorySlider
-          categories={categories}
-          selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
-        />
+      <div className="sticky top-[80px] z-40 bg-white/95 backdrop-blur-md border-b border-gray-100 mb-8">
+        <div className="max-w-7xl mx-auto">
+          <CategorySlider
+            categories={categories}
+            selectedCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+          />
+        </div>
       </div>
 
-      <div className="max-w-[1440px] mx-auto px-6 lg:px-16 pb-40">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 relative items-start">
+      <div className="pb-32">
+        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-12 relative items-start">
 
           {/* Main Feed Area */}
-          <main className="col-span-12 lg:col-span-8 lg:col-start-1">
+          <main className="w-full lg:col-span-8">
             {loading ? (
               renderSkeletonLoader()
             ) : error ? (
@@ -118,9 +120,9 @@ const HomePage = () => {
                 {error}
               </div>
             ) : blogs.length > 0 ? (
-              <div className="space-y-4">
-                {featuredPost && <FeaturedPostCard post={featuredPost} />}
-                <div className="space-y-2">
+              <div className="divide-y divide-gray-100">
+                {featuredPost && <div className="pb-10"><FeaturedPostCard post={featuredPost} /></div>}
+                <div className="pt-10 space-y-12">
                   {remainingPosts.map((post) => (
                     <BlogPostCard key={post._id} post={post} />
                   ))}

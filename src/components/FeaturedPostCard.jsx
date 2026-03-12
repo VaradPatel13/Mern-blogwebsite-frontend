@@ -20,11 +20,11 @@ const FeaturedPostCard = ({ post }) => {
   const snippet = trimmedText ? trimmedText.slice(0, 180) + '...' : '';
 
   return (
-    <Link to={`/blog/${post.slug}`} className="block group mb-12">
-      <div className="w-full bg-white rounded-none border-0 border-b border-gray-100 pb-12 shadow-none transition-transparent overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    <Link to={`/blog/${post.slug}`} className="block group mb-8 md:mb-16">
+      <div className="w-full bg-white transition-all overflow-hidden">
+        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           {/* Image Section */}
-          <div className="lg:col-span-7 overflow-hidden rounded-sm bg-gray-50 relative aspect-[16/9]">
+          <div className="w-full lg:col-span-8 overflow-hidden rounded-sm bg-slate-50 relative aspect-[16/9] lg:aspect-[3/2] shadow-sm">
             <img
               src={post.coverImage || "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=1200"}
               alt={post.title}
@@ -33,26 +33,25 @@ const FeaturedPostCard = ({ post }) => {
           </div>
 
           {/* Content Section */}
-          <div className="lg:col-span-5 flex flex-col justify-center py-1">
-            <div className="flex items-center gap-3 mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-[#FF4D00]">
+          <div className="w-full lg:col-span-4 flex flex-col justify-center">
+            <div className="flex items-center gap-3 mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-teal-600">
+              <span className="w-8 h-[2px] bg-teal-600 hidden lg:block"></span>
               <span>Featured Story</span>
             </div>
 
-            <h2 className="text-2xl lg:text-[32px] font-black text-black mb-4 leading-[1.1] tracking-[-0.03em] group-hover:underline decoration-1 underline-offset-[6px] transition-all line-clamp-3">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-serif font-bold text-slate-900 mb-4 leading-tight tracking-tight group-hover:text-teal-900 transition-colors">
               {post.title || 'Untitled Post'}
             </h2>
 
-            <p className="text-[16px] text-[#6B6B6B] font-medium leading-[1.5] mb-6 line-clamp-3 pr-2">
+            <p className="text-base md:text-lg text-slate-500 font-medium leading-relaxed mb-6 line-clamp-3">
               {snippet}
             </p>
 
-            <div className="flex items-center text-[13px] font-medium text-[#6B6B6B] mt-auto">
-              <span>By {post.author?.fullName || post.createdBy?.fullName || 'Unknown'}</span>
-              <span className="mx-3 opacity-40">·</span>
+            <div className="flex items-center text-sm font-bold text-slate-400 mt-auto">
+              <span className="text-slate-900 uppercase tracking-widest text-[11px]">{post.author?.fullName || post.createdBy?.fullName || 'Editor'}</span>
+              <span className="mx-3 opacity-30">/</span>
               <span>
-                {hoursRead > 0 
-                  ? `${hoursRead}h ${remainingMinutes > 0 ? `${remainingMinutes}m` : ''}` 
-                  : `${minutesRead} min`} read
+                {minutesRead} min read
               </span>
             </div>
           </div>

@@ -55,11 +55,11 @@ const CategorySlider = ({ categories, selectedCategory, onSelectCategory }) => {
   };
 
   return (
-    <div className="relative w-full border-b border-slate-200 bg-white pt-2 pb-0">
+    <div className="relative w-full border-b border-slate-100 bg-white/50 pt-2">
       {/* Scrollable Container */}
       <div
         ref={scrollRef}
-        className="flex items-center gap-6 overflow-x-auto scrollbar-hide cursor-grab active:cursor-grabbing select-none px-4 lg:px-0"
+        className="flex items-center gap-6 overflow-x-auto scrollbar-hide cursor-grab active:cursor-grabbing select-none px-6 md:px-0"
         onMouseDown={handleMouseDown}
         onMouseLeave={handleMouseLeave}
         onMouseUp={handleMouseUp}

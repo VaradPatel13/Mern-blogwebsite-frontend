@@ -1,65 +1,10 @@
 import React from 'react';
 import { ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import landingData from '../data/landingData.json';
 
 const FeaturesSection = () => {
-  // Creating a list of dummy articles to represent a blog feed
-  const latestPosts = [
-    {
-      title: "Why Silicon Valley is obsessed with stoicism",
-      excerpt: "The ancient Greek philosophy has found an unlikely resurgence among tech founders and venture capitalists looking for emotional resilience.",
-      category: "Philosophy",
-      author: "Marcus Aurelius",
-      date: "Oct 20",
-      readTime: "7 min",
-      image: "https://images.unsplash.com/photo-1563291074-2bf8677ac0e5?auto=format&fit=crop&q=80&w=600"
-    },
-    {
-      title: "The problem with endless scrolling",
-      excerpt: "How infinite interfaces are rewiring our attention spans and what designers are doing to build humane software.",
-      category: "UX Design",
-      author: "Elena Rossi",
-      date: "Oct 19",
-      readTime: "5 min",
-      image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&q=80&w=600"
-    },
-    {
-      title: "Cooking perfectly, slowly",
-      excerpt: "In defiance of instant pots and microwaves, the slow food movement is capturing the hearts of home chefs.",
-      category: "Food",
-      author: "Julia Child",
-      date: "Oct 18",
-      readTime: "12 min",
-      image: "https://images.unsplash.com/photo-1466637574441-749b8f19452f?auto=format&fit=crop&q=80&w=600"
-    },
-    {
-      title: "A beginner's guide to quantum computing",
-      excerpt: "It sounds like science fiction, but qubits are already solving problems classical computers could never touch.",
-      category: "Technology",
-      author: "Dr. Feynman",
-      date: "Oct 15",
-      readTime: "9 min",
-      image: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&q=80&w=600"
-    },
-    {
-      title: "The economics of remote work",
-      excerpt: "Three years later, the data is clear: remote work changes urban real estate, salaries, and corporate culture permanently.",
-      category: "Business",
-      author: "Adam Smith",
-      date: "Oct 12",
-      readTime: "6 min",
-      image: "https://images.unsplash.com/photo-1593642532973-d31b6557fa68?auto=format&fit=crop&q=80&w=600"
-    },
-    {
-      title: "Minimalism in the 21st century",
-      excerpt: "Is the minimalist aesthetic a genuine philosophical choice or just another luxury commodity?",
-      category: "Culture",
-      author: "Marie Kondo",
-      date: "Oct 10",
-      readTime: "11 min",
-      image: "https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&q=80&w=600"
-    }
-  ];
+  const { latestPosts } = landingData;
 
   return (
     <section className="py-20 bg-slate-50 border-t border-slate-200">
