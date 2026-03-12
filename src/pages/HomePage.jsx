@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getAllBlogs } from '../services/blogService';
 import { getAllCategories, getBlogsByCategory } from '../services/categoryService';
+import { Helmet } from 'react-helmet-async';
 import BlogPostCard from '../components/BlogPostCard';
 import BlogPostCardSkeleton from '../components/BlogPostCardSkeleton';
 import CategorySlider from '../components/CategorySlider';
@@ -75,6 +76,27 @@ const HomePage = () => {
 
   return (
     <div className="bg-[#FFFFFF] text-[#1A1A1A] min-h-screen font-inter selection:bg-[#FF4D00] selection:text-white">
+      <Helmet>
+        <title>MindLoom | Explore Stories that Inform and Inspire</title>
+        <meta name="description" content="MindLoom is a premium editorial platform for long-form stories, insightful deep-dives, and technical excellence. Explore articles on technology, development, and more." />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={window.location.origin} />
+        <meta property="og:title" content="MindLoom | Premium Editorial Platform" />
+        <meta property="og:description" content="Join MindLoom to discover deep-dives and high-fidelity stories on everything that matters in tech and lifestyle." />
+        <meta property="og:image" content={`${window.location.origin}/og-image.png`} />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={window.location.origin} />
+        <meta name="twitter:title" content="MindLoom | Premium Editorial Platform" />
+        <meta name="twitter:description" content="Join MindLoom to discover deep-dives and high-fidelity stories." />
+        <meta name="twitter:image" content={`${window.location.origin}/og-image.png`} />
+        
+        <link rel="canonical" href={window.location.origin} />
+      </Helmet>
+
       {/* Editorial Category Navigation */}
       <div className="sticky top-20 z-40 bg-white/70 backdrop-blur-md border-b border-gray-100 mb-10 -mx-6 lg:-mx-16">
         <CategorySlider
