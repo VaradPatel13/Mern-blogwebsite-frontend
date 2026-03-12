@@ -1,62 +1,64 @@
-// src/components/FeaturedPostCard.jsx (NEW FILE)
-
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardContent } from "@/components/ui/card";
-import { ArrowUpRight } from 'lucide-react';
+import { Card } from "@/components/ui/card";
 
 const FeaturedPostCard = ({ post }) => {
   if (!post) return null;
 
-  const formattedDate = new Date(post.createdAt).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+  // Use server-calculated readingTime if available, otherwise calculate client-side
+  const minutesRead = post.readingTime || (post.body 
+    ? Math.max(1, Math.ceil(post.body.replace(/<[^>]*>/g, '').trim().split(/\s+/).length / 225)) 
+    : 1);
+  const hoursRead = Math.floor(minutesRead / 60);
+  const remainingMinutes = minutesRead % 60;
 
-  const snippet = post.body 
-    ? new DOMParser().parseFromString(post.body, 'text/html').body.textContent.slice(0, 150) + '...' 
+  const rawText = post.body
+    ? new DOMParser().parseFromString(post.body, 'text/html').body.textContent
     : '';
+  // Remove the title from the start of the snippet to avoid duplication
+  const trimmedText = rawText.startsWith(post.title) ? rawText.slice(post.title.length).trim() : rawText;
+  const snippet = trimmedText ? trimmedText.slice(0, 180) + '...' : '';
 
   return (
-    <Card className="w-full bg-white rounded-2xl border border-amber-200/50 shadow-sm transition-all duration-300 hover:shadow-lg hover:border-amber-300/80 overflow-hidden">
-      <Link to={`/blog/${post.slug}`} className="block">
-        <div className="grid grid-cols-1 md:grid-cols-2">
+    <Link to={`/blog/${post.slug}`} className="block group mb-12">
+      <div className="w-full bg-white rounded-none border-0 border-b border-gray-100 pb-12 shadow-none transition-transparent overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Image Section */}
-          <div className="md:order-2">
-            <img 
-              src={post.coverImage} 
-              alt={post.title} 
-              className="w-full h-64 md:h-full object-cover" 
+          <div className="lg:col-span-7 overflow-hidden rounded-sm bg-gray-50 relative aspect-[16/9]">
+            <img
+              src={post.coverImage || "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=1200"}
+              alt={post.title}
+              className="absolute inset-0 w-full h-full object-cover grayscale-[0.1] transition-transform duration-1000 group-hover:scale-[1.03]"
             />
           </div>
-          
+
           {/* Content Section */}
-          <div className="md:order-1 p-6 md:p-8 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center space-x-3 mb-4">
-                <img src={post.author?.avatar} alt={post.author?.fullName} className="w-8 h-8 rounded-full object-cover" />
-                <span className="font-semibold text-gray-800 text-sm">{post.author?.fullName || 'Unknown'}</span>
-              </div>
-              
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
-                {post.title || 'Untitled Post'}
-              </h2>
-              <p className="text-gray-600 text-base mb-4 leading-relaxed">
-                {snippet}
-              </p>
+          <div className="lg:col-span-5 flex flex-col justify-center py-1">
+            <div className="flex items-center gap-3 mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-[#FF4D00]">
+              <span>Featured Story</span>
             </div>
 
-            <div className="flex items-center justify-between text-sm text-gray-500 mt-4">
-              <span>{formattedDate}</span>
-              <span className="flex items-center font-semibold text-amber-600">
-                Read More <ArrowUpRight size={16} className="ml-1" />
+            <h2 className="text-2xl lg:text-[32px] font-black text-black mb-4 leading-[1.1] tracking-[-0.03em] group-hover:underline decoration-1 underline-offset-[6px] transition-all line-clamp-3">
+              {post.title || 'Untitled Post'}
+            </h2>
+
+            <p className="text-[16px] text-[#6B6B6B] font-medium leading-[1.5] mb-6 line-clamp-3 pr-2">
+              {snippet}
+            </p>
+
+            <div className="flex items-center text-[13px] font-medium text-[#6B6B6B] mt-auto">
+              <span>By {post.author?.fullName || post.createdBy?.fullName || 'Unknown'}</span>
+              <span className="mx-3 opacity-40">·</span>
+              <span>
+                {hoursRead > 0 
+                  ? `${hoursRead}h ${remainingMinutes > 0 ? `${remainingMinutes}m` : ''}` 
+                  : `${minutesRead} min`} read
               </span>
             </div>
           </div>
         </div>
-      </Link>
-    </Card>
+      </div>
+    </Link>
   );
 };
 

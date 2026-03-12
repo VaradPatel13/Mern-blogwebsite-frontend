@@ -1,32 +1,30 @@
-// src/layouts/MainLayout.jsx (REDESIGNED)
-
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import MainNavbar from '../components/Navbar';
 
-
 const MainLayout = () => {
   const location = useLocation();
-  const isHomePage = location.pathname === '/home';
 
   return (
-    <div className="bg-gray-50/50 min-h-screen">
-      {/* 1. UNIFIED FIXED HEADER */}
-      <div className="sticky top-0 z-50 w-full bg-white shadow-sm border-b border-gray-200">
-        <div className="container max-w-7xl mx-auto px-4">
-          {/* Main Navbar is always present */}
-          <MainNavbar />
-        </div>
+    <div className="bg-slate-50 min-h-screen font-sans selection:bg-teal-100 selection:text-teal-900 flex flex-col">
+      {/* Editorial Top Navigation */}
+      <div className="sticky top-0 z-50 w-full bg-white shadow-sm border-b border-slate-200">
+        <MainNavbar />
       </div>
 
-      {/* 2. MAIN CONTENT AREA */}
-      {/* Increased top padding to account for the taller fixed header */}
-      <main className="container max-w-7xl mx-auto px-4 py-8 pt-10">
+      {/* Main App Content Area */}
+      <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-8 pb-16">
         <Outlet />
       </main>
+
+      {/* Simple Footer for the Internal App */}
+      <footer className="mt-auto py-8 border-t border-slate-200 bg-white text-center">
+        <p className="text-sm font-semibold text-slate-500">
+          MindLoom. &copy; {new Date().getFullYear()} All rights reserved.
+        </p>
+      </footer>
     </div>
   );
 };
 
 export default MainLayout;
-

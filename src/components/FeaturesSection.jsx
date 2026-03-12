@@ -1,58 +1,128 @@
-
-// src/components/FeaturesSection.jsx
-
 import React from 'react';
-import { Zap, Edit3, Heart } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const FeaturesSection = () => {
-  const features = [
+  // Creating a list of dummy articles to represent a blog feed
+  const latestPosts = [
     {
-      icon: <Zap className="w-8 h-8" />,
-      title: "Blazing Fast",
-      description: "Powered by modern technology for an instant, seamless writing experience that never keeps you waiting."
+      title: "Why Silicon Valley is obsessed with stoicism",
+      excerpt: "The ancient Greek philosophy has found an unlikely resurgence among tech founders and venture capitalists looking for emotional resilience.",
+      category: "Philosophy",
+      author: "Marcus Aurelius",
+      date: "Oct 20",
+      readTime: "7 min",
+      image: "https://images.unsplash.com/photo-1563291074-2bf8677ac0e5?auto=format&fit=crop&q=80&w=600"
     },
     {
-      icon: <Edit3 className="w-8 h-8" />,
-      title: "Beautifully Simple",
-      description: "A clean, intuitive editor that gets out of your way so you can focus on what matters: your writing."
+      title: "The problem with endless scrolling",
+      excerpt: "How infinite interfaces are rewiring our attention spans and what designers are doing to build humane software.",
+      category: "UX Design",
+      author: "Elena Rossi",
+      date: "Oct 19",
+      readTime: "5 min",
+      image: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&q=80&w=600"
     },
     {
-      icon: <Heart className="w-8 h-8" />,
-      title: "Engage & Grow",
-      description: "Connect with readers through likes, comments, and shares to build a thriving community around your stories."
+      title: "Cooking perfectly, slowly",
+      excerpt: "In defiance of instant pots and microwaves, the slow food movement is capturing the hearts of home chefs.",
+      category: "Food",
+      author: "Julia Child",
+      date: "Oct 18",
+      readTime: "12 min",
+      image: "https://images.unsplash.com/photo-1466637574441-749b8f19452f?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      title: "A beginner's guide to quantum computing",
+      excerpt: "It sounds like science fiction, but qubits are already solving problems classical computers could never touch.",
+      category: "Technology",
+      author: "Dr. Feynman",
+      date: "Oct 15",
+      readTime: "9 min",
+      image: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      title: "The economics of remote work",
+      excerpt: "Three years later, the data is clear: remote work changes urban real estate, salaries, and corporate culture permanently.",
+      category: "Business",
+      author: "Adam Smith",
+      date: "Oct 12",
+      readTime: "6 min",
+      image: "https://images.unsplash.com/photo-1593642532973-d31b6557fa68?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      title: "Minimalism in the 21st century",
+      excerpt: "Is the minimalist aesthetic a genuine philosophical choice or just another luxury commodity?",
+      category: "Culture",
+      author: "Marie Kondo",
+      date: "Oct 10",
+      readTime: "11 min",
+      image: "https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&q=80&w=600"
     }
   ];
 
   return (
-    <section id="features" className="py-20 lg:py-32 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16 lg:mb-24">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-            Why You'll Love MindLoom
-          </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Everything you need to create, share, and grow your writing community
-          </p>
+    <section className="py-20 bg-slate-50 border-t border-slate-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8">
+
+        {/* Section Header */}
+        <div className="flex items-end justify-between mb-10 pb-4 border-b border-slate-300">
+          <h2 className="text-2xl font-bold font-serif text-slate-900">Latest from the network</h2>
+          <Link to="/home" className="text-sm font-semibold text-teal-700 hover:text-teal-900 flex items-center group transition-colors">
+            View all stories
+            <ChevronRight size={16} className="ml-1 group-hover:translate-x-1 transition-transform" />
+          </Link>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
-          {features.map((feature, index) => (
-            <div key={index} className="group p-8 rounded-2xl border border-amber-100 hover:border-amber-300 hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-white to-amber-50/30">
-              <div className="text-amber-600 mb-4 group-hover:scale-110 transition-transform duration-300">
-                {feature.icon}
+
+        {/* Blog Post Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+          {latestPosts.map((post, idx) => (
+            <Link to="/home" key={idx} className="group cursor-pointer flex flex-col h-full bg-white p-5 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+
+              {/* Image Placeholder */}
+              <div className="w-full h-48 bg-slate-100 rounded-lg overflow-hidden mb-5 relative shrink-0">
+                <img
+                  src={post.image}
+                  alt={post.title}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
               </div>
-              <h3 className="text-xl lg:text-2xl font-bold text-amber-900 mb-4">
-                {feature.title}
+
+              {/* Meta */}
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-teal-700 mb-2">
+                <span>{post.category}</span>
+              </div>
+
+              {/* Title */}
+              <h3 className="text-xl font-serif font-bold text-slate-900 leading-tight mb-3 group-hover:text-teal-800 transition-colors shrink-0">
+                {post.title}
               </h3>
-              <p className="text-gray-600 leading-relaxed">
-                {feature.description}
+
+              {/* Excerpt */}
+              <p className="text-slate-600 text-sm font-sans leading-relaxed mb-6 flex-grow line-clamp-3">
+                {post.excerpt}
               </p>
-            </div>
+
+              {/* Author & Date */}
+              <div className="flex items-center justify-between mt-auto pt-4 text-xs shrink-0 border-t border-slate-100">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-500 overflow-hidden">
+                    <img src={`https://i.pravatar.cc/100?u=${idx}`} alt={post.author} className="w-full h-full object-cover" />
+                  </div>
+                  <span className="font-semibold text-slate-800">{post.author}</span>
+                </div>
+                <div className="text-slate-500">
+                  {post.date} · {post.readTime}
+                </div>
+              </div>
+
+            </Link>
           ))}
         </div>
+
       </div>
     </section>
   );
 };
-    
+
 export default FeaturesSection;

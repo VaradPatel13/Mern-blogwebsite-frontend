@@ -45,10 +45,11 @@ export const AuthProvider = ({ children }) => {
     logout,
   };
 
-  // We don't render the app until the initial authentication check is done
+  // We don't block the app render for initial authentication check
+  // (The backend might take a minute to spin up on Render free tier)
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 };

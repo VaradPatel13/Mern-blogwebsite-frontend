@@ -1,5 +1,3 @@
-// src/components/CategorySlider.jsx (with arrows + drag scrolling)
-
 import React, { useRef, useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -15,9 +13,7 @@ const CategorySlider = ({ categories, selectedCategory, onSelectCategory }) => {
 
   const checkScroll = () => {
     if (!scrollRef.current) return;
-
     const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-
     setShowLeft(scrollLeft > 0);
     setShowRight(scrollLeft + clientWidth < scrollWidth - 5);
   };
@@ -29,22 +25,19 @@ const CategorySlider = ({ categories, selectedCategory, onSelectCategory }) => {
       slider.addEventListener('scroll', checkScroll);
     }
     return () => {
-      if (slider) {
-        slider.removeEventListener('scroll', checkScroll);
-      }
+      if (slider) slider.removeEventListener('scroll', checkScroll);
     };
-  }, []);
+  }, [categories]);
 
   const handleScroll = (direction) => {
     if (scrollRef.current) {
       scrollRef.current.scrollBy({
-        left: direction === 'left' ? -200 : 200,
+        left: direction === 'left' ? -300 : 300,
         behavior: 'smooth',
       });
     }
   };
 
-  // Drag scroll handlers
   const handleMouseDown = (e) => {
     setIsDragging(true);
     setStartX(e.pageX - scrollRef.current.offsetLeft);
@@ -53,75 +46,66 @@ const CategorySlider = ({ categories, selectedCategory, onSelectCategory }) => {
 
   const handleMouseLeave = () => setIsDragging(false);
   const handleMouseUp = () => setIsDragging(false);
-
   const handleMouseMove = (e) => {
     if (!isDragging) return;
     e.preventDefault();
     const x = e.pageX - scrollRef.current.offsetLeft;
-    const walk = (x - startX) * 1; // speed factor
+    const walk = (x - startX) * 1.5;
     scrollRef.current.scrollLeft = scrollLeft - walk;
   };
 
   return (
-    <div className="sticky top-16 z-40 bg-white/80 backdrop-blur-sm border-b border-gray-200 -mx-4">
-      <div className="container mx-auto px-4 relative">
-        {/* Scrollable Categories */}
-        <div
-          ref={scrollRef}
-          className="flex items-center space-x-2 sm:space-x-4 overflow-x-auto py-3 scrollbar-hide cursor-grab active:cursor-grabbing select-none"
-          onMouseDown={handleMouseDown}
-          onMouseLeave={handleMouseLeave}
-          onMouseUp={handleMouseUp}
-          onMouseMove={handleMouseMove}
-        >
-          <button
-            onClick={() => onSelectCategory(null)}
-            className={`px-4 py-2 text-sm font-semibold rounded-full transition-all duration-200 whitespace-nowrap shadow-sm ${
-              !selectedCategory
-                ? 'bg-amber-500 text-white shadow-md'
-                : 'text-gray-600 hover:bg-amber-100'
+    <div className="relative w-full border-b border-slate-200 bg-white pt-2 pb-0">
+      {/* Scrollable Container */}
+      <div
+        ref={scrollRef}
+        className="flex items-center gap-6 overflow-x-auto scrollbar-hide cursor-grab active:cursor-grabbing select-none px-4 lg:px-0"
+        onMouseDown={handleMouseDown}
+        onMouseLeave={handleMouseLeave}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
+      >
+        <button
+          onClick={() => onSelectCategory(null)}
+          className={`whitespace-nowrap pb-3 text-sm font-semibold transition-all border-b-2 ${!selectedCategory
+              ? 'border-slate-900 text-slate-900'
+              : 'border-transparent text-slate-500 hover:text-slate-900'
             }`}
-          >
-            For you
-          </button>
-          {categories.map((category) => (
-            <button
-              key={category._id}
-              onClick={() => onSelectCategory(category.slug)}
-              className={`px-4 py-2 text-sm font-semibold rounded-full transition-all duration-200 whitespace-nowrap shadow-sm ${
-                selectedCategory === category.slug
-                  ? 'bg-amber-500 text-white shadow-md'
-                  : 'text-gray-600 hover:bg-amber-100'
+        >
+          For you
+        </button>
+        {categories.map((category) => (
+          <button
+            key={category._id}
+            onClick={() => onSelectCategory(category.slug)}
+            className={`whitespace-nowrap pb-3 text-sm font-semibold transition-all border-b-2 ${selectedCategory === category.slug
+                ? 'border-slate-900 text-slate-900'
+                : 'border-transparent text-slate-500 hover:text-slate-900'
               }`}
-            >
-              {category.name}
-            </button>
-          ))}
-        </div>
-
-        {/* Left Arrow */}
-        {showLeft && (
-          <button
-            onClick={() => handleScroll('left')}
-            className="absolute left-0 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm border rounded-full p-2 shadow-md hover:bg-amber-100 transition"
           >
-            <ChevronLeft className="w-5 h-5 text-gray-600" />
+            {category.name}
           </button>
-        )}
-
-        {/* Right Arrow */}
-        {showRight && (
-          <button
-            onClick={() => handleScroll('right')}
-            className="absolute right-0 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm border rounded-full p-2 shadow-md hover:bg-amber-100 transition"
-          >
-            <ChevronRight className="w-5 h-5 text-gray-600" />
-          </button>
-        )}
+        ))}
       </div>
+
+      {/* Fade Gradients & Arrows */}
+      {showLeft && (
+        <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-white to-transparent pointer-events-none flex items-center">
+          <button onClick={() => handleScroll('left')} className="pointer-events-auto ml-1 p-1 bg-white rounded-full shadow-sm border border-slate-100 text-slate-600 hover:text-slate-900">
+            <ChevronLeft size={20} />
+          </button>
+        </div>
+      )}
+
+      {showRight && (
+        <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-white to-transparent pointer-events-none flex items-center justify-end">
+          <button onClick={() => handleScroll('right')} className="pointer-events-auto mr-1 p-1 bg-white rounded-full shadow-sm border border-slate-100 text-slate-600 hover:text-slate-900">
+            <ChevronRight size={20} />
+          </button>
+        </div>
+      )}
     </div>
   );
 };
 
 export default CategorySlider;
-

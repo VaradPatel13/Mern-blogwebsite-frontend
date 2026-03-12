@@ -1,5 +1,3 @@
-// src/pages/HomePage.jsx (UPDATED with Sticky Slider)
-
 import React, { useState, useEffect } from 'react';
 import { getAllBlogs } from '../services/blogService';
 import { getAllCategories, getBlogsByCategory } from '../services/categoryService';
@@ -35,10 +33,10 @@ const HomePage = () => {
       setLoading(true);
       setError('');
       try {
-        const response = selectedCategory 
+        const response = selectedCategory
           ? await getBlogsByCategory(selectedCategory)
           : await getAllBlogs();
-        
+
         if (response.success) {
           setBlogs(response.data.docs || response.data);
         }
@@ -48,82 +46,78 @@ const HomePage = () => {
         setLoading(false);
       }
     };
-    // Add a small delay to showcase the skeleton loader
-    const timer = setTimeout(() => fetchBlogs(), 500); 
+    const timer = setTimeout(() => fetchBlogs(), 300);
     return () => clearTimeout(timer);
   }, [selectedCategory]);
 
   const renderSkeletonLoader = () => (
     <>
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200/80 mb-8">
-         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                    <div className="h-8 w-8 rounded-full bg-gray-200 animate-pulse" />
-                    <div className="h-4 w-24 bg-gray-200 animate-pulse" />
-                </div>
-                <div className="h-8 w-full bg-gray-200 animate-pulse" />
-                <div className="h-4 w-3/4 bg-gray-200 animate-pulse" />
-                <div className="h-4 w-full bg-gray-200 animate-pulse" />
-                <div className="h-4 w-5/6 bg-gray-200 animate-pulse" />
-            </div>
-            <div className="h-64 w-full rounded-lg bg-gray-200 animate-pulse" />
-         </div>
+      <div className="mb-10 pb-10 border-b border-slate-200">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div className="lg:col-span-8 bg-slate-100 h-[400px] rounded-xl animate-pulse"></div>
+          <div className="lg:col-span-4 flex flex-col justify-center h-full pt-4 lg:pt-0">
+            <div className="h-4 w-24 bg-slate-100 rounded mb-4 animate-pulse"></div>
+            <div className="h-10 w-full bg-slate-100 rounded mb-2 animate-pulse"></div>
+            <div className="h-10 w-3/4 bg-slate-100 rounded mb-6 animate-pulse"></div>
+            <div className="h-4 w-full bg-slate-100 rounded mb-2 animate-pulse"></div>
+            <div className="h-4 w-5/6 bg-slate-100 rounded mb-2 animate-pulse"></div>
+          </div>
+        </div>
       </div>
-      <div className="space-y-8">
-        {Array.from({ length: 2 }).map((_, index) => <BlogPostCardSkeleton key={index} />)}
+      <div>
+        {Array.from({ length: 3 }).map((_, index) => <BlogPostCardSkeleton key={index} />)}
       </div>
     </>
   );
-  
+
   const featuredPost = blogs.length > 0 ? blogs[0] : null;
   const remainingPosts = blogs.length > 1 ? blogs.slice(1) : [];
 
   return (
-    <>
-      <div className="sticky top-20 z-40 -mx-4">
-        <div className="bg-white/80  border-b border-gray-200">
-            <div className="container mx-auto px-4">
-                <CategorySlider 
-                    categories={categories}
-                    selectedCategory={selectedCategory}
-                    onSelectCategory={setSelectedCategory}
-                />
-            </div>
-        </div>
+    <div className="bg-[#FFFFFF] text-[#1A1A1A] min-h-screen font-inter selection:bg-[#FF4D00] selection:text-white">
+      {/* Editorial Category Navigation */}
+      <div className="sticky top-20 z-40 bg-white/70 backdrop-blur-md border-b border-gray-100 mb-10 -mx-6 lg:-mx-16">
+        <CategorySlider
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onSelectCategory={setSelectedCategory}
+        />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 mt-25">
-        {/* Main Content: Blog Feed */}
-        <div className="lg:col-span-2">
-          {loading ? (
-            renderSkeletonLoader()
-          ) : error ? (
-            <p className="text-center text-red-500 p-4 bg-red-50 rounded-lg">{error}</p>
-          ) : blogs.length > 0 ? (
-            <div className="space-y-8">
-              {featuredPost && <FeaturedPostCard post={featuredPost} />}
-              {remainingPosts.length > 0 && <div className="border-t pt-8 border-dashed"></div>}
-              {remainingPosts.map((post) => (
-                <BlogPostCard key={post._id} post={post} />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-16 px-6 bg-white rounded-2xl border border-dashed">
-              <h3 className="text-xl font-semibold text-gray-800">No Posts Yet</h3>
-              <p className="text-gray-500 mt-2">There are no posts in this category. Why not be the first?</p>
-            </div>
-          )}
-        </div>
+      <div className="max-w-[1440px] mx-auto px-6 lg:px-16 pb-40">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 relative items-start">
 
-        {/* Sidebar */}
-        <div className="lg:col-span-1">
+          {/* Main Feed Area */}
+          <main className="col-span-12 lg:col-span-8 lg:col-start-1">
+            {loading ? (
+              renderSkeletonLoader()
+            ) : error ? (
+              <div className="text-center p-12 bg-red-50 text-red-600 rounded-sm border border-red-100 font-bold uppercase tracking-widest text-[10px]">
+                {error}
+              </div>
+            ) : blogs.length > 0 ? (
+              <div className="space-y-4">
+                {featuredPost && <FeaturedPostCard post={featuredPost} />}
+                <div className="space-y-2">
+                  {remainingPosts.map((post) => (
+                    <BlogPostCard key={post._id} post={post} />
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-32 px-6 bg-gray-50 rounded-sm border border-gray-100 border-dashed">
+                <h3 className="text-2xl font-black text-black mb-4 tracking-tight uppercase tracking-[0.1em]">No Stories Found</h3>
+                <p className="text-[#6B6B6B] font-medium max-w-md mx-auto">There are no stories published in this category yet. Be the first to share your thoughts.</p>
+              </div>
+            )}
+          </main>
+
+          {/* Right Sidebar */}
           <HomeSidebar />
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
 export default HomePage;
-

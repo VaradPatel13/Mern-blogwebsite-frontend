@@ -1,10 +1,7 @@
-// src/components/HomeSidebar.jsx
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getAllCategories } from '../services/categoryService';
 import { getAllTags } from '../services/tagService';
-import { Skeleton } from '@/components/ui/skeleton';
 
 const HomeSidebar = () => {
   const [categories, setCategories] = useState([]);
@@ -18,7 +15,6 @@ const HomeSidebar = () => {
           getAllCategories(),
           getAllTags()
         ]);
-        
         if (catRes.success) setCategories(catRes.data);
         if (tagRes.success) setTags(tagRes.data);
       } catch (error) {
@@ -32,27 +28,28 @@ const HomeSidebar = () => {
 
   const SkeletonLoader = () => (
     <div className="flex flex-wrap gap-2">
-      <Skeleton className="h-6 w-20 rounded-full" />
-      <Skeleton className="h-6 w-24 rounded-full" />
-      <Skeleton className="h-6 w-16 rounded-full" />
-      <Skeleton className="h-6 w-28 rounded-full" />
-      <Skeleton className="h-6 w-20 rounded-full" />
+      {[1, 2, 3, 4, 5].map(i => (
+        <div key={i} className="h-8 w-20 bg-slate-100 animate-pulse rounded-full"></div>
+      ))}
     </div>
   );
 
   return (
-    <aside className="w-full lg:w-80 flex-shrink-0">
-      <div className="sticky top-24 space-y-8">
-        {/* Categories Section */}
-        <div>
-          <h3 className="text-lg font-semibold text-amber-800 mb-4">Discover by Category</h3>
+    <aside className="hidden lg:block lg:col-span-3 lg:col-start-10 relative bg-gray-50 min-h-full rounded-sm -mr-6 lg:-mr-16 pl-8 pr-6 pt-12">
+      <div className="sticky top-28 space-y-12">
+        
+        {/* Recommended Topics */}
+        <div className="space-y-6">
+          <h4 className="text-[10px] font-black uppercase tracking-widest text-[#999] border-b border-gray-200 pb-4">
+            Recommended Topics
+          </h4>
           {loading ? <SkeletonLoader /> : (
-            <div className="flex flex-wrap gap-2">
-              {categories.map(category => (
+            <div className="flex flex-wrap gap-2.5">
+              {categories.slice(0, 8).map(category => (
                 <Link
                   key={category._id}
                   to={`/category/${category.slug}`}
-                  className="px-3 py-1 text-sm bg-amber-100 text-amber-800 rounded-full hover:bg-amber-500 hover:text-white transition-colors font-medium"
+                  className="px-4 py-2 text-[12px] font-bold bg-white text-black rounded-full hover:bg-black hover:text-white transition-all border border-gray-200 shadow-sm"
                 >
                   {category.name}
                 </Link>
@@ -60,23 +57,36 @@ const HomeSidebar = () => {
             </div>
           )}
         </div>
-        
-        {/* Tags Section */}
-        <div>
-          <h3 className="text-lg font-semibold text-amber-800 mb-4">Popular Tags</h3>
+
+        {/* Popular Tags */}
+        <div className="space-y-6">
+          <h4 className="text-[10px] font-black uppercase tracking-widest text-[#999] border-b border-gray-200 pb-4">
+            Trending Tags
+          </h4>
           {loading ? <SkeletonLoader /> : (
             <div className="flex flex-wrap gap-2">
-              {tags.map(tag => (
+              {tags.slice(0, 10).map(tag => (
                 <Link
                   key={tag._id}
-                  to={`/tag/${tag.slug}`} // Note: We still need to build the /tag/:slug page
-                  className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-colors"
+                  to={`/tag/${tag.slug}`}
+                  className="text-[12px] font-bold text-[#777] hover:text-black transition-colors"
                 >
                   #{tag.name}
                 </Link>
               ))}
             </div>
           )}
+        </div>
+
+        {/* Mini Footer / Links */}
+        <div className="pt-12 border-t border-gray-200">
+          <div className="flex flex-wrap gap-x-5 gap-y-3 text-[11px] font-bold uppercase tracking-wider text-[#BBB]">
+            <Link to="#" className="hover:text-black transition-colors">Help</Link>
+            <Link to="#" className="hover:text-black transition-colors">About</Link>
+            <Link to="#" className="hover:text-black transition-colors">Privacy</Link>
+            <Link to="#" className="hover:text-black transition-colors">Terms</Link>
+          </div>
+          <p className="mt-8 text-[11px] font-bold text-[#DDD] tracking-widest uppercase">© 2026 Bolify</p>
         </div>
       </div>
     </aside>

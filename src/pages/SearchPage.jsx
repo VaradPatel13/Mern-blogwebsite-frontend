@@ -1,8 +1,10 @@
-// src/pages/SearchPage.jsx (NEW FILE)
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { searchSite } from '../services/searchService';
-import BlogPostCard from '../components/BlogPostCard'; 
+import BlogPostCard from '../components/BlogPostCard';
+import BlogPostCardSkeleton from '../components/BlogPostCardSkeleton';
+import { Search, ArrowLeft, Frown } from 'lucide-react';
+
 const SearchPage = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q');
@@ -15,7 +17,7 @@ const SearchPage = () => {
       setLoading(false);
       return;
     }
-    
+
     const fetchResults = async () => {
       setLoading(true);
       setError('');
@@ -35,25 +37,65 @@ const SearchPage = () => {
   }, [query]);
 
   return (
-    <div className="container mx-auto px-4 py-8 mt-10">
-      <h1 className="text-3xl font-bold mb-6">
-        Search Results for: <span className="text-amber-500">"{query}"</span>
-      </h1>
+    <div className="max-w-4xl mx-auto py-8 lg:py-12 font-sans px-4 sm:px-0">
 
-      {loading && <p>Loading results...</p>}
-      {error && <p className="text-red-500">{error}</p>}
-      
-      {!loading && !error && (
+      {/* Search Header */}
+      <div className="mb-12 pb-8 border-b border-slate-200">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-2 bg-slate-100 rounded-full text-slate-500">
+            <Search size={20} />
+          </div>
+          <h1 className="text-sm font-bold uppercase tracking-widest text-slate-500">
+            Search Results
+          </h1>
+        </div>
+
+        <h2 className="text-4xl sm:text-5xl font-serif font-bold text-slate-900 tracking-tight">
+          {query ? (
+            <span>Results for <span className="text-teal-700 italic">"{query}"</span></span>
+          ) : (
+            "Search"
+          )}
+        </h2>
+      </div>
+
+      {loading ? (
+        <div className="space-y-4">
+          {Array.from({ length: 4 }).map((_, index) => <BlogPostCardSkeleton key={index} />)}
+        </div>
+      ) : error ? (
+        <div className="p-4 bg-red-50 text-red-700 border border-red-200 rounded-lg font-medium">
+          {error}
+        </div>
+      ) : (!query) ? (
+        <div className="text-center py-20">
+          <h3 className="text-xl font-serif font-bold text-slate-900 mb-2">Search the archive</h3>
+          <p className="text-slate-500 font-medium">Enter a query above to search through our published stories.</p>
+        </div>
+      ) : (
         <div className="space-y-12">
           {/* Blog Results */}
           <div>
-            <h2 className="text-2xl font-semibold mb-4 border-b pb-2">Blogs</h2>
             {results.blogs.length > 0 ? (
-              <div className="space-y-8">
+              <div className="space-y-4">
                 {results.blogs.map(blog => <BlogPostCard key={blog._id} post={blog} />)}
               </div>
             ) : (
-              <p className="text-gray-500">No blogs found matching your search.</p>
+              <div className="text-center py-20 bg-slate-50 border border-slate-200 border-dashed rounded-xl">
+                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-200 shadow-sm">
+                  <Frown className="w-8 h-8 text-slate-400" />
+                </div>
+                <h3 className="text-xl font-serif font-bold text-slate-900 mb-2">No matching stories</h3>
+                <p className="text-slate-500 font-medium max-w-sm mx-auto">
+                  We couldn't find any stories matching "{query}". Try checking your spelling or use more general terms.
+                </p>
+
+                <div className="mt-8">
+                  <Link to="/home" className="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors group">
+                    <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Return to feed
+                  </Link>
+                </div>
+              </div>
             )}
           </div>
         </div>

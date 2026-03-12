@@ -1,11 +1,7 @@
-// src/components/BlogPostCard.jsx (FIXED)
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Card } from "@/components/ui/card";
-import { Eye, Heart, Share2, Bookmark } from 'lucide-react';
+import { Bookmark, Share2 } from 'lucide-react';
 import { useToast } from "@/components/ui/toast";
-import { motion } from 'framer-motion';
 
 const BlogPostCard = ({ post }) => {
   if (!post) return null;
@@ -13,104 +9,98 @@ const BlogPostCard = ({ post }) => {
   const [isBookmarked, setIsBookmarked] = useState(false);
   const { toast } = useToast();
 
-  const formattedDate = new Date(post.createdAt).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-  });
+  // Use server-calculated readingTime if available, otherwise calculate client-side
+  const minutesRead = post.readingTime || (post.body 
+    ? Math.max(1, Math.ceil(post.body.replace(/<[^>]*>/g, '').trim().split(/\s+/).length / 225)) 
+    : 1);
+  const hoursRead = Math.floor(minutesRead / 60);
+  const remainingMinutes = minutesRead % 60;
 
-  const snippet = post.body 
-    ? new DOMParser().parseFromString(post.body, 'text/html').body.textContent.slice(0, 100) + '...' 
+  const rawText = post.body
+    ? new DOMParser().parseFromString(post.body, 'text/html').body.textContent
     : '';
+  const trimmedText = rawText.startsWith(post.title) ? rawText.slice(post.title.length).trim() : rawText;
+  const snippet = trimmedText ? trimmedText.slice(0, 150) + '...' : '';
 
   const handleShare = (e) => {
-    e.preventDefault(); // Prevent navigation
+    e.preventDefault();
     const shareUrl = `${window.location.origin}/blog/${post.slug}`;
     if (navigator.share) {
       navigator.share({ title: post.title, text: snippet, url: shareUrl });
     } else {
       navigator.clipboard.writeText(shareUrl);
-      toast({
-        title: "Link Copied!",
-        description: "The blog post URL has been copied to your clipboard.",
-      });
+      toast({ title: "Link Copied!", description: "The article URL has been copied." });
     }
   };
 
   const handleBookmark = (e) => {
-    e.preventDefault(); // Prevent navigation
+    e.preventDefault();
     setIsBookmarked(!isBookmarked);
     toast({
-      title: isBookmarked ? "Bookmark Removed" : "Bookmarked!",
-      description: `"${post.title}" has been ${isBookmarked ? 'removed from' : 'added to'} your bookmarks.`,
+      title: isBookmarked ? "Removed" : "Saved",
+      description: `Article has been ${isBookmarked ? 'removed from' : 'saved to'} your reading list.`,
     });
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      whileHover={{ y: -5, boxShadow: "0px 10px 20px rgba(245, 158, 11, 0.2)" }}
-    >
-      {/* The outer Link has been removed. The Card itself is no longer a link. */}
-      <Card className="w-full bg-white rounded-xl border border-amber-200/50 p-6 shadow-sm transition-colors duration-300">
-        <div className="flex justify-between items-start">
-          {/* Left Side: Content */}
-          <div className="flex-grow pr-8">
-            <div className="flex items-center space-x-2 mb-2">
-              {/* This Link is now independent */}
-              <Link to={`/profile/${post.author?.username}`} className="flex items-center space-x-2">
-                <img src={post.author?.avatar} alt={post.author?.fullName} className="w-6 h-6 rounded-full object-cover" />
-                <span className="font-semibold text-gray-800 text-sm hover:underline">
-                  {post.author?.fullName || 'Unknown'}
-                </span>
-              </Link>
-            </div>
-            
-            {/* The title and snippet are now their own link */}
-            <Link to={`/blog/${post.slug}`}>
-              <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-1 hover:text-amber-800 transition-colors duration-200">
-                {post.title || 'Untitled Post'}
-              </h2>
-              <p className="hidden md:block text-gray-600 text-base mb-4">
-                {snippet}
-              </p>
-            </Link>
+    <Link to={`/blog/${post.slug}`} className="block group mb-12 pb-12 border-b border-gray-100 last:border-0 hover:opacity-[0.98] transition-opacity">
+      <article className="grid grid-cols-1 md:grid-cols-[1fr_240px] gap-8 items-start">
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center text-sm text-gray-500 space-x-4">
-                <span>{formattedDate}</span>
-                <span className="flex items-center space-x-1" title="Views">
-                  <Eye size={16} /> 
-                  <span>{post.views || 0}</span>
-                </span>
-                <span className="flex items-center space-x-1" title="Likes">
-                  <Heart size={16} /> 
-                  <span>{post.likes || 0}</span>
-                </span>
-              </div>
-              <div className="flex items-center space-x-4 text-gray-500">
-                  <button onClick={handleShare} className="hover:text-amber-600 transition-colors z-10" title="Share">
-                      <Share2 size={18} />
-                  </button>
-                  <button onClick={handleBookmark} className="hover:text-amber-600 transition-colors z-10" title="Bookmark">
-                      <Bookmark size={18} className={`transition-all ${isBookmarked ? 'fill-amber-500 text-amber-500' : ''}`} />
-                  </button>
-              </div>
-            </div>
+        {/* Content Side */}
+        <div className="flex flex-col h-full">
+          {/* Author Meta */}
+          <div className="flex items-center gap-3 mb-4">
+            <img 
+              src={post.author?.avatar || post.createdBy?.avatar || "https://i.pravatar.cc/100"} 
+              alt="Author" 
+              className="w-8 h-8 rounded-full object-cover" 
+            />
+            <span className="text-sm font-medium text-black">{post.author?.fullName || post.createdBy?.fullName || 'Anonymous'}</span>
           </div>
 
-          {/* The image is also its own link */}
-          <Link to={`/blog/${post.slug}`} className="flex-shrink-0">
-            <img 
-              src={post.coverImage} 
-              alt={post.title || 'Blog post'} 
-              className="w-28 h-28 md:w-32 md:h-32 object-cover rounded-md" 
-            />
-          </Link>
+          {/* Title */}
+          <h2 className="text-2xl md:text-3xl font-black text-black leading-[1.1] tracking-[-0.03em] mb-4 group-hover:underline decoration-1 underline-offset-[6px] transition-all line-clamp-2">
+            {post.title || 'Untitled'}
+          </h2>
+
+          {/* Excerpt */}
+          <p className="text-[#6B6B6B] font-medium text-[16px] leading-[1.6] mb-6 line-clamp-2">
+            {snippet}
+          </p>
+
+          {/* Footer Meta */}
+          <div className="flex items-center justify-between mt-auto">
+            <div className="flex items-center text-[13px] text-[#6B6B6B] font-medium">
+              <span>
+                {hoursRead > 0 
+                  ? `${hoursRead}h ${remainingMinutes > 0 ? `${remainingMinutes}m` : ''}` 
+                  : `${minutesRead} min`} read
+              </span>
+              <span className="mx-3 opacity-40">·</span>
+              <span>{post.category?.name || 'General'}</span>
+            </div>
+
+            <div className="flex items-center gap-4 text-gray-400">
+              <button onClick={handleBookmark} className={`hover:text-black transition-colors z-10 ${isBookmarked ? 'text-[#D4AF37]' : ''}`} title="Save">
+                <Bookmark size={18} className={isBookmarked ? 'fill-[#D4AF37]' : ''} />
+              </button>
+              <button onClick={handleShare} className="hover:text-black transition-colors z-10" title="Share">
+                <Share2 size={18} />
+              </button>
+            </div>
+          </div>
         </div>
-      </Card>
-    </motion.div>
+
+        {/* Image Side */}
+        <div className="hidden md:block w-full aspect-[4/3] bg-gray-50 rounded-sm overflow-hidden relative shrink-0 shadow-sm border border-gray-100/50">
+          <img
+            src={post.coverImage || "https://images.unsplash.com/photo-1559757175-5700dde675bc?auto=format&fit=crop&q=80&w=400"}
+            alt={post.title}
+            className="absolute inset-0 w-full h-full object-cover grayscale-[0.2] transition-transform duration-700 group-hover:scale-105"
+          />
+        </div>
+      </article>
+    </Link>
   );
 };
 
