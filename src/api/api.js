@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api/v1',
+  baseURL: 'https://mern-blogwebsite-backend.onrender.com/api/v1',
   withCredentials: true,
 });
 
@@ -20,7 +20,7 @@ api.interceptors.response.use(
 
       try {
         // Attempt to refresh the token
-        await axios.post('http://localhost:8000/api/v1/auth/refresh-token', {}, {
+        await axios.post('https://mern-blogwebsite-backend.onrender.com/api/v1/auth/refresh-token', {}, {
           withCredentials: true
         });
 
