@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import landingData from '../data/landingData.json';
@@ -6,64 +7,77 @@ import landingData from '../data/landingData.json';
 const FeaturesSection = () => {
   const { latestPosts } = landingData;
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 15 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+  };
+
   return (
-    <section className="py-20 bg-slate-50 border-t border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-8">
+    <section className="py-24 bg-white">
+      <div className="max-w-7xl mx-auto px-6">
 
-        {/* Section Header */}
-        <div className="flex items-end justify-between mb-10 pb-4 border-b border-slate-300">
-          <h2 className="text-2xl font-bold font-serif text-slate-900">Latest from the network</h2>
-          <Link to="/home" className="text-sm font-semibold text-teal-700 hover:text-teal-900 flex items-center group transition-colors">
-            View all stories
-            <ChevronRight size={16} className="ml-1 group-hover:translate-x-1 transition-transform" />
-          </Link>
-        </div>
+        {/* Simple Header */}
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-16 text-center"
+        >
+          <h2 className="text-4xl md:text-5xl font-bold text-slate-900 tracking-tight">Recent Ideas.</h2>
+          <p className="mt-4 text-slate-500 font-medium">Curated thoughts from our community.</p>
+        </motion.div>
 
-        {/* Blog Post Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
-          {latestPosts.map((post, idx) => (
-            <Link to="/home" key={idx} className="group cursor-pointer flex flex-col h-full bg-white p-5 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+        {/* AI-Style Grid */}
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
+        >
+          {latestPosts.slice(0, 6).map((post, idx) => (
+            <motion.div key={idx} variants={itemVariants}>
+              <Link to="/home" className="group flex flex-col h-full bg-slate-50/50 p-6 rounded-[2rem] border border-slate-100 hover:bg-white hover:shadow-2xl hover:shadow-teal-900/5 transition-all duration-500">
 
-              {/* Image Placeholder */}
-              <div className="w-full h-48 bg-slate-100 rounded-lg overflow-hidden mb-5 relative shrink-0">
-                <img
-                  src={post.image}
-                  alt={post.title}
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-              </div>
+                <div className="w-full aspect-[16/10] rounded-[1.5rem] overflow-hidden mb-6 relative shadow-sm">
+                  <motion.img
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.6 }}
+                    src={post.image}
+                    alt={post.title}
+                    className="absolute inset-0 w-full h-full object-cover grayscale-[0.3] group-hover:grayscale-0 transition-all duration-700"
+                  />
+                </div>
 
-              {/* Meta */}
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-teal-700 mb-2">
-                <span>{post.category}</span>
-              </div>
+                <div className="flex-1">
+                  <span className="text-[10px] font-bold text-teal-600 uppercase tracking-widest mb-2 block">{post.category}</span>
+                  <h3 className="text-2xl font-bold text-slate-900 leading-tight mb-4 tracking-tight">
+                    {post.title}
+                  </h3>
+                  <p className="text-slate-500 text-sm font-medium leading-relaxed line-clamp-2">
+                    {post.excerpt}
+                  </p>
+                </div>
 
-              {/* Title */}
-              <h3 className="text-xl font-serif font-bold text-slate-900 leading-tight mb-3 group-hover:text-teal-800 transition-colors shrink-0">
-                {post.title}
-              </h3>
-
-              {/* Excerpt */}
-              <p className="text-slate-600 text-sm font-sans leading-relaxed mb-6 flex-grow line-clamp-3">
-                {post.excerpt}
-              </p>
-
-              {/* Author & Date */}
-              <div className="flex items-center justify-between mt-auto pt-4 text-xs shrink-0 border-t border-slate-100">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-500 overflow-hidden">
-                    <img src={`https://i.pravatar.cc/100?u=${idx}`} alt={post.author} className="w-full h-full object-cover" />
+                <div className="mt-8 flex items-center justify-between text-[11px] font-bold text-slate-400 uppercase tracking-widest pt-6 border-t border-slate-100">
+                  <div className="flex items-center gap-2">
+                    <span className="text-slate-900">{post.author}</span>
                   </div>
-                  <span className="font-semibold text-slate-800">{post.author}</span>
+                  <span>{post.readTime}</span>
                 </div>
-                <div className="text-slate-500">
-                  {post.date} · {post.readTime}
-                </div>
-              </div>
 
-            </Link>
+              </Link>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
       </div>
     </section>

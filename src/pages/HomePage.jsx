@@ -7,6 +7,7 @@ import BlogPostCardSkeleton from '../components/BlogPostCardSkeleton';
 import CategorySlider from '../components/CategorySlider';
 import HomeSidebar from '../components/HomeSidebar';
 import FeaturedPostCard from '../components/FeaturedPostCard';
+import { motion } from "framer-motion";
 
 const HomePage = () => {
   const [blogs, setBlogs] = useState([]);
@@ -16,7 +17,6 @@ const HomePage = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    // Fetches categories for the slider
     const fetchCategories = async () => {
       try {
         const response = await getAllCategories();
@@ -29,7 +29,6 @@ const HomePage = () => {
   }, []);
 
   useEffect(() => {
-    // Fetches blogs based on the selected category (or all blogs)
     const fetchBlogs = async () => {
       setLoading(true);
       setError('');
@@ -52,54 +51,30 @@ const HomePage = () => {
   }, [selectedCategory]);
 
   const renderSkeletonLoader = () => (
-    <>
-      <div className="mb-10 pb-10 border-b border-slate-200">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          <div className="lg:col-span-8 bg-slate-100 h-[400px] rounded-xl animate-pulse"></div>
-          <div className="lg:col-span-4 flex flex-col justify-center h-full pt-4 lg:pt-0">
-            <div className="h-4 w-24 bg-slate-100 rounded mb-4 animate-pulse"></div>
-            <div className="h-10 w-full bg-slate-100 rounded mb-2 animate-pulse"></div>
-            <div className="h-10 w-3/4 bg-slate-100 rounded mb-6 animate-pulse"></div>
-            <div className="h-4 w-full bg-slate-100 rounded mb-2 animate-pulse"></div>
-            <div className="h-4 w-5/6 bg-slate-100 rounded mb-2 animate-pulse"></div>
-          </div>
-        </div>
-      </div>
-      <div>
-        {Array.from({ length: 3 }).map((_, index) => <BlogPostCardSkeleton key={index} />)}
-      </div>
-    </>
+    <div className="space-y-8">
+      <div className="h-[500px] w-full bg-slate-100 rounded-[3rem] animate-pulse"></div>
+      {Array.from({ length: 3 }).map((_, index) => (
+        <div key={index} className="h-64 w-full bg-slate-50 rounded-[2rem] animate-pulse"></div>
+      ))}
+    </div>
   );
 
   const featuredPost = blogs.length > 0 ? blogs[0] : null;
   const remainingPosts = blogs.length > 1 ? blogs.slice(1) : [];
 
   return (
-    <div className="bg-[#FFFFFF] text-[#1A1A1A] min-h-screen font-inter selection:bg-[#FF4D00] selection:text-white">
+    <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="bg-white min-h-screen selection:bg-teal-100 selection:text-teal-900"
+    >
       <Helmet>
-        <title>MindLoom | Explore Stories that Inform and Inspire</title>
-        <meta name="description" content="MindLoom is a premium editorial platform for long-form stories, insightful deep-dives, and technical excellence. Explore articles on technology, development, and more." />
-        
-        {/* Open Graph / Facebook */}
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content={window.location.origin} />
-        <meta property="og:title" content="MindLoom | Premium Editorial Platform" />
-        <meta property="og:description" content="Join MindLoom to discover deep-dives and high-fidelity stories on everything that matters in tech and lifestyle." />
-        <meta property="og:image" content={`${window.location.origin}/og-image.png`} />
-
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:url" content={window.location.origin} />
-        <meta name="twitter:title" content="MindLoom | Premium Editorial Platform" />
-        <meta name="twitter:description" content="Join MindLoom to discover deep-dives and high-fidelity stories." />
-        <meta name="twitter:image" content={`${window.location.origin}/og-image.png`} />
-        
-        <link rel="canonical" href={window.location.origin} />
+        <title>MindLoom | Ideas Woven.</title>
       </Helmet>
 
-      {/* Editorial Category Navigation */}
-      <div className="sticky top-[80px] z-40 bg-white/95 backdrop-blur-md border-b border-gray-100 mb-8">
-        <div className="max-w-7xl mx-auto">
+      {/* Modern Category Navigation */}
+      <div className="sticky top-[80px] z-[45] bg-white/70 backdrop-blur-xl border-b border-slate-50">
+        <div className="max-w-7xl mx-auto px-6">
           <CategorySlider
             categories={categories}
             selectedCategory={selectedCategory}
@@ -108,30 +83,34 @@ const HomePage = () => {
         </div>
       </div>
 
-      <div className="pb-32">
-        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-12 relative items-start">
+      <div className="max-w-7xl mx-auto px-6 pt-12 pb-32">
+        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-16 relative items-start">
 
           {/* Main Feed Area */}
           <main className="w-full lg:col-span-8">
             {loading ? (
               renderSkeletonLoader()
             ) : error ? (
-              <div className="text-center p-12 bg-red-50 text-red-600 rounded-sm border border-red-100 font-bold uppercase tracking-widest text-[10px]">
-                {error}
+              <div className="p-10 bg-red-50 text-red-600 rounded-[2rem] border border-red-100 text-center">
+                 <p className="text-sm font-bold uppercase tracking-widest">{error}</p>
               </div>
             ) : blogs.length > 0 ? (
-              <div className="divide-y divide-gray-100">
-                {featuredPost && <div className="pb-10"><FeaturedPostCard post={featuredPost} /></div>}
-                <div className="pt-10 space-y-12">
+              <div className="">
+                {featuredPost && <FeaturedPostCard post={featuredPost} />}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 mb-12 px-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-teal-500"></span>
+                    <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">Latest Feed</h3>
+                  </div>
                   {remainingPosts.map((post) => (
                     <BlogPostCard key={post._id} post={post} />
                   ))}
                 </div>
               </div>
             ) : (
-              <div className="text-center py-32 px-6 bg-gray-50 rounded-sm border border-gray-100 border-dashed">
-                <h3 className="text-2xl font-black text-black mb-4 tracking-tight uppercase tracking-[0.1em]">No Stories Found</h3>
-                <p className="text-[#6B6B6B] font-medium max-w-md mx-auto">There are no stories published in this category yet. Be the first to share your thoughts.</p>
+              <div className="text-center py-40 px-6 bg-slate-50 rounded-[3rem] border border-slate-100 border-dashed">
+                <h3 className="text-3xl font-bold text-slate-900 mb-4 tracking-tighter">No ideas found.</h3>
+                <p className="text-slate-500 font-medium max-w-xs mx-auto">Be the first to weave a story here.</p>
               </div>
             )}
           </main>
@@ -140,7 +119,7 @@ const HomePage = () => {
           <HomeSidebar />
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

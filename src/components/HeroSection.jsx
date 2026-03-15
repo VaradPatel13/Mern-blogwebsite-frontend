@@ -1,102 +1,94 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import landingData from '../data/landingData.json';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 const HeroSection = () => {
-  const { categories, featuredPost, secondaryPosts } = landingData;
+  const navigate = useNavigate();
 
   return (
-    <section className="pt-40 lg:pt-48 pb-12 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-8">
+    <div className="relative min-h-[85vh] flex items-center bg-white overflow-hidden">
+      
+      {/* Decorative Background Elements */}
+      <div className="absolute top-0 right-0 w-1/2 h-full bg-slate-50/50 -skew-x-12 translate-x-32 z-0 hidden lg:block"></div>
+      <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-teal-400/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
 
-        {/* Publication Title/Welcome */}
-        <div className="max-w-3xl mb-12 border-b-2 border-slate-900 pb-8">
-          <h1 className="text-4xl sm:text-5xl lg:text-7xl font-serif font-bold text-slate-900 leading-[1.1] mb-6">
-            Ideas that matter, <br />from independent voices.
-          </h1>
-          <p className="text-xl text-slate-600 font-sans max-w-2xl leading-relaxed">
-            Discover profound essays, breaking analysis, and intimate stories crafted by the world's most insightful writers.
-          </p>
-        </div>
+      <div className="container mx-auto px-6 relative z-10">
+        <div className="flex flex-col lg:flex-row items-center gap-16">
+          
+          {/* Left Side: Content */}
+          <div className="w-full lg:w-1/2 text-left">
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <div className="inline-flex items-center gap-2 px-3 py-1 mb-8 rounded-full bg-slate-900 text-white text-[10px] font-black uppercase tracking-[0.2em]">
+                MindLoom Pulse
+              </div>
+              
+              <h1 className="text-6xl sm:text-8xl lg:text-[7rem] font-bold tracking-tight text-slate-900 leading-[0.9] mb-8">
+                Ideas. <br />
+                <span className="text-teal-500">Shared.</span>
+              </h1>
+              
+              <p className="text-xl md:text-2xl text-slate-500 max-w-md font-medium leading-relaxed mb-12">
+                A simple home for your stories and the people who read them. No noise, just you.
+              </p>
 
-        {/* Topics Bar - Requested by USER */}
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-4 mb-16 pb-6 border-b border-slate-100">
-          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Discover Topics</span>
-          <div className="flex flex-wrap items-center gap-3">
-            {categories.map((topic) => (
-              <Link 
-                key={topic} 
-                to="/home" 
-                className="px-4 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-full text-sm font-bold text-slate-700 transition-all hover:border-slate-300"
-              >
-                {topic}
-              </Link>
-            ))}
+              <div className="flex flex-col sm:flex-row items-center gap-4">
+                <button 
+                  onClick={() => navigate('/home')}
+                  className="w-full sm:w-auto px-12 py-5 bg-slate-900 text-white rounded-2xl text-lg font-bold transition-all hover:bg-slate-800 hover:shadow-2xl hover:-translate-y-1 active:scale-95"
+                >
+                  Start Reading
+                </button>
+                <button 
+                   onClick={() => navigate('/register')}
+                   className="w-full sm:w-auto px-12 py-5 bg-white text-slate-900 border border-slate-200 rounded-2xl text-lg font-bold transition-all hover:bg-slate-50 hover:border-slate-800 shadow-sm active:scale-95"
+                >
+                  Publish
+                </button>
+              </div>
+            </motion.div>
           </div>
-        </div>
 
-        {/* Featured Editorial Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+          {/* Right Side: AI-Inspired Visual */}
+          <div className="w-full lg:w-1/2 relative">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="relative"
+            >
+              <div className="relative rounded-[3rem] overflow-hidden shadow-2xl border border-white/50 bg-white/40 backdrop-blur-md p-2">
+                <img 
+                  src="/blog-mockup.png" 
+                  alt="MindLoom Platform" 
+                  className="w-full h-auto rounded-[2.5rem] shadow-sm transform transition-transform duration-700 hover:scale-[1.02]"
+                />
+              </div>
 
-          {/* Main Featured Post */}
-          <Link to="/home" className="block lg:col-span-8 group cursor-pointer">
-            <div className="w-full h-[400px] sm:h-[500px] bg-slate-200 rounded-xl overflow-hidden mb-6 relative shadow-sm">
-              <img
-                src={featuredPost.image}
-                alt={featuredPost.title}
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              {/* Decorative Floating Elements */}
+              <motion.div 
+                animate={{ y: [0, -15, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -top-10 -right-10 w-32 h-32 bg-teal-500/20 rounded-[2rem] blur-2xl z-0"
               />
-              <div className="absolute inset-0 bg-slate-900/10 group-hover:bg-transparent transition-colors duration-500"></div>
-            </div>
-
-            <div className="flex items-center gap-3 mb-4 text-xs font-bold uppercase tracking-widest text-teal-700">
-              <span>{featuredPost.category}</span>
-              <span className="text-slate-300 mx-2">•</span>
-              <span className="text-slate-500">By {featuredPost.author}</span>
-            </div>
-
-            <h2 className="text-3xl sm:text-4xl font-serif font-bold text-slate-900 group-hover:text-teal-800 transition-colors mb-4 leading-snug">
-              {featuredPost.title}
-            </h2>
-
-            <p className="text-lg text-slate-600 font-sans leading-relaxed mb-4 line-clamp-2">
-              {featuredPost.excerpt}
-            </p>
-
-            <div className="text-sm font-medium text-slate-400 font-sans">
-              {featuredPost.date} · {featuredPost.readTime}
-            </div>
-          </Link>
-
-          {/* Secondary Posts Column */}
-          <div className="lg:col-span-4 flex flex-col gap-10 border-t lg:border-t-0 lg:border-l border-slate-200 pt-10 lg:pt-0 lg:pl-10">
-            {secondaryPosts.map((post, idx) => (
-              <React.Fragment key={idx}>
-                <Link to="/home" className="block group cursor-pointer">
-                  <div className="w-full h-[200px] bg-slate-200 rounded-lg overflow-hidden mb-4 relative shadow-sm">
-                    <img
-                      src={post.image}
-                      alt={post.title}
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                  </div>
-                  <div className="text-xs font-bold uppercase tracking-widest text-teal-700 mb-2">{post.category}</div>
-                  <h3 className="text-xl font-serif font-bold text-slate-900 leading-tight mb-2 group-hover:text-teal-800 transition-colors">
-                    {post.title}
-                  </h3>
-                  <p className="text-sm text-slate-600 line-clamp-2 mb-2 bg-white">
-                    {post.excerpt}
-                  </p>
-                  <div className="text-xs font-medium text-slate-400">{post.date} · {post.readTime}</div>
-                </Link>
-                {idx === 0 && <hr className="border-slate-100" />}
-              </React.Fragment>
-            ))}
+              <motion.div 
+                animate={{ y: [0, 15, 0] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                className="absolute -bottom-10 -left-10 w-48 h-48 bg-slate-900/5 rounded-[3rem] blur-2xl z-0"
+              />
+            </motion.div>
           </div>
 
         </div>
       </div>
-    </section>
+      
+      {/* Subtle Grid Background */}
+      <div className="absolute inset-0 z-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:32px_32px] pointer-events-none"></div>
+
+    </div>
   );
 };
 

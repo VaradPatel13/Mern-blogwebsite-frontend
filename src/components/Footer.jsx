@@ -6,85 +6,77 @@ import { Github, Twitter, Instagram, Mail, ArrowRight } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="relative bg-black pt-20 pb-10 overflow-hidden text-zinc-400 border-t border-white/10">
+    <footer className="relative bg-white pt-24 pb-12 overflow-hidden text-slate-500 border-t border-slate-100">
       
-      <div className="relative max-w-7xl mx-auto px-6 lg:px-12 grid gap-12 md:grid-cols-12 mb-16 z-10">
+      <div className="relative max-w-7xl mx-auto px-6 lg:px-12 grid gap-12 md:grid-cols-12 mb-20 z-10">
         
         {/* Brand / Logo Section */}
         <div className="md:col-span-4 space-y-6">
-          <Link to="/" className="inline-flex items-center gap-2 text-2xl font-bold tracking-tighter text-white">
-            <div className="w-5 h-5 rounded bg-zinc-200"></div>
-            MindLoom
+          <Link to="/" className="inline-flex items-center gap-2 text-2xl font-black tracking-tighter text-slate-900">
+            MindLoom<span className="text-teal-500">.</span>
           </Link>
-          <p className="leading-relaxed max-w-sm text-sm block">
-            A minimalist sanctuary where stories, ideas, and knowledge come alive. Build your brand with absolute focus.
+          <p className="leading-relaxed max-w-sm text-sm block font-medium">
+            Where ideas find their voice. A simple sanctuary for readers and writers.
           </p>
-          <div className="flex space-x-4 pt-4">
-            <a href="https://github.com/VaradPatel13/Mern-blogwebsite-frontend" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300">
-              <Github size={18} />
-            </a>
-            <a href="https://twitter.com" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300">
-              <Twitter size={18} />
-            </a>
-            <a href="https://instagram.com" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300">
-              <Instagram size={18} />
-            </a>
-            <a href="mailto:varadpatelo355@gmail.com" className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300">
-              <Mail size={18} />
-            </a>
+          <div className="flex space-x-3 pt-2">
+            {[Github, Twitter, Instagram, Mail].map((Icon, i) => (
+              <a key={i} href="#" className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center hover:bg-slate-900 hover:text-white transition-all duration-300">
+                <Icon size={18} />
+              </a>
+            ))}
           </div>
         </div>
 
         {/* Links Array Spacer */}
-        <div className="md:col-span-1 hidden md:block"></div>
+        <div className="md:col-span-2 hidden md:block"></div>
 
         {/* Quick Links */}
         <div className="md:col-span-2">
-          <h3 className="text-white font-semibold text-sm mb-6 uppercase tracking-wider">Product</h3>
-          <ul className="space-y-4 text-sm">
-            <li><Link to="/features" className="hover:text-white transition-colors">Features</Link></li>
-            <li><Link to="/pricing" className="hover:text-white transition-colors">Pricing</Link></li>
-            <li><Link to="/integrations" className="hover:text-white transition-colors">Integrations</Link></li>
-            <li><Link to="/changelog" className="hover:text-white transition-colors">Changelog</Link></li>
+          <h3 className="text-slate-900 font-bold text-xs mb-6 uppercase tracking-widest">Platform</h3>
+          <ul className="space-y-4 text-[13px] font-medium">
+            <li><Link to="/home" className="hover:text-teal-600 transition-colors">Our Story</Link></li>
+            <li><Link to="/home" className="hover:text-teal-600 transition-colors">Membership</Link></li>
+            <li><Link to="/home" className="hover:text-teal-600 transition-colors">Creators</Link></li>
+            <li><Link to="/home" className="hover:text-teal-600 transition-colors">Write</Link></li>
           </ul>
         </div>
         
         <div className="md:col-span-2">
-          <h3 className="text-white font-semibold text-sm mb-6 uppercase tracking-wider">Company</h3>
-          <ul className="space-y-4 text-sm">
-            <li><Link to="/about" className="hover:text-white transition-colors">About</Link></li>
-            <li><Link to="/blog" className="hover:text-white transition-colors">Blog</Link></li>
-            <li><Link to="/careers" className="hover:text-white transition-colors">Careers</Link></li>
-            <li><Link to="/contact" className="hover:text-white transition-colors">Contact</Link></li>
+          <h3 className="text-slate-900 font-bold text-xs mb-6 uppercase tracking-widest">Quick help</h3>
+          <ul className="space-y-4 text-[13px] font-medium">
+            <li><Link to="/home" className="hover:text-teal-600 transition-colors">Support</Link></li>
+            <li><Link to="/home" className="hover:text-teal-600 transition-colors">Status</Link></li>
+            <li><Link to="/home" className="hover:text-teal-600 transition-colors">Privacy</Link></li>
+            <li><Link to="/home" className="hover:text-teal-600 transition-colors">Terms</Link></li>
           </ul>
         </div>
 
-        {/* Legal */}
-        <div className="md:col-span-3">
-          <h3 className="text-white font-semibold text-sm mb-6 uppercase tracking-wider">Subscribe</h3>
-          <p className="mb-4 text-sm block leading-relaxed">Join our newsletter to get the latest stories and updates.</p>
-          <div className="flex bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800 focus-within:border-zinc-500 transition-colors">
-            <input 
-              type="email" 
-              placeholder="Email address" 
-              className="bg-transparent text-white px-4 py-2 w-full focus:outline-none text-sm placeholder-zinc-600"
-            />
-            <button className="bg-white hover:bg-zinc-200 text-black px-4 py-2 text-sm font-medium transition-colors border-l border-zinc-800">
-              Join
-            </button>
-          </div>
+        {/* Newsletter */}
+        <div className="md:col-span-2">
+            <h3 className="text-slate-900 font-bold text-xs mb-6 uppercase tracking-widest">Connect</h3>
+            <p className="mb-6 text-xs block leading-relaxed font-medium">Join the weaver newsletter for weekly ideas.</p>
+            <div className="flex flex-col gap-3">
+              <input 
+                type="email" 
+                placeholder="Email" 
+                className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 w-full focus:outline-none focus:ring-2 focus:ring-teal-500/20 text-sm placeholder-slate-400 font-medium"
+              />
+              <button className="w-full bg-slate-900 text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-800 transition-all shadow-sm">
+                Join now
+              </button>
+            </div>
         </div>
 
       </div>
 
       {/* Bottom bar */}
-      <div className="relative border-t border-white/5 pt-8 mt-8 px-6 lg:px-12 max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center z-10">
-        <div className="text-zinc-600 text-sm mb-4 md:mb-0">
-          © {new Date().getFullYear()} MindLoom Inc. All rights reserved.
+      <div className="relative border-t border-slate-100 pt-8 px-6 lg:px-12 max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center z-10">
+        <div className="text-slate-400 text-xs mb-4 md:mb-0 font-medium">
+          © {new Date().getFullYear()} MindLoom. Built with precision.
         </div>
-        <div className="flex space-x-6 text-sm text-zinc-600">
-          <Link to="/privacy" className="hover:text-zinc-400 transition">Privacy Policy</Link>
-          <Link to="/terms" className="hover:text-zinc-400 transition">Terms of Service</Link>
+        <div className="flex space-x-6 text-xs text-slate-400 font-medium">
+          <Link to="/privacy" className="hover:text-slate-600 transition">Privacy Policy</Link>
+          <Link to="/terms" className="hover:text-slate-600 transition">Terms of Service</Link>
         </div>
       </div>
     </footer>

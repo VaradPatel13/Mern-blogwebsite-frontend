@@ -1,6 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
@@ -267,7 +267,7 @@ html, body, #root {
   top: 0;
   left: 0;
   height: 2px;
-  background: #FF4D00;
+  background: #14b8a6;
   z-index: 100;
   transition: width 0.1s ease;
 }
@@ -275,7 +275,7 @@ html, body, #root {
 .pull-quote {
   position: relative;
   padding-left: 2rem;
-  border-left: 2px solid #FF4D00;
+  border-left: 2px solid #14b8a6;
   font-family: 'Playfair Display', serif;
   font-style: italic;
   font-size: 1.5rem;

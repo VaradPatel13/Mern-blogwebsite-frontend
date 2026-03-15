@@ -3,11 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { registerUser, loginWithGoogle } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
 import { GoogleLogin } from "@react-oauth/google";
-import { Mail, Lock, Eye, EyeOff, Loader2, ArrowLeft, User, AtSign } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, Loader2, ArrowLeft, User, AtSign, ArrowRight } from "lucide-react";
 import { Helmet } from "react-helmet-async";
+import { motion } from "framer-motion";
 
 // UI Components
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
 
 const RegisterPage = () => {
@@ -74,176 +74,151 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex bg-white font-sans selection:bg-teal-100 selection:text-teal-900 overflow-x-hidden">
+    <div className="min-h-screen w-full flex bg-slate-50 font-sans selection:bg-teal-100 selection:text-teal-900 relative overflow-hidden">
       <Helmet>
         <title>Sign Up | MindLoom</title>
-        <meta name="description" content="Join MindLoom today to start your journey as an independent writer. Create your account and join a global network of thinkers." />
       </Helmet>
 
+      {/* Decorative Background Elements */}
+      <div className="absolute top-0 right-0 w-1/2 h-full bg-white -skew-x-12 translate-x-32 z-0"></div>
+      <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-teal-400/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
+
       {/* Back Link */}
-      <Link to="/" className="absolute top-6 left-6 z-50 text-xs font-bold text-slate-400 hover:text-slate-900 transition-colors flex items-center gap-1.5 py-2 px-4 rounded-full border border-slate-100 bg-white/50 backdrop-blur-sm lg:bg-transparent lg:border-none lg:text-slate-200 lg:hover:text-white">
-        <ArrowLeft size={14} strokeWidth={2.5} /> Back to Homepage
+      <Link to="/" className="absolute top-8 left-8 z-50 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-200 text-sm font-bold text-slate-500 hover:text-slate-900 hover:shadow-md transition-all">
+        <ArrowLeft size={16} /> Home
       </Link>
 
-      {/* Left Side - Editorial Branding */}
-      <div className="hidden lg:flex lg:w-[40%] xl:w-[45%] relative bg-slate-900 items-center justify-center p-12 overflow-hidden text-center">
-        <img
-          src="https://images.unsplash.com/photo-1455390582262-044cdead27d4?auto=format&fit=crop&q=80&w=1400"
-          alt="Vintage typewriter"
-          className="absolute inset-0 w-full h-full object-cover opacity-40"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
-        
-        <div className="relative z-10 max-w-sm">
-          <h1 className="text-6xl font-serif font-bold text-white mb-6 tracking-tight">
-            MindLoom.
-          </h1>
-          <div className="w-12 h-1 bg-teal-500 mx-auto mb-8 rounded-full"></div>
-          <p className="text-xl font-serif text-slate-300 leading-relaxed italic">
-            "Join a global circle of writers committed to clarity and insight."
-          </p>
-          <div className="mt-10 flex items-center justify-center gap-4">
-             <div className="flex -space-x-2">
-                {[12, 45, 67].map(i => (
-                  <img key={i} src={`https://i.pravatar.cc/100?u=${i}`} className="w-8 h-8 rounded-full border-2 border-slate-900" alt="Member" />
-                ))}
-             </div>
-             <p className="text-slate-400 text-xs font-bold tracking-widest uppercase">12k+ Writers Linked</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Right Side - Register Form */}
-      <div className="w-full lg:w-[60%] xl:w-[55%] flex items-center justify-center p-8 sm:p-12">
-        <div className="w-full max-w-[450px] animate-in fade-in slide-in-from-bottom-4 duration-700">
-
-          <div className="mb-10 text-left">
-            <h2 className="text-3xl font-serif font-bold text-slate-900 mb-2">Create Account</h2>
-            <p className="text-slate-500 font-medium tracking-tight">Begin your publishing journey today.</p>
+      <div className="container mx-auto px-6 flex items-center justify-center relative z-10 pt-20 pb-12">
+        <div className="w-full max-w-5xl grid lg:grid-cols-2 gap-16 items-center">
+          
+          {/* Left: Branding & Message */}
+          <div className="hidden lg:block text-left">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <h1 className="text-7xl font-bold tracking-tighter text-slate-900 leading-[0.9] mb-8">
+                Ideas. <br />
+                <span className="text-teal-500">Shared.</span>
+              </h1>
+              <p className="text-xl text-slate-500 max-w-sm font-medium leading-relaxed mb-8">
+                Join a global circle of writers committed to clarity and insight.
+              </p>
+              <div className="flex items-center gap-4">
+                 <div className="flex -space-x-3">
+                    {[12, 45, 67, 88].map(i => (
+                      <img key={i} src={`https://i.pravatar.cc/100?u=${i}`} className="w-10 h-10 rounded-full border-2 border-white bg-slate-100 shadow-sm" alt="Member" />
+                    ))}
+                 </div>
+                 <p className="text-slate-400 text-[10px] font-black tracking-widest uppercase">12k+ Writers Linked</p>
+              </div>
+            </motion.div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label htmlFor="fullName" className="block text-sm font-semibold text-slate-700">
-                  Full Name
-                </label>
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                    <User size={18} strokeWidth={2} />
-                  </div>
-                  <input
-                    id="fullName"
-                    type="text"
-                    placeholder="Jane Doe"
-                    value={formData.fullName}
-                    onChange={handleChange}
-                    required
-                    className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:bg-white transition-all shadow-sm"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <label htmlFor="username" className="block text-sm font-semibold text-slate-700">
-                  Username
-                </label>
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                    <AtSign size={18} strokeWidth={2} />
-                  </div>
-                  <input
-                    id="username"
-                    type="text"
-                    placeholder="janedoe"
-                    value={formData.username}
-                    onChange={handleChange}
-                    required
-                    className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:bg-white transition-all shadow-sm"
-                  />
-                </div>
-              </div>
+          {/* Right: Register Form */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full max-w-[480px] bg-white rounded-[2.5rem] p-10 md:p-12 shadow-2xl shadow-slate-200/50 border border-slate-100 mx-auto"
+          >
+            <div className="mb-10 text-center lg:text-left">
+              <h2 className="text-3xl font-bold text-slate-900 mb-2">Create Portal</h2>
+              <p className="text-slate-500 font-medium">Begin your journey today.</p>
             </div>
 
-            <div className="space-y-2 pt-1">
-              <label htmlFor="email" className="block text-sm font-semibold text-slate-700">
-                Email Address
-              </label>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="relative group">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                      <User size={18} />
+                    </div>
+                    <input
+                      id="fullName"
+                      type="text"
+                      placeholder="Name"
+                      value={formData.fullName}
+                      onChange={handleChange}
+                      required
+                      className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold text-slate-900 focus:outline-none focus:ring-4 focus:ring-teal-500/5 focus:border-teal-500 transition-all"
+                    />
+                  </div>
+
+                  <div className="relative group">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                      <AtSign size={18} />
+                    </div>
+                    <input
+                      id="username"
+                      type="text"
+                      placeholder="User"
+                      value={formData.username}
+                      onChange={handleChange}
+                      required
+                      className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold text-slate-900 focus:outline-none focus:ring-4 focus:ring-teal-500/5 focus:border-teal-500 transition-all"
+                    />
+                  </div>
+              </div>
+
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                  <Mail size={18} strokeWidth={2} />
+                  <Mail size={18} />
                 </div>
                 <input
                   id="email"
                   type="email"
-                  placeholder="name@example.com"
+                  placeholder="Email"
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:bg-white transition-all shadow-sm"
+                  className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold text-slate-900 focus:outline-none focus:ring-4 focus:ring-teal-500/5 focus:border-teal-500 transition-all"
                 />
               </div>
-            </div>
 
-            <div className="space-y-2 pt-1">
-              <label htmlFor="password" className="block text-sm font-semibold text-slate-700">
-                Password
-              </label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                  <Lock size={18} strokeWidth={2} />
+                  <Lock size={18} />
                 </div>
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="Create a secure password"
+                  placeholder="Password"
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="w-full pl-12 pr-12 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:bg-white transition-all shadow-sm"
+                  className="w-full pl-12 pr-12 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold text-slate-900 focus:outline-none focus:ring-4 focus:ring-teal-500/5 focus:border-teal-500 transition-all"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 transition-colors focus:outline-none"
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none"
                 >
-                  {showPassword ? <EyeOff size={18} strokeWidth={2} /> : <Eye size={18} strokeWidth={2} />}
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
+
+              {error && (
+                <div className="p-4 bg-red-50 border border-red-100 rounded-2xl text-[11px] font-bold text-red-600">
+                  {error}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl transition-all hover:bg-slate-800 hover:shadow-xl hover:-translate-y-0.5 mt-2"
+                disabled={loading}
+              >
+                {loading ? <Loader2 size={18} className="animate-spin mx-auto" /> : "Join MindLoom"}
+              </button>
+            </form>
+
+            <div className="mt-8 relative flex items-center">
+              <div className="flex-grow border-t border-slate-100"></div>
+              <span className="flex-shrink-0 mx-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">or</span>
+              <div className="flex-grow border-t border-slate-100"></div>
             </div>
 
-            {error && (
-              <div className="p-4 bg-red-50 border border-red-100 rounded-xl text-xs font-bold text-red-600 leading-tight">
-                {error}
-              </div>
-            )}
-
-            <Button
-              type="submit"
-              className="w-full py-6 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition-all shadow-sm hover:shadow-md mt-2"
-              disabled={loading}
-            >
-              {loading ? (
-                <div className="flex items-center justify-center gap-2">
-                  <Loader2 size={18} className="animate-spin" />
-                  <span>Creating account...</span>
-                </div>
-              ) : (
-                "Create Account"
-              )}
-            </Button>
-          </form>
-
-          <div className="mt-8 relative flex items-center py-2">
-            <div className="flex-grow border-t border-slate-100"></div>
-            <span className="flex-shrink-0 mx-4 text-xs font-bold text-slate-400 uppercase tracking-widest">
-              or
-            </span>
-            <div className="flex-grow border-t border-slate-100"></div>
-          </div>
-
-          <div className="mt-6">
-            <div className="w-full flex justify-center">
+            <div className="mt-8">
               <GoogleLogin
                 onSuccess={handleGoogleSuccess}
                 onError={() => setError("Google registration failed.")}
@@ -251,17 +226,18 @@ const RegisterPage = () => {
                 theme="outline"
                 size="large"
                 shape="pill"
-                width="450"
+                width="100%"
               />
             </div>
-          </div>
 
-          <p className="mt-10 text-center text-sm font-medium text-slate-500">
-            Already a member?{" "}
-            <Link to="/login" className="text-teal-600 font-bold hover:text-teal-700 transition-colors">
-              Sign In
-            </Link>
-          </p>
+            <p className="mt-10 text-center text-[13px] font-medium text-slate-500">
+              Already have a portal?{" "}
+              <Link to="/login" className="text-teal-600 font-bold hover:text-teal-700 transition-colors">
+                Sign In
+              </Link>
+            </p>
+          </motion.div>
+
         </div>
       </div>
     </div>

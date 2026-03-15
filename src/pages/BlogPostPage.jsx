@@ -143,7 +143,7 @@ const BlogPostPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-white w-full flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-[#FF4D00] border-r-2"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-teal-500 border-r-2"></div>
       </div>
     );
   }
@@ -155,7 +155,7 @@ const BlogPostPage = () => {
         <div className="text-center max-w-md">
           <h1 className="text-2xl font-black text-black mb-2">Oops! Something went wrong</h1>
           <p className="text-[#6B6B6B] mb-6">{error || "Post not found"}</p>
-          <Link to="/home" className="text-[#FF4D00] font-bold underline">Go Back Home</Link>
+          <Link to="/home" className="text-teal-600 font-bold underline">Go Back Home</Link>
         </div>
       </div>
     );
@@ -204,7 +204,7 @@ const BlogPostPage = () => {
     },
     "publisher": {
       "@type": "Organization",
-      "name": "Bolify",
+      "name": "MindLoom",
       "logo": {
         "@type": "ImageObject",
         "url": `${typeof window !== 'undefined' ? window.location.origin : ''}/logo.png`
@@ -223,10 +223,10 @@ const BlogPostPage = () => {
   };
 
   return (
-    <article className="bg-[#FFFFFF] text-[#1A1A1A] min-h-screen font-inter selection:bg-[#FF4D00] selection:text-white" itemScope itemType="https://schema.org/Article">
+    <article className="bg-white text-slate-900 min-h-screen font-sans selection:bg-teal-100 selection:text-teal-900" itemScope itemType="https://schema.org/Article">
       {/* SEO Head */}
       <Helmet>
-        <title>{blog.title} | Bolify</title>
+        <title>{blog.title} | MindLoom</title>
         <meta name="description" content={plainTextSummary} />
         <meta name="author" content={blog.createdBy?.fullName || 'Anonymous'} />
         <link rel="canonical" href={pageUrl} />
@@ -237,7 +237,7 @@ const BlogPostPage = () => {
         <meta property="og:description" content={plainTextSummary} />
         <meta property="og:url" content={pageUrl} />
         {blog.coverImage && <meta property="og:image" content={blog.coverImage} />}
-        <meta property="og:site_name" content="Bolify" />
+        <meta property="og:site_name" content="MindLoom" />
         <meta property="article:published_time" content={publishDate} />
         <meta property="article:modified_time" content={updateDate} />
         <meta property="article:author" content={blog.createdBy?.fullName || 'Anonymous'} />
@@ -264,10 +264,10 @@ const BlogPostPage = () => {
         <div className="flex items-center gap-3 md:gap-6 relative" ref={topShareMenuRef}>
           <button 
             onClick={toggleSave}
-            className={`text-[10px] md:text-[11px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 md:gap-2 group ${isSaved ? 'text-[#D4AF37]' : 'text-[#999] hover:text-[#D4AF37]'}`}
+            className={`text-[10px] md:text-[11px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 md:gap-2 group ${isSaved ? 'text-teal-500' : 'text-slate-400 hover:text-teal-500'}`}
             aria-label={isSaved ? 'Unsave article' : 'Save article for later'}
           >
-            <Bookmark size={14} className={isSaved ? 'fill-[#D4AF37]' : 'group-hover:fill-[#D4AF37] transition-all'} />
+            <Bookmark size={14} className={isSaved ? 'fill-teal-500' : 'group-hover:fill-teal-500 transition-all'} />
             <span className="hidden sm:inline">{isSaved ? 'Saved' : 'Save for later'}</span>
           </button>
           
@@ -389,10 +389,10 @@ const BlogPostPage = () => {
                 <button
                   onClick={handleLike}
                   disabled={isLiking}
-                  className={`flex items-center gap-2 md:gap-3 transition-all ${isLikedByUser ? 'text-[#FF4D00]' : 'text-[#BBB] hover:text-black'}`}
+                  className={`flex items-center gap-2 md:gap-3 transition-all ${isLikedByUser ? 'text-teal-500' : 'text-slate-400 hover:text-slate-900'}`}
                   aria-label={`Like article, ${blog.likes} likes`}
                 >
-                  <Heart size={20} className={`md:w-6 md:h-6 ${isLikedByUser ? 'fill-[#FF4D00]' : ''}`} />
+                  <Heart size={20} className={`md:w-6 md:h-6 ${isLikedByUser ? 'fill-teal-500' : ''}`} />
                   <span className="text-xs md:text-sm font-bold tracking-widest uppercase">{blog.likes.toLocaleString()}</span>
                 </button>
                 <div className="flex items-center gap-2 md:gap-3 text-[#BBB]" aria-label={`${blog.views} views`}>
@@ -404,10 +404,10 @@ const BlogPostPage = () => {
               <div className="flex items-center gap-3 md:gap-6 relative">
                 <button 
                    onClick={toggleSave}
-                   className={`p-1 md:p-1.5 transition-all ${isSaved ? 'text-[#D4AF37]' : 'text-[#BBB] hover:text-black'}`}
+                   className={`p-1 md:p-1.5 transition-all ${isSaved ? 'text-teal-500' : 'text-slate-400 hover:text-slate-900'}`}
                    aria-label={isSaved ? 'Unsave article' : 'Save article'}
                 >
-                  <Bookmark size={20} className={`md:w-6 md:h-6 ${isSaved ? 'fill-[#D4AF37]' : ''}`} />
+                  <Bookmark size={20} className={`md:w-6 md:h-6 ${isSaved ? 'fill-teal-500' : ''}`} />
                 </button>
 
                 <div className="relative" ref={bottomShareMenuRef}>
@@ -478,8 +478,8 @@ const BlogPostPage = () => {
                       <a 
                         key={i} 
                         href={`#${h.id}`} 
-                        className={`pl-4 text-[12px] font-medium transition-all leading-relaxed hover:text-black hover:border-l-2 hover:border-[#FF4D00] -ml-[2px] ${
-                          h.level === 'h3' ? 'ml-4 text-[#B0B0B0] italic scale-95 origin-left' : 'text-[#999]'
+                        className={`pl-4 text-[12px] font-medium transition-all leading-relaxed hover:text-slate-900 hover:border-l-2 hover:border-teal-500 -ml-[2px] ${
+                          h.level === 'h3' ? 'ml-4 text-slate-400 italic scale-95 origin-left' : 'text-slate-500'
                         }`}
                       >
                         {h.text}
@@ -513,7 +513,7 @@ const BlogPostPage = () => {
               <X size={20} className="md:w-6 md:h-6" />
             </button>
             
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#FF4D00] mb-4 block">Spread the Insight</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-teal-600 mb-4 block">Spread the Insight</span>
             <h3 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-playfair font-black mb-8 md:mb-12 text-black leading-tight">
               Share this dialogue with your world.
             </h3>
@@ -526,7 +526,7 @@ const BlogPostPage = () => {
                     <span className="flex-1 truncate text-xs md:text-sm font-bold text-black text-left">{pageUrl}</span>
                     <button 
                       onClick={copyToClipboard}
-                      className="flex items-center gap-2 px-4 md:px-6 py-2 bg-black text-white rounded-lg md:rounded-xl font-black text-xs uppercase tracking-widest hover:bg-[#FF4D00] transition-colors shrink-0"
+                      className="flex items-center gap-2 px-4 md:px-6 py-2 bg-slate-900 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-teal-600 transition-colors shrink-0"
                     >
                       {copySuccess ? (
                         <>

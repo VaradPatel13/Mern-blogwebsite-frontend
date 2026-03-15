@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { getMyBlogs } from '../services/uesrService';
 import { deleteBlog } from '../services/blogService';
 import { useAuth } from '../context/AuthContext';
-import { Plus, Heart, Edit, Trash2, Eye, TrendingUp, Calendar, MoreVertical, LayoutDashboard, User } from 'lucide-react';
+import { Plus, Heart, Edit, Trash2, Eye, Calendar, LayoutDashboard, User } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const DashboardPage = () => {
   const [myBlogs, setMyBlogs] = useState([]);
@@ -53,11 +54,11 @@ const DashboardPage = () => {
   const LoadingSkeleton = () => (
     <div className="space-y-4">
       {[1, 2, 3].map(i => (
-        <div key={i} className="bg-white border text-left border-slate-200 p-6 animate-pulse">
-          <div className="h-6 bg-slate-100 rounded w-3/4 mb-4"></div>
-          <div className="h-4 bg-slate-100 rounded w-1/4 mb-4"></div>
+        <div key={i} className="bg-white border rounded-[2rem] border-slate-100 p-8 animate-pulse shadow-sm">
+          <div className="h-6 bg-slate-100 rounded-lg w-3/4 mb-4"></div>
+          <div className="h-4 bg-slate-100 rounded-lg w-1/4 mb-4"></div>
           <div className="flex space-x-4">
-            <div className="h-4 bg-slate-100 rounded w-16"></div>
+            <div className="h-4 bg-slate-100 rounded-lg w-16"></div>
           </div>
         </div>
       ))}
@@ -65,17 +66,20 @@ const DashboardPage = () => {
   );
 
   return (
-    <div className="w-full font-sans pt-10">
-
+    <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="w-full font-sans pt-12"
+    >
       {/* Header Section */}
       <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-4xl font-serif font-bold text-slate-900 mb-2">Dashboard</h1>
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tighter text-slate-900 mb-3">Dashboard</h1>
           <p className="text-slate-500 font-medium">Manage your publications and track your performance.</p>
         </div>
         <Link
           to="/create-post"
-          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-slate-900 text-white font-bold rounded-lg hover:bg-teal-700 transition-colors shadow-sm"
+          className="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all hover:shadow-xl hover:-translate-y-0.5 active:scale-95 shadow-sm"
         >
           <Plus size={18} />
           <span>Write a story</span>
@@ -83,38 +87,37 @@ const DashboardPage = () => {
       </div>
 
       {/* KPI Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
-        <div className="bg-white border border-slate-200 p-6 rounded-xl flex flex-col">
-          <div className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Total Stories</div>
-          <div className="text-3xl font-serif font-bold text-slate-900">{myBlogs.length}</div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+        <div className="bg-white border border-slate-100 p-8 rounded-[2rem] shadow-xl shadow-slate-200/50 flex flex-col hover:shadow-teal-900/5 transition-shadow">
+          <div className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Total Stories</div>
+          <div className="text-4xl font-bold tracking-tighter text-slate-900">{myBlogs.length}</div>
         </div>
-        <div className="bg-white border border-slate-200 p-6 rounded-xl flex flex-col">
-          <div className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Total Views</div>
-          <div className="text-3xl font-serif font-bold text-slate-900">{totalViews}</div>
+        <div className="bg-white border border-slate-100 p-8 rounded-[2rem] shadow-xl shadow-slate-200/50 flex flex-col hover:shadow-teal-900/5 transition-shadow">
+          <div className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Total Views</div>
+          <div className="text-4xl font-bold tracking-tighter text-slate-900">{totalViews}</div>
         </div>
-        <div className="bg-white border border-slate-200 p-6 rounded-xl flex flex-col">
-          <div className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Total Likes</div>
-          <div className="text-3xl font-serif font-bold text-slate-900">{totalLikes}</div>
+        <div className="bg-white border border-slate-100 p-8 rounded-[2rem] shadow-xl shadow-slate-200/50 flex flex-col hover:shadow-teal-900/5 transition-shadow">
+          <div className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Total Likes</div>
+          <div className="text-4xl font-bold tracking-tighter text-slate-900">{totalLikes}</div>
         </div>
-        <div className="bg-white border border-slate-200 p-6 rounded-xl flex flex-col">
-          <div className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-1">Published</div>
-          <div className="text-3xl font-serif font-bold text-teal-700">{publishedBlogs.length}</div>
+        <div className="bg-white border border-teal-100 p-8 rounded-[2rem] shadow-xl shadow-teal-500/10 flex flex-col bg-teal-50/50 hover:shadow-teal-500/20 transition-shadow">
+          <div className="text-[11px] font-black text-teal-600 uppercase tracking-[0.2em] mb-2">Published</div>
+          <div className="text-4xl font-bold tracking-tighter text-teal-600">{publishedBlogs.length}</div>
         </div>
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-700 border border-red-200 p-4 mb-8 font-medium">
+        <div className="bg-red-50 text-red-600 border border-red-100 p-4 rounded-xl mb-8 text-[11px] font-bold tracking-wider uppercase">
           {error}
         </div>
       )}
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_300px] gap-12">
-
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-12">
         {/* Left Side: Story List */}
         <div>
           {/* Tabs */}
-          <div className="flex items-center gap-6 border-b border-slate-200 mb-8 overflow-x-auto">
+          <div className="flex items-center gap-8 border-b border-slate-100 mb-8 overflow-x-auto">
             {[
               { key: 'all', label: 'All filter', count: myBlogs.length },
               { key: 'published', label: 'Published', count: publishedBlogs.length },
@@ -123,13 +126,13 @@ const DashboardPage = () => {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`pb-3 text-sm font-bold flex items-center gap-2 whitespace-nowrap transition-colors border-b-2 ${activeTab === tab.key
+                className={`pb-4 text-sm font-bold flex items-center gap-2 whitespace-nowrap transition-all border-b-2 ${activeTab === tab.key
                     ? 'border-slate-900 text-slate-900'
-                    : 'border-transparent text-slate-500 hover:text-slate-900'
+                    : 'border-transparent text-slate-400 hover:text-slate-900'
                   }`}
               >
                 <span>{tab.label === 'All filter' ? 'All Stories' : tab.label}</span>
-                <span className={`px-2 py-0.5 rounded-full text-xs ${activeTab === tab.key ? 'bg-slate-100 text-slate-900' : 'bg-slate-100 text-slate-500'}`}>
+                <span className={`px-2 py-0.5 rounded-md text-xs font-black tracking-widest ${activeTab === tab.key ? 'bg-slate-100 text-slate-900' : 'bg-slate-50 text-slate-400'}`}>
                   {tab.count}
                 </span>
               </button>
@@ -139,69 +142,72 @@ const DashboardPage = () => {
           {loading ? (
             <LoadingSkeleton />
           ) : filteredBlogs.length > 0 ? (
-            <div className="space-y-4">
-              {filteredBlogs.map((blog) => (
-                <div
+            <div className="space-y-6">
+              {filteredBlogs.map((blog, idx) => (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.05 }}
                   key={blog._id}
-                  className="group bg-white border border-slate-200 p-6 transition-all hover:border-slate-300"
+                  className="group bg-white rounded-[2rem] border border-slate-100 p-6 sm:p-8 transition-all hover:shadow-2xl hover:shadow-slate-200/50 hover:bg-slate-50/50"
                 >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
+                      <div className="flex items-center gap-3 mb-4">
                         {blog.status === 'published' ? (
-                          <span className="text-[10px] font-bold uppercase tracking-widest text-teal-700 bg-teal-50 px-2 py-1 rounded">Published</span>
+                          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-teal-600 bg-teal-50 px-2 py-1.5 rounded-md">Published</span>
                         ) : (
-                          <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600 bg-slate-100 px-2 py-1 rounded">Draft</span>
+                          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 bg-slate-100 px-2 py-1.5 rounded-md">Draft</span>
                         )}
-                        <span className="text-xs font-semibold text-slate-400 flex items-center gap-1">
-                          <Calendar size={12} />
+                        <span className="text-xs font-bold tracking-widest uppercase text-slate-400 flex items-center gap-1.5">
+                          <Calendar size={14} className="text-slate-300" />
                           {new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </span>
                       </div>
-                      <h2 className="text-xl font-serif font-bold text-slate-900 mb-2 group-hover:text-teal-800 transition-colors">
+                      <h2 className="text-2xl font-bold tracking-tighter text-slate-900 mb-2 group-hover:text-teal-600 transition-colors">
                         <Link to={`/blog/${blog.slug}`}>{blog.title || 'Untitled Story'}</Link>
                       </h2>
 
-                      <div className="flex items-center gap-4 text-slate-500 text-sm font-medium mt-4">
-                        <div className="flex items-center gap-1.5" title="Views">
+                      <div className="flex items-center gap-6 text-slate-400 text-sm font-bold mt-6">
+                        <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg" title="Views">
                           <Eye size={16} /> <span>{blog.views || 0}</span>
                         </div>
-                        <div className="flex items-center gap-1.5" title="Likes">
+                        <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg" title="Likes">
                           <Heart size={16} /> <span>{blog.likes || 0}</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3 border-t sm:border-t-0 border-slate-100 pt-4 sm:pt-0 shrink-0">
+                    <div className="flex items-center gap-2 border-t sm:border-t-0 border-slate-100 pt-6 sm:pt-0 shrink-0">
                       <Link
                         to={`/edit-post/${blog._id}`}
-                        className="flex items-center gap-2 px-3 py-2 text-sm font-bold text-slate-600 bg-slate-50 hover:bg-slate-100 rounded transition-colors"
+                        className="flex items-center justify-center w-12 h-12 text-slate-500 bg-slate-50 border border-slate-100 hover:text-slate-900 hover:bg-white hover:shadow-sm rounded-2xl transition-all"
+                        title="Edit Story"
                       >
-                        <Edit size={16} />
-                        <span className="hidden sm:inline">Edit</span>
+                        <Edit size={18} />
                       </Link>
                       <button
                         onClick={() => handleDelete(blog._id)}
-                        className="flex items-center gap-2 px-3 py-2 text-sm font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded transition-colors"
+                        className="flex items-center justify-center w-12 h-12 text-red-500 bg-red-50 border border-red-100 hover:text-red-700 hover:bg-red-100 rounded-2xl transition-all"
+                        title="Delete Story"
                       >
-                        <Trash2 size={16} />
-                        <span className="hidden sm:inline">Delete</span>
+                        <Trash2 size={18} />
                       </button>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           ) : (
-            <div className="text-center py-24 bg-white border border-slate-200 border-dashed rounded-xl">
-              <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <LayoutDashboard className="w-8 h-8 text-slate-400" />
+            <div className="text-center py-24 bg-slate-50 border border-slate-100 border-dashed rounded-[3rem]">
+              <div className="w-20 h-20 bg-white shadow-xl shadow-slate-200/50 rounded-[2rem] flex items-center justify-center mx-auto mb-6">
+                <LayoutDashboard className="w-10 h-10 text-slate-300" />
               </div>
-              <h3 className="text-xl font-serif font-bold text-slate-900 mb-2">No stories yet.</h3>
-              <p className="text-slate-500 mb-6 font-medium">Get started by writing your first article.</p>
+              <h3 className="text-2xl font-bold text-slate-900 mb-2 tracking-tighter">No stories yet.</h3>
+              <p className="text-slate-500 mb-8 font-medium">Get started by weaving your first idea.</p>
               <Link
                 to="/create-post"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 text-white font-bold rounded-lg hover:bg-teal-700 transition-colors"
+                className="inline-flex items-center gap-2 px-8 py-3.5 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all hover:shadow-xl hover:-translate-y-0.5"
               >
                 Write a story
               </Link>
@@ -211,32 +217,32 @@ const DashboardPage = () => {
 
         {/* Right Side: Quick Profile */}
         <div className="hidden xl:block">
-          <div className="sticky top-28 bg-white border border-slate-200 p-6">
-            <div className="flex flex-col items-center text-center">
-              <div className="w-24 h-24 mb-4 rounded-full overflow-hidden border-2 border-slate-100">
+          <div className="sticky top-28 bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-xl shadow-slate-200/50">
+            <div className="flex flex-col items-center justify-center text-center">
+              <div className="w-24 h-24 mb-6 rounded-2xl overflow-hidden shadow-lg border-2 border-white ring-1 ring-slate-100 bg-white">
                 <img
-                  src={user?.avatar || "https://i.pravatar.cc/150"}
+                  src={user?.avatar || `https://i.pravatar.cc/150?u=${user?.username}`}
                   alt={user?.fullName}
                   className="w-full h-full object-cover"
                 />
               </div>
-              <h3 className="text-lg font-bold text-slate-900">{user?.fullName}</h3>
-              <p className="text-sm font-bold text-teal-700 mb-6">@{user?.username}</p>
+              <h3 className="text-xl font-bold tracking-tight text-slate-900">{user?.fullName}</h3>
+              <p className="text-[11px] font-black text-teal-600 mb-8 uppercase tracking-[0.2em] mt-1">@{user?.username}</p>
 
-              <div className="w-full space-y-2 mb-6">
-                <div className="flex justify-between text-sm font-medium py-2 border-b border-slate-100">
-                  <span className="text-slate-500">Stories</span>
-                  <span className="text-slate-900">{myBlogs.length}</span>
+              <div className="w-full space-y-2 mb-8 bg-slate-50 p-4 rounded-2xl">
+                <div className="flex justify-between items-center text-sm font-bold py-2 border-b border-slate-200/50 last:border-0 last:pb-0">
+                  <span className="text-slate-400">Stories</span>
+                  <span className="text-slate-900 bg-white px-2.5 py-1 rounded-md shadow-sm border border-slate-100">{myBlogs.length}</span>
                 </div>
-                <div className="flex justify-between text-sm font-medium py-2 border-b border-slate-100">
-                  <span className="text-slate-500">Total Views</span>
-                  <span className="text-slate-900">{totalViews}</span>
+                <div className="flex justify-between items-center text-sm font-bold py-2 border-b border-slate-200/50 last:border-0 last:pb-0">
+                  <span className="text-slate-400">Total Views</span>
+                  <span className="text-slate-900 bg-white px-2.5 py-1 rounded-md shadow-sm border border-slate-100">{totalViews}</span>
                 </div>
               </div>
 
               <Link
                 to={`/my-profile`}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-50 text-slate-900 font-bold text-sm border border-slate-200 hover:bg-slate-100 transition-colors"
+                className="w-full flex items-center justify-center gap-2 px-4 py-4 bg-slate-900 text-white font-bold text-sm rounded-2xl hover:bg-slate-800 transition-all hover:shadow-xl shadow-sm"
               >
                 <User size={16} /> View Profile
               </Link>
@@ -245,7 +251,7 @@ const DashboardPage = () => {
         </div>
 
       </div>
-    </div>
+    </motion.div>
   );
 };
 
