@@ -1,6 +1,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
+import img1 from '../assets/photo-1499750310107-5fef28a66643.jpg';
+import img2 from '../assets/photo-1544716278-ca5e3f4abd8c.jpg';
+import img3 from '../assets/photo-1519389950473-47ba0277781c.jpg';
+import img4 from '../assets/photo-1507842217343-583bb7270b66.jpg';
+import img5 from '../assets/photo-1513364776144-60967b0f800f.jpg';
+import img6 from '../assets/photo-1455390582262-044cdead277a.jpg';
+import img7 from '../assets/photo-1441974231531-c6227db76b6e.jpg';
+
 // --- ANIMATION CONFIGS ---
 const transition = { duration: 1.4, ease: [0.6, 0.01, -0.05, 0.9] };
 
@@ -76,13 +84,13 @@ const ArtCardFan = ({ image, index, total, user, color }) => {
 
 export default function MasterpieceHero() {
   const cards = [
-    { image: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=400", user: null }, // Writing desk
-    { image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400", user: "coplin", color: "bg-blue-600" }, // Coffee & book
-    { image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400", user: null }, // Tech/Team
-    { image: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=400", user: null }, // Library (Center)
-    { image: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400", user: null }, // Art/Creative
-    { image: "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=400", user: "andrea", color: "bg-teal-600" }, // Journaling
-    { image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400", user: null }, // Nature/Inspiration
+    { image: img1, user: null }, // Writing desk
+    { image: img2, user: "coplin", color: "bg-blue-600" }, // Coffee & book
+    { image: img3, user: null }, // Tech/Team
+    { image: img4, user: null }, // Library (Center)
+    { image: img5, user: null }, // Art/Creative
+    { image: img6, user: "andrea", color: "bg-teal-600" }, // Journaling
+    { image: img7, user: null }, // Nature/Inspiration
   ];
 
   return (
@@ -102,7 +110,7 @@ export default function MasterpieceHero() {
             </motion.h1>
           </div>
           <div className="overflow-hidden">
-            <motion.h1 variants={segmentVariants} className="text-[2.5rem] md:text-[2.5rem] font-bold tracking-tighter text-[#111] leading-none mb-0">
+            <motion.h1 variants={segmentVariants} className="text-[2.5rem] md:text-[4rem] font-bold tracking-tighter text-[#111] leading-none mb-0">
               your best stories<span className="text-[#4FD1C5]">.</span>
             </motion.h1>
           </div>

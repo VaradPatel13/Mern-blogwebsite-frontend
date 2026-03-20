@@ -4,6 +4,9 @@ import LandingNavbar from '@/components/LandingNavbar';
 import MasterpieceHero from '@/components/HeroSection';
 import CommunitySection from '@/components/CommunitySection';
 import VisionSection from '@/components/VisionSection';
+import CreativeCraft from '@/components/CreativeCraft';
+import LatestStories from '@/components/LatestStories';
+import CommunityFind from '@/components/CommunityFind';
 import Footer from '@/components/Footer';
 import ScrollToTopButton from '@/components/ui/ScrollToTopButton';
 
@@ -25,9 +28,12 @@ const LandingPage = () => {
         <LandingNavbar />
         
         <main className="w-full flex flex-col">
-          <MasterpieceHero scrollProgress={scrollYProgress} />
-          <CommunitySection scrollProgress={scrollYProgress} />
-          <VisionSection scrollProgress={scrollYProgress} />
+          <section id="hero"><MasterpieceHero scrollProgress={scrollYProgress} /></section>
+          <section id="community-impact"><CommunitySection scrollProgress={scrollYProgress} /></section>
+          <section id="vision"><VisionSection scrollProgress={scrollYProgress} /></section>
+          <section id="craft"><CreativeCraft scrollProgress={scrollYProgress} /></section>
+          <section id="stories"><LatestStories scrollProgress={scrollYProgress} /></section>
+          <section id="community"><CommunityFind scrollProgress={scrollYProgress} /></section>
         </main>
 
         <Footer />

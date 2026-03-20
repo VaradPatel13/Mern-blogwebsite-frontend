@@ -2,6 +2,12 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ChevronUp, ChevronDown, Sparkles } from 'lucide-react';
 
+import img1 from '../assets/photo-1558655146-d09347e92766.jpg';
+import img2 from '../assets/photo-1544716278-ca5e3f4abd8c.jpg';
+import img3 from '../assets/photo-1455390582262-044cdead277a.jpg';
+import img4 from '../assets/photo-1519389950473-47ba0277781c.jpg';
+import img5 from '../assets/photo-1507842217343-583bb7270b66.jpg';
+
 const segmentVariants = {
   initial: { opacity: 0, y: 30, filter: "blur(8px)" },
   animate: {
@@ -14,11 +20,11 @@ const segmentVariants = {
 
 const CommunitySection = () => {
   const cards = [
-    { image: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=400", user: "howard", color: "bg-[#A13333]", rotation: -8, x: 0, y: 0 },
-    { image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400", x: 120, y: 20, rotation: 5 },
-    { image: "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=400", user: "robin", color: "bg-[#111]", x: 240, y: 80, rotation: -2 },
-    { image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400", x: 360, y: 160, rotation: 12 },
-    { image: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=400", x: 480, y: 220, rotation: -5 },
+    { image: img1, user: "howard", color: "bg-[#A13333]", rotation: -8, x: 0, y: 0 },
+    { image: img2, x: 120, y: 20, rotation: 5 },
+    { image: img3, user: "robin", color: "bg-[#111]", x: 240, y: 80, rotation: -2 },
+    { image: img4, x: 360, y: 160, rotation: 12 },
+    { image: img5, x: 480, y: 220, rotation: -5 },
   ];
 
   return (
@@ -70,7 +76,7 @@ const CommunitySection = () => {
             transition={{ delay: 0.5, duration: 1 }}
             className="text-[#666] font-medium text-[16px] max-w-[420px] leading-relaxed"
           >
-            Dynamic community where writers and readers seamlessly merge. MindLoom brings together creators and enthusiasts to share stories.
+            Dynamic community where writers and readers seamlessly merge. Scribloom brings together creators and enthusiasts to share stories.
           </motion.p>
         </div>
 

@@ -16,10 +16,11 @@ const LandingNavbar = () => {
   }, []);
 
   const navLinks = [
-    { name: 'Home', path: '#' },
-    { name: 'Community', path: '#community', icon: <Sparkles size={14} className="text-[#A13333]" /> },
-    { name: 'Top Stories', path: '#' },
-    { name: 'Write Story', path: '/create-post', icon: <PenLine size={14} /> },
+    { name: 'Home', path: '#hero' },
+    { name: 'Community', path: '#community' },
+    { name: 'Vision', path: '#vision' },
+    { name: 'Studio', path: '#craft' },
+    { name: 'Stories', path: '#stories' },
   ];
 
   const fadeBlur = {
@@ -38,17 +39,16 @@ const LandingNavbar = () => {
       <div className="max-w-[1400px] mx-auto px-6 md:px-10 flex items-center justify-between">
         {/* Left: Logo */}
         <motion.div initial="initial" animate="animate" variants={fadeBlur}>
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="relative w-9 h-9 flex items-center justify-center">
-              <div className="absolute inset-0 bg-[#111] rounded-[10px] group-hover:rotate-12 transition-transform duration-500" />
-              <Sparkles size={18} className="text-white relative z-10" />
+          <a href="#hero" className="flex items-center gap-3 group">
+            <div className="relative w-10 h-10 flex items-center justify-center rounded-xl overflow-hidden shadow-sm border border-gray-100 group-hover:scale-105 transition-transform duration-500">
+              <img src="/icon.jpg" alt="Scribloom Logo" className="w-full h-full object-cover" />
             </div>
             <div className="flex flex-col">
               <span className="text-[20px] font-black tracking-tight text-[#111111] leading-none">
-                MindLoom<span className="text-[#4FD1C5]">.</span>
+                Scribloom<span className="text-[#4FD1C5]">.</span>
               </span>
             </div>
-          </Link>
+          </a>
         </motion.div>
 
         {/* Center: Nav Items */}
@@ -60,13 +60,13 @@ const LandingNavbar = () => {
         >
           {navLinks.map((link) => (
             <motion.div key={link.name} variants={fadeBlur}>
-              <Link
-                to={link.path}
+              <a
+                href={link.path}
                 className="text-[14px] font-bold text-[#111111]/70 hover:text-[#111111] transition-colors flex items-center gap-2"
               >
                 {link.icon && <span className="opacity-50">{link.icon}</span>}
                 {link.name}
-              </Link>
+              </a>
             </motion.div>
           ))}
         </motion.div>
@@ -102,15 +102,15 @@ const LandingNavbar = () => {
             className="lg:hidden absolute top-full left-0 w-full bg-white border-b border-gray-100 shadow-xl p-6 flex flex-col gap-4"
           >
             {navLinks.map((link) => (
-              <Link
+              <a
                 key={link.name}
-                to={link.path}
+                href={link.path}
                 className="text-lg font-semibold text-[#111] hover:text-[#4FD1C5] flex items-center gap-3"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {link.icon}
                 {link.name}
-              </Link>
+              </a>
             ))}
           </motion.div>
         )}

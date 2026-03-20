@@ -2,6 +2,13 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Paintbrush, PenTool, Pencil, Layers, Command, Wand2, Shapes, CircleDot } from 'lucide-react';
 
+import img1 from '../assets/photo-1499750310107-5fef28a66643.jpg';
+import img2 from '../assets/photo-1544716278-ca5e3f4abd8c.jpg';
+import img3 from '../assets/photo-1507842217343-583bb7270b66.jpg';
+import img4 from '../assets/photo-1455390582262-044cdead277a.jpg';
+import img5 from '../assets/photo-1513364776144-60967b0f800f.jpg';
+import img6 from '../assets/photo-1519389950473-47ba0277781c.jpg';
+
 const fallBounce = {
   initial: { y: -400, rotate: -360, opacity: 0 },
   animate: { 
@@ -30,12 +37,12 @@ const VisionSection = () => {
   ];
 
   const artCards = [
-    "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=400", // Writing desk
-    "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400", // Coffee & book
-    "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=400", // Library
-    "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=400", // Journaling
-    "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400", // Creative
-    "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400", // Tech
+    img1, // Writing desk
+    img2, // Coffee & book
+    img3, // Library
+    img4, // Journaling
+    img5, // Creative
+    img6, // Tech
   ];
 
   return (
@@ -61,7 +68,7 @@ const VisionSection = () => {
               transition={{ delay: 0.2 }}
               className="text-[#666] font-medium text-[16px] max-w-[420px] leading-relaxed"
             >
-              We believe in the power of words to shape the world. MindLoom provides a sophisticated canvas for storytellers to reach their audience and spark meaningful global conversations.
+              We believe in the power of words to shape the world. Scribloom provides a sophisticated canvas for storytellers to reach their audience and spark meaningful global conversations.
             </motion.p>
             
             <motion.button
