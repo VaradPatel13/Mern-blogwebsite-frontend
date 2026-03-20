@@ -1,82 +1,92 @@
-// src/components/Footer.jsx
-
 import React from "react";
 import { Link } from "react-router-dom";
-import { Github, Twitter, Instagram, Mail, ArrowRight } from "lucide-react";
+import { Github, Twitter, Instagram, Mail } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="relative bg-white pt-24 pb-12 overflow-hidden text-slate-500 border-t border-slate-100">
+    <footer className="relative pt-20 pb-10 overflow-hidden">
       
-      <div className="relative max-w-7xl mx-auto px-6 lg:px-12 grid gap-12 md:grid-cols-12 mb-20 z-10">
+      <div className="relative max-w-[1200px] mx-auto px-8 grid gap-10 md:grid-cols-12 mb-16 z-10">
         
-        {/* Brand / Logo Section */}
-        <div className="md:col-span-4 space-y-6">
-          <Link to="/" className="inline-flex items-center gap-2 text-2xl font-black tracking-tighter text-slate-900">
-            MindLoom<span className="text-teal-500">.</span>
+        {/* Brand */}
+        <div className="md:col-span-4 space-y-5">
+          <Link to="/" className="inline-flex items-center gap-2">
+            <div className="w-6 h-6 relative">
+              <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16 4L28 28H4L16 4Z" fill="#14b8a6" opacity="0.6"/>
+                <path d="M10 10L22 28H-2L10 10Z" fill="#0f766e"/>
+              </svg>
+            </div>
+            <span className="text-[16px] font-bold tracking-tight text-[#111]">MindLoom</span>
           </Link>
-          <p className="leading-relaxed max-w-sm text-sm block font-medium">
+          <p className="leading-relaxed max-w-[280px] text-[13px] text-[#999] font-medium">
             Where ideas find their voice. A simple sanctuary for readers and writers.
           </p>
-          <div className="flex space-x-3 pt-2">
+          <div className="flex gap-2 pt-1">
             {[Github, Twitter, Instagram, Mail].map((Icon, i) => (
-              <a key={i} href="#" className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center hover:bg-slate-900 hover:text-white transition-all duration-300">
-                <Icon size={18} />
+              <a
+                key={i}
+                href="#"
+                className="w-9 h-9 rounded-full bg-white border border-[#eee] flex items-center justify-center text-[#999] hover:bg-[#111] hover:text-white hover:border-[#111] transition-all duration-300 shadow-sm"
+              >
+                <Icon size={15} />
               </a>
             ))}
           </div>
         </div>
 
-        {/* Links Array Spacer */}
         <div className="md:col-span-2 hidden md:block"></div>
 
-        {/* Quick Links */}
+        {/* Links */}
         <div className="md:col-span-2">
-          <h3 className="text-slate-900 font-bold text-xs mb-6 uppercase tracking-widest">Platform</h3>
-          <ul className="space-y-4 text-[13px] font-medium">
-            <li><Link to="/home" className="hover:text-teal-600 transition-colors">Our Story</Link></li>
-            <li><Link to="/home" className="hover:text-teal-600 transition-colors">Membership</Link></li>
-            <li><Link to="/home" className="hover:text-teal-600 transition-colors">Creators</Link></li>
-            <li><Link to="/home" className="hover:text-teal-600 transition-colors">Write</Link></li>
+          <h3 className="text-[#111] font-bold text-[11px] mb-5 uppercase tracking-[0.2em]">Platform</h3>
+          <ul className="space-y-3 text-[13px] font-medium text-[#999]">
+            {['Our Story', 'Membership', 'Creators', 'Write'].map((item) => (
+              <li key={item}>
+                <Link to="/home" className="hover:text-[#111] transition-colors">{item}</Link>
+              </li>
+            ))}
           </ul>
         </div>
-        
+
         <div className="md:col-span-2">
-          <h3 className="text-slate-900 font-bold text-xs mb-6 uppercase tracking-widest">Quick help</h3>
-          <ul className="space-y-4 text-[13px] font-medium">
-            <li><Link to="/home" className="hover:text-teal-600 transition-colors">Support</Link></li>
-            <li><Link to="/home" className="hover:text-teal-600 transition-colors">Status</Link></li>
-            <li><Link to="/home" className="hover:text-teal-600 transition-colors">Privacy</Link></li>
-            <li><Link to="/home" className="hover:text-teal-600 transition-colors">Terms</Link></li>
+          <h3 className="text-[#111] font-bold text-[11px] mb-5 uppercase tracking-[0.2em]">Quick Help</h3>
+          <ul className="space-y-3 text-[13px] font-medium text-[#999]">
+            {['Support', 'Status', 'Privacy', 'Terms'].map((item) => (
+              <li key={item}>
+                <Link to="/home" className="hover:text-[#111] transition-colors">{item}</Link>
+              </li>
+            ))}
           </ul>
         </div>
 
         {/* Newsletter */}
         <div className="md:col-span-2">
-            <h3 className="text-slate-900 font-bold text-xs mb-6 uppercase tracking-widest">Connect</h3>
-            <p className="mb-6 text-xs block leading-relaxed font-medium">Join the weaver newsletter for weekly ideas.</p>
-            <div className="flex flex-col gap-3">
-              <input 
-                type="email" 
-                placeholder="Email" 
-                className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 w-full focus:outline-none focus:ring-2 focus:ring-teal-500/20 text-sm placeholder-slate-400 font-medium"
-              />
-              <button className="w-full bg-slate-900 text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-800 transition-all shadow-sm">
-                Join now
-              </button>
-            </div>
+          <h3 className="text-[#111] font-bold text-[11px] mb-5 uppercase tracking-[0.2em]">Connect</h3>
+          <p className="mb-5 text-[12px] leading-relaxed font-medium text-[#999]">
+            Join the newsletter for weekly ideas.
+          </p>
+          <div className="flex flex-col gap-2">
+            <input
+              type="email"
+              placeholder="Email"
+              className="bg-white border border-[#eee] rounded-xl px-4 py-2.5 w-full focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500/30 text-[13px] placeholder-[#ccc] font-medium transition-all"
+            />
+            <button className="w-full bg-[#111] text-white px-4 py-2.5 rounded-xl text-[12px] font-bold hover:bg-[#222] transition-all shadow-sm">
+              Join now
+            </button>
+          </div>
         </div>
-
       </div>
 
-      {/* Bottom bar */}
-      <div className="relative border-t border-slate-100 pt-8 px-6 lg:px-12 max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center z-10">
-        <div className="text-slate-400 text-xs mb-4 md:mb-0 font-medium">
+      {/* Bottom */}
+      <div className="relative border-t border-[#eee] pt-6 px-8 max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center z-10">
+        <div className="text-[#ccc] text-[11px] mb-3 md:mb-0 font-medium">
           © {new Date().getFullYear()} MindLoom. Built with precision.
         </div>
-        <div className="flex space-x-6 text-xs text-slate-400 font-medium">
-          <Link to="/privacy" className="hover:text-slate-600 transition">Privacy Policy</Link>
-          <Link to="/terms" className="hover:text-slate-600 transition">Terms of Service</Link>
+        <div className="flex space-x-6 text-[11px] text-[#ccc] font-medium">
+          <Link to="/privacy" className="hover:text-[#888] transition">Privacy Policy</Link>
+          <Link to="/terms" className="hover:text-[#888] transition">Terms of Service</Link>
         </div>
       </div>
     </footer>

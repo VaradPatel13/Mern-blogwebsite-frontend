@@ -1,12 +1,10 @@
-// src/components/ScrollToTopButton.jsx
-
 import React, { useState, useEffect } from "react";
 import { ArrowUp } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const ScrollToTopButton = () => {
   const [isVisible, setIsVisible] = useState(false);
 
-  // Show button when scrolled down 300px
   useEffect(() => {
     const toggleVisibility = () => {
       if (window.scrollY > 300) {
@@ -20,7 +18,6 @@ const ScrollToTopButton = () => {
     return () => window.removeEventListener("scroll", toggleVisibility);
   }, []);
 
-  // Scroll to top
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -29,16 +26,22 @@ const ScrollToTopButton = () => {
   };
 
   return (
-    <>
+    <AnimatePresence>
       {isVisible && (
-        <button
+        <motion.button
+          initial={{ opacity: 0, scale: 0.8, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.8, y: 20 }}
+          transition={{ duration: 0.3 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
           onClick={scrollToTop}
-          className="fixed bottom-6 right-6 p-3 rounded-full bg-amber-500 hover:bg-amber-600 text-white shadow-lg transition-all duration-300"
+          className="fixed bottom-6 right-6 w-11 h-11 rounded-full bg-[#111] hover:bg-[#333] text-white shadow-xl shadow-black/20 flex items-center justify-center transition-colors z-50"
         >
-          <ArrowUp size={20} />
-        </button>
+          <ArrowUp size={18} />
+        </motion.button>
       )}
-    </>
+    </AnimatePresence>
   );
 };
 
