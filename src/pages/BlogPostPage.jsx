@@ -1,75 +1,42 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { getBlogBySlug, toggleLikeOnBlog, getAllBlogs } from '../services/blogService';
-import { getCommentsForBlog } from '../services/commentService';
+import { toggleLikeOnBlog } from '../services/blogService';
 import { useAuth } from '../context/AuthContext';
 import CommentSection from '../components/CommentSection';
-import { formatTimeAgo } from '../utils/timeUtils';
-import { Eye, Heart, MessageCircle, Share2, Link as LinkIcon, Bookmark, X, Copy, Check, Play } from 'lucide-react';
+import Footer from '../components/Footer';
+import BlogPostSkeleton from '../components/BlogPostSkeleton';
+import useBlog from '../hooks/useBlog';
+import { Heart, MessageCircle, Bookmark, Share2, ArrowRight, List, ChevronDown, Check } from 'lucide-react';
 
 const BlogPostPage = () => {
   const { slug } = useParams();
-  const [blog, setBlog] = useState(null);
-  const [relatedBlogs, setRelatedBlogs] = useState([]);
-  const [comments, setComments] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { isAuthenticated, user } = useAuth();
+
+  // Custom hook encapsulates all data fetching (Antigravity: extract to hooks/)
+  const { blog, setBlog, relatedBlogs, comments, setComments, loading, error } = useBlog(slug);
+
   const [isLiking, setIsLiking] = useState(false);
   const [scrollProgress, setScrollProgress] = useState('0%');
-  const { isAuthenticated, user } = useAuth();
   const [isSaved, setIsSaved] = useState(false);
-  const [showShareModal, setShowShareModal] = useState(false);
-  const [shareMenuOpen, setShareMenuOpen] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
-  const topShareMenuRef = useRef(null);
-  const bottomShareMenuRef = useRef(null);
 
-  useEffect(() => {
-    const fetchBlogAndData = async () => {
-      if (!slug) return;
-      try {
-        setLoading(true);
-        const blogResponse = await getBlogBySlug(slug);
-        if (blogResponse.success) {
-          setBlog(blogResponse.data);
-          
-          const allBlogsResponse = await getAllBlogs();
-          if (allBlogsResponse.success) {
-            setRelatedBlogs(allBlogsResponse.data.docs.filter(b => b._id !== blogResponse.data._id).slice(0, 3));
-          }
-
-          const commentsResponse = await getCommentsForBlog(blogResponse.data._id);
-          if (commentsResponse.success) {
-            setComments(commentsResponse.data.docs);
-          }
-        }
-      } catch (err) {
-        setError(err.message || 'Could not fetch the blog post.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBlogAndData();
-  }, [slug]);
-
+  // Scroll progress tracking
   useEffect(() => {
     const handleScroll = () => {
       const totalScroll = document.documentElement.scrollTop;
       const windowHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-      const scrollValue = `${(totalScroll / windowHeight) * 100}%`;
+      const scrollValue = `${Math.min(100, Math.max(0, (totalScroll / windowHeight) * 100))}%`;
       setScrollProgress(scrollValue);
     };
-
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleLike = async () => {
+  // useCallback: prevents handler recreation on re-render (Antigravity: INP <200ms)
+  const handleLike = useCallback(async () => {
     if (!isAuthenticated) return alert('Please log in to like a post.');
     if (isLiking) return;
-
     try {
       setIsLiking(true);
       const response = await toggleLikeOnBlog(blog._id);
@@ -87,7 +54,7 @@ const BlogPostPage = () => {
     } finally {
       setIsLiking(false);
     }
-  };
+  }, [isAuthenticated, isLiking, blog, user, setBlog]);
 
   useEffect(() => {
     if (blog) {
@@ -96,66 +63,34 @@ const BlogPostPage = () => {
     }
   }, [blog]);
 
-  const toggleSave = () => {
+  const toggleSave = useCallback(() => {
     const saved = JSON.parse(localStorage.getItem('savedPosts') || '[]');
     if (isSaved) {
-      const filtered = saved.filter(p => p._id !== blog._id);
-      localStorage.setItem('savedPosts', JSON.stringify(filtered));
+      localStorage.setItem('savedPosts', JSON.stringify(saved.filter(p => p._id !== blog._id)));
       setIsSaved(false);
     } else {
-      saved.push({
-        _id: blog._id,
-        title: blog.title,
-        slug: blog.slug,
-        coverImage: blog.coverImage,
-        category: blog.category,
-        createdAt: blog.createdAt
-      });
+      saved.push({ _id: blog._id, title: blog.title, slug: blog.slug, coverImage: blog.coverImage, category: blog.category, createdAt: blog.createdAt });
       localStorage.setItem('savedPosts', JSON.stringify(saved));
       setIsSaved(true);
     }
-  };
+  }, [isSaved, blog]);
 
-  const copyToClipboard = () => {
+  const copyToClipboard = useCallback(() => {
     navigator.clipboard.writeText(window.location.href);
     setCopySuccess(true);
-    setTimeout(() => {
-      setCopySuccess(false);
-      setShareMenuOpen(false);
-    }, 2000);
-  };
-
-  // Close share menu on outside click
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        (topShareMenuRef.current && !topShareMenuRef.current.contains(event.target)) &&
-        (bottomShareMenuRef.current && !bottomShareMenuRef.current.contains(event.target))
-      ) {
-        setShareMenuOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    setTimeout(() => setCopySuccess(false), 2000);
   }, []);
 
-  // Loading state
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-white w-full flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-teal-500 border-r-2"></div>
-      </div>
-    );
-  }
+  // Skill: Skeleton Loader that mimics the layout instead of spinner
+  if (loading) return <BlogPostSkeleton />;
 
-  // Error state
   if (error || !blog) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="text-center max-w-md">
-          <h1 className="text-2xl font-black text-black mb-2">Oops! Something went wrong</h1>
-          <p className="text-[#6B6B6B] mb-6">{error || "Post not found"}</p>
-          <Link to="/home" className="text-teal-600 font-bold underline">Go Back Home</Link>
+      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center p-4">
+        <div className="text-center max-w-md bg-white p-12 rounded-3xl border border-[#c0c8c3]/20 shadow-xl">
+          <h1 className="text-3xl font-newsreader font-black text-[#00261b] mb-4">Withered Bloom</h1>
+          <p className="text-[#414944] mb-8 font-manrope">{error || "This article couldn't be loaded."}</p>
+          <Link to="/home" className="inline-block bg-[#00261b] text-white px-8 py-3 rounded-full font-manrope text-sm font-bold uppercase tracking-widest hover:bg-[#214f3f] transition-colors">Return to Garden</Link>
         </div>
       </div>
     );
@@ -163,7 +98,6 @@ const BlogPostPage = () => {
 
   const isLikedByUser = user && blog.likedBy.includes(user._id);
 
-  // Extract headings for Table of Contents
   const headings = blog?.body
     ? Array.from(new DOMParser().parseFromString(blog.body, 'text/html').querySelectorAll('h2, h3'))
         .map((h, i) => ({ 
@@ -175,393 +109,234 @@ const BlogPostPage = () => {
 
   let hIndex = 0;
   const processedBody = blog?.body?.replace(/<h([23])>(.*?)<\/h[23]>/g, (match, level, content) => {
-    return `<h${level} id="section-${hIndex++}" class="scroll-mt-24">${content}</h${level}>`;
+    return `<h${level} id="section-${hIndex++}" class="scroll-mt-24 clear-both break-words">${content}</h${level}>`;
   });
 
   const wordCount = blog?.body ? blog.body.replace(/<[^>]*>/g, '').trim().split(/\s+/).length : 0;
   const minutesRead = Math.max(1, Math.ceil(wordCount / 225));
-  const hoursRead = Math.floor(minutesRead / 60);
-  const remainingMinutes = minutesRead % 60;
 
-  // SEO helpers
   const pageUrl = typeof window !== 'undefined' ? window.location.href : '';
   const plainTextSummary = blog.summary || (blog.body ? blog.body.replace(/<[^>]*>/g, '').slice(0, 160) : '');
-  const publishDate = blog.createdAt ? new Date(blog.createdAt).toISOString() : '';
-  const updateDate = blog.updatedAt ? new Date(blog.updatedAt).toISOString() : publishDate;
-
-  // JSON-LD Structured Data
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": blog.title,
-    "description": plainTextSummary,
-    "image": blog.coverImage || '',
-    "datePublished": publishDate,
-    "dateModified": updateDate,
-    "author": {
-      "@type": "Person",
-      "name": blog.createdBy?.fullName || "Anonymous"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "MindLoom",
-      "logo": {
-        "@type": "ImageObject",
-        "url": `${typeof window !== 'undefined' ? window.location.origin : ''}/logo.png`
-      }
-    },
-    "mainEntityOfPage": {
-      "@type": "WebPage",
-      "@id": pageUrl
-    },
-    "wordCount": wordCount,
-    "articleSection": blog.category?.name || "General",
-    "interactionStatistic": [
-      { "@type": "InteractionCounter", "interactionType": "https://schema.org/LikeAction", "userInteractionCount": blog.likes },
-      { "@type": "InteractionCounter", "interactionType": "https://schema.org/CommentAction", "userInteractionCount": comments.length }
-    ]
-  };
 
   return (
-    <article className="bg-white text-slate-900 min-h-screen font-sans selection:bg-teal-100 selection:text-teal-900" itemScope itemType="https://schema.org/Article">
-      {/* SEO Head */}
-      <Helmet>
-        <title>{blog.title} | MindLoom</title>
-        <meta name="description" content={plainTextSummary} />
-        <meta name="author" content={blog.createdBy?.fullName || 'Anonymous'} />
-        <link rel="canonical" href={pageUrl} />
+    <>
+      <div className="bg-[var(--background)] text-[#1b1c1a] min-h-screen font-manrope selection:bg-[#ffdad9] selection:text-[#2f1314] overflow-x-hidden relative" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(0,38,27,0.03) 1px, transparent 0)', backgroundSize: '32px 32px' }}>
+        
+        <Helmet>
+          <title>{blog.title} | Scribloom</title>
+          <meta name="description" content={plainTextSummary} />
+        </Helmet>
 
-        {/* Open Graph */}
-        <meta property="og:type" content="article" />
-        <meta property="og:title" content={blog.title} />
-        <meta property="og:description" content={plainTextSummary} />
-        <meta property="og:url" content={pageUrl} />
-        {blog.coverImage && <meta property="og:image" content={blog.coverImage} />}
-        <meta property="og:site_name" content="MindLoom" />
-        <meta property="article:published_time" content={publishDate} />
-        <meta property="article:modified_time" content={updateDate} />
-        <meta property="article:author" content={blog.createdBy?.fullName || 'Anonymous'} />
-        {blog.category?.name && <meta property="article:section" content={blog.category.name} />}
-
-        {/* Twitter Card */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={blog.title} />
-        <meta name="twitter:description" content={plainTextSummary} />
-        {blog.coverImage && <meta name="twitter:image" content={blog.coverImage} />}
-
-        {/* JSON-LD Structured Data */}
-        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
-      </Helmet>
-
-      {/* Sticky Top Nav (Glassmorphic) */}
-      <nav className="fixed top-0 left-0 right-0 h-14 md:h-16 bg-white/70 backdrop-blur-md border-b border-gray-100 z-50 flex items-center justify-between px-4 md:px-6 lg:px-12" aria-label="Article navigation">
-        <div className="flex items-center gap-3 truncate max-w-[55%] md:max-w-[60%]">
-          <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-[#999] truncate">
-            {blog.title}
-          </span>
+        {/* Top Progress Bar */}
+        <div className="fixed top-0 left-0 w-full h-1 z-50 bg-[#e4e2de]">
+          <div className="h-full bg-gradient-to-r from-[#00261b] to-[#79a894] transition-all duration-150 ease-out" style={{ width: scrollProgress }}></div>
         </div>
 
-        <div className="flex items-center gap-3 md:gap-6 relative" ref={topShareMenuRef}>
-          <button 
-            onClick={toggleSave}
-            className={`text-[10px] md:text-[11px] font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 md:gap-2 group ${isSaved ? 'text-teal-500' : 'text-slate-400 hover:text-teal-500'}`}
-            aria-label={isSaved ? 'Unsave article' : 'Save article for later'}
-          >
-            <Bookmark size={14} className={isSaved ? 'fill-teal-500' : 'group-hover:fill-teal-500 transition-all'} />
-            <span className="hidden sm:inline">{isSaved ? 'Saved' : 'Save for later'}</span>
-          </button>
-          
-          <div className="relative">
-            <button 
-              onClick={() => setShareMenuOpen(!shareMenuOpen)}
-              className="p-2 text-[#999] hover:text-black transition-colors"
-              aria-label="Share article"
-              aria-expanded={shareMenuOpen}
-            >
-              <Share2 size={16} className="md:w-[18px] md:h-[18px]" />
-            </button>
-
-            {/* Share Dropdown Menu */}
-            {shareMenuOpen && (
-              <div className="absolute top-full right-0 mt-2 w-56 md:w-64 bg-white border border-gray-100 rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] py-2 z-[100]" role="menu">
-                <button 
-                  onClick={copyToClipboard}
-                  className="w-full flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3 text-sm font-medium text-[#444] hover:bg-gray-50 transition-colors"
-                  role="menuitem"
-                >
-                  {copySuccess ? <Check size={18} className="text-green-500" /> : <LinkIcon size={18} className="text-gray-400" />}
-                  <span>{copySuccess ? 'Copied!' : 'Copy link'}</span>
-                </button>
-                
-                <div className="border-t border-gray-50 my-1"></div>
-
-                <a 
-                  href={`https://wa.me/?text=${encodeURIComponent(blog.title)}%20${encodeURIComponent(pageUrl)}`}
-                  target="_blank" rel="noopener noreferrer"
-                  className="w-full flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3 text-sm font-medium text-[#444] hover:bg-gray-50 transition-colors"
-                  role="menuitem"
-                >
-                  <MessageCircle size={18} className="text-gray-400" />
-                  <span>Share on WhatsApp</span>
-                </a>
-              </div>
-            )}
+        {/* Article Header */}
+        <header className="pt-16 md:pt-24 pb-12 md:pb-16 px-6 max-w-5xl mx-auto flex flex-col items-start md:items-center md:text-center text-left">
+          <nav className="mb-8 md:mb-12 w-full text-left md:text-center">
+            <Link to="/home" className="font-newsreader text-3xl md:text-4xl text-[#00261b] tracking-tighter">Scribloom</Link>
+          </nav>
+          <div className="flex w-full justify-start md:justify-center mb-6">
+            <span className="bg-[#ffdad9] text-[#613d3e] px-4 py-1.5 rounded-full text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase">
+              {blog.category?.name || 'General Insight'}
+            </span>
           </div>
-        </div>
+          <h1 className="font-newsreader text-4xl md:text-6xl lg:text-[72px] font-bold text-[#00261b] leading-[1.1] tracking-tight mb-8 md:mb-10 text-left md:text-center">
+            {blog.title}
+          </h1>
+          <div className="flex items-center justify-start md:justify-center gap-4 w-full text-sm font-manrope">
+            <div className="flex items-center md:gap-4 gap-3">
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden shrink-0 border-2 border-[#e4e2de]">
+                <img src={blog.createdBy?.avatar || `https://i.pravatar.cc/150?u=${blog.createdBy?.username}`} loading="lazy" className="w-full h-full object-cover" alt="Author" />
+              </div>
+              <div className="flex flex-col md:flex-row md:items-center gap-0 md:gap-4 text-left">
+                <span className="font-bold text-[#00261b] text-sm md:text-base">{blog.createdBy?.fullName || 'Anonymous'}</span>
+                <span className="hidden md:inline text-[#c0c8c3]">•</span>
+                <span className="text-xs md:text-sm text-[#414944]">{new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                <span className="hidden md:inline text-[#c0c8c3]">•</span>
+                <span className="text-xs md:text-sm text-[#414944]">{minutesRead} min read</span>
+              </div>
+            </div>
+          </div>
+        </header>
 
-        {/* Reading Progress Bar */}
-        <div className="editorial-progress-bar" style={{ width: scrollProgress }} />
-      </nav>
+        {/* Featured Image */}
+        {blog.coverImage && (
+          <div className="max-w-7xl mx-auto px-4 md:px-6 mb-16 md:mb-24">
+            <div className="relative aspect-[4/3] md:aspect-[21/9] rounded-2xl overflow-hidden group bg-[#eae8e4] shadow-[0_20px_40px_rgba(0,38,27,0.06)]">
+              <img src={blog.coverImage} alt={blog.title} className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-[1.03]" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#00261b]/20 to-transparent"></div>
+            </div>
+          </div>
+        )}
 
-      <div className="max-w-[1440px] mx-auto px-4 md:px-6 lg:px-16 pt-24 md:pt-28 lg:pt-32 pb-16 md:pb-24 lg:pb-40">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 lg:gap-12 relative">
+        {/* Main Content Grid */}
+        <main className="max-w-7xl mx-auto px-6 lg:grid lg:grid-cols-12 lg:gap-16 pb-32">
           
-          {/* Main Content Area */}
-          <main className="col-span-12 lg:col-span-8 lg:col-start-1">
-            
-            <header id="story-top" className="mb-8 md:mb-12 lg:mb-16">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[64px] font-black text-black leading-[1.1] md:leading-[1.05] tracking-[-0.02em] md:tracking-[-0.03em] mb-3 md:mb-4" itemProp="headline">
-                {blog.title}
-              </h1>
-              
-              {blog.summary && (
-                <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-[#6B6B6B] font-medium leading-relaxed mb-6 md:mb-8" itemProp="abstract">
-                  {blog.summary}
-                </p>
-              )}
+          {/* Mobile Collapsible TOC */}
+          {headings.length > 0 && (
+            <div className="lg:hidden col-span-1 mb-12">
+              <details className="bg-[#f5f3ef] rounded-2xl p-6 group shadow-sm border border-[#c0c8c3]/20 transition-all duration-300">
+                <summary className="list-none flex items-center justify-between cursor-pointer focus:outline-none outline-none">
+                  <span className="font-manrope font-bold text-[#00261b] flex items-center gap-3">
+                    <List size={20} className="text-[#396756]" /> Table of Contents
+                  </span>
+                  <ChevronDown size={20} className="text-[#414944] transition-transform group-open:rotate-180" />
+                </summary>
+                <nav className="mt-6 flex flex-col gap-4 border-l-2 border-[#c0c8c3]/30 ml-2 pl-5">
+                  {headings.map((h, i) => (
+                    <a key={i} href={`#${h.id}`} className="font-manrope text-sm font-medium text-[#414944] hover:text-[#00261b] transition-colors">{h.text}</a>
+                  ))}
+                </nav>
+              </details>
+            </div>
+          )}
 
-              <div className="flex items-center gap-3 mt-4 md:mt-6" itemProp="author" itemScope itemType="https://schema.org/Person">
-                <img
-                  src={blog.createdBy.avatar || "https://i.pravatar.cc/150"}
-                  alt={`${blog.createdBy.fullName}'s avatar`}
-                  className="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover"
-                  itemProp="image"
-                />
-                <div className="flex items-center gap-2 md:gap-3 flex-wrap">
-                  <span className="text-sm font-medium text-black" itemProp="name">{blog.createdBy.fullName}</span>
-                  <button className="px-3 py-1 text-xs font-medium border border-gray-200 rounded-full hover:bg-gray-50 transition-colors">
-                    Follow
+          {/* Desktop Left Sidebar (TOC & Subscribe) */}
+          <aside className="hidden lg:block lg:col-span-3 pb-8 relative">
+            <div className="sticky top-24 space-y-12">
+              {headings.length > 0 && (
+                <div>
+                  <h3 className="font-manrope text-xs uppercase tracking-[0.25em] text-[#717974] mb-8 font-black">On this page</h3>
+                  <ul className="space-y-4 text-sm font-manrope">
+                    {headings.map((h, i) => (
+                      <li key={i}>
+                        <a href={`#${h.id}`} className="text-[#414944] hover:text-[#00261b] font-bold transition-all border-l-2 hover:border-[#00261b] border-transparent pl-4 block py-1.5 opacity-70 hover:opacity-100">{h.text}</a>
+                      </li>
+                    ))}
+                    <li>
+                      <a href="#comments-section" className="text-[#396756] hover:text-[#00261b] font-black transition-all border-l-2 hover:border-[#00261b] border-transparent pl-4 block mt-8 py-1.5">
+                        Discourse ({comments.length})
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              )}
+              
+              <div className="p-8 rounded-3xl bg-[#f5f3ef] border border-[#c0c8c3]/20 shadow-sm relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-[#bcedd7]/20 rounded-full blur-xl -translate-y-1/2 translate-x-1/2"></div>
+                <h4 className="font-newsreader text-2xl font-bold text-[#00261b] mb-3 relative z-10">Subscribe</h4>
+                <p className="text-xs text-[#414944] mb-6 font-manrope leading-relaxed relative z-10">Get the latest botanical tech insights directly to your greenhouse.</p>
+                <div className="relative z-10">
+                  <input type="email" placeholder="Email address" className="w-full bg-transparent border-none border-b border-[#c0c8c3] focus:ring-0 focus:border-[#00261b] px-0 py-2 text-sm text-[#00261b] placeholder:text-[#717974] outline-none font-bold" />
+                  <button className="absolute right-0 top-1/2 -translate-y-1/2 text-[#00261b] hover:text-[#396756] transition-transform hover:translate-x-1 p-2">
+                    <ArrowRight size={18} strokeWidth={2} />
                   </button>
-                  <div className="flex items-center gap-1.5 md:gap-2 text-xs md:text-sm text-[#6B6B6B]">
-                    <span>
-                      {hoursRead > 0 
-                        ? `${hoursRead}h ${remainingMinutes > 0 ? `${remainingMinutes}m` : ''}` 
-                        : `${minutesRead} min`} read
-                    </span>
-                    <span>·</span>
-                    <time dateTime={publishDate} itemProp="datePublished">{formatTimeAgo(blog.createdAt)}</time>
-                  </div>
                 </div>
               </div>
-            </header>
+            </div>
+          </aside>
 
-            {/* Cover Image */}
-            {blog.coverImage && (
-              <figure className="mb-8 md:mb-12 lg:mb-16">
-                <img
-                  src={blog.coverImage}
-                  alt={blog.title}
-                  className="w-full h-auto block rounded-sm"
-                  itemProp="image"
-                  loading="eager"
-                />
-              </figure>
-            )}
-
-            {/* Long-form Content */}
-            <section
-              className="prose prose-base sm:prose-lg md:prose-xl max-w-none 
-                font-inter prose-p:text-[#333] prose-p:leading-[1.8] md:prose-p:leading-[1.9] prose-p:mb-6 md:prose-p:mb-8 lg:prose-p:mb-10
-                prose-headings:font-playfair prose-headings:font-black prose-headings:text-black prose-headings:tracking-tighter
-                prose-h2:text-2xl md:prose-h2:text-3xl lg:prose-h2:text-4xl prose-h2:mt-12 md:prose-h2:mt-16 lg:prose-h2:mt-20 prose-h2:mb-6 md:prose-h2:mb-8
-                prose-img:rounded-sm prose-img:border prose-img:border-gray-100
-                prose-blockquote:pull-quote overflow-visible"
-              dangerouslySetInnerHTML={{ __html: processedBody }}
-              itemProp="articleBody"
+          {/* Article Prose Content */}
+          <div className="lg:col-span-7 w-full overflow-hidden shrink-0">
+            <article 
+              className="font-manrope text-lg lg:text-[19px] leading-loose text-[#1b1c1a]/90 break-words
+              prose-p:mb-8 prose-p:font-medium
+              prose-headings:font-newsreader prose-headings:font-bold prose-headings:text-[#00261b] prose-headings:tracking-tight prose-headings:break-words
+              prose-blockquote:my-16 prose-blockquote:py-6 prose-blockquote:pl-8 prose-blockquote:border-l-[6px] prose-blockquote:border-[#7b5455]/20 prose-blockquote:not-italic prose-blockquote:font-newsreader prose-blockquote:text-2xl md:prose-blockquote:text-3xl prose-blockquote:text-[#00261b] prose-blockquote:leading-snug
+              prose-h2:text-3xl lg:prose-h2:text-4xl prose-h2:mb-6 prose-h2:mt-16 
+              prose-h3:text-2xl lg:prose-h3:text-3xl prose-h3:mb-4 prose-h3:mt-12
+              prose-img:rounded-2xl prose-img:w-full prose-img:shadow-lg prose-img:my-12 prose-img:mx-0 
+              prose-a:text-[#396756] prose-a:font-bold prose-a:underline prose-a:underline-offset-4 hover:prose-a:text-[#00261b]
+              max-w-none w-full"
+              dangerouslySetInnerHTML={{ __html: processedBody }} 
             />
 
-            {/* Divider */}
-            <div className="h-px bg-gray-100 w-full my-12 md:my-16 lg:my-20" role="separator" />
-
-            {/* Action Bar & Stats */}
-            <section className="flex flex-row items-center justify-between gap-4 mb-12 md:mb-16 lg:mb-20" aria-label="Article actions">
-              <div className="flex items-center gap-6 md:gap-8 lg:gap-12">
-                <button
-                  onClick={handleLike}
-                  disabled={isLiking}
-                  className={`flex items-center gap-2 md:gap-3 transition-all ${isLikedByUser ? 'text-teal-500' : 'text-slate-400 hover:text-slate-900'}`}
-                  aria-label={`Like article, ${blog.likes} likes`}
-                >
-                  <Heart size={20} className={`md:w-6 md:h-6 ${isLikedByUser ? 'fill-teal-500' : ''}`} />
-                  <span className="text-xs md:text-sm font-bold tracking-widest uppercase">{blog.likes.toLocaleString()}</span>
-                </button>
-                <div className="flex items-center gap-2 md:gap-3 text-[#BBB]" aria-label={`${blog.views} views`}>
-                  <Eye size={20} className="md:w-6 md:h-6" />
-                  <span className="text-xs md:text-sm font-bold tracking-widest uppercase">{blog.views.toLocaleString()}</span>
+            {/* Author Bio Box */}
+            <div className="mt-24 p-8 md:p-12 rounded-[2rem] bg-[#efeeea] border-t-4 border-[#00261b]/10 flex flex-col md:flex-row gap-8 items-center md:items-start shadow-sm">
+              <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden shrink-0 border-4 border-[var(--background)] shadow-lg">
+                <img src={blog.createdBy?.avatar || `https://i.pravatar.cc/150?u=${blog.createdBy?.username}`} className="w-full h-full object-cover" alt={blog.createdBy?.fullName} />
+              </div>
+              <div className="text-center md:text-left flex-1">
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#7b5455] mb-1 block">The Cultivator</span>
+                <h4 className="font-newsreader text-2xl md:text-3xl font-bold text-[#00261b] mb-4">{blog.createdBy?.fullName || 'Anonymous'}</h4>
+                <p className="text-[15px] text-[#414944] font-manrope font-medium leading-relaxed mb-8 max-w-xl">
+                  Digital author and active contributor at Scribloom. Documenting the intersection of structured systems and organic creativity.
+                </p>
+                <div className="flex items-center justify-center md:justify-start">
+                  <Link to={`/profile/${blog.createdBy?.username}`} className="text-[#00261b] font-manrope text-[11px] uppercase tracking-widest font-black hover:text-[#396756] transition-colors border-b-2 border-[#00261b] pb-1 hover:border-[#396756]">
+                    Follow Profile
+                  </Link>
                 </div>
               </div>
-
-              <div className="flex items-center gap-3 md:gap-6 relative">
-                <button 
-                   onClick={toggleSave}
-                   className={`p-1 md:p-1.5 transition-all ${isSaved ? 'text-teal-500' : 'text-slate-400 hover:text-slate-900'}`}
-                   aria-label={isSaved ? 'Unsave article' : 'Save article'}
-                >
-                  <Bookmark size={20} className={`md:w-6 md:h-6 ${isSaved ? 'fill-teal-500' : ''}`} />
-                </button>
-
-                <div className="relative" ref={bottomShareMenuRef}>
-                  <button 
-                    onClick={() => setShareMenuOpen(!shareMenuOpen)}
-                    className="p-1 md:p-1.5 text-[#BBB] hover:text-black transition-colors"
-                    aria-label="Share article"
-                    aria-expanded={shareMenuOpen}
-                  >
-                    <Share2 size={20} className="md:w-6 md:h-6" />
-                  </button>
-
-                  {/* Bottom Share Dropdown */}
-                  {shareMenuOpen && (
-                    <div className="absolute bottom-full right-0 mb-3 w-56 md:w-64 bg-white border border-gray-100 rounded-xl shadow-[0_-10px_40px_-10px_rgba(0,0,0,0.1)] py-2 z-[100]" role="menu">
-                      <button 
-                        onClick={copyToClipboard}
-                        className="w-full flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3 text-sm font-medium text-[#444] hover:bg-gray-50 transition-colors"
-                        role="menuitem"
-                      >
-                        {copySuccess ? <Check size={18} className="text-green-500" /> : <LinkIcon size={18} className="text-gray-400" />}
-                        <span>{copySuccess ? 'Copied!' : 'Copy link'}</span>
-                      </button>
-                      
-                      <div className="border-t border-gray-50 my-1"></div>
-
-                      <a 
-                        href={`https://wa.me/?text=${encodeURIComponent(blog.title)}%20${encodeURIComponent(pageUrl)}`}
-                        target="_blank" rel="noopener noreferrer"
-                        className="w-full flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3 text-sm font-medium text-[#444] hover:bg-gray-50 transition-colors"
-                        role="menuitem"
-                      >
-                        <MessageCircle size={18} className="text-gray-400" />
-                        <span>Share on WhatsApp</span>
-                      </a>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </section>
-
-            {/* Comments Section */}
-            <div id="comments-section" className="scroll-mt-24">
-              <CommentSection
-                blogId={blog._id}
-                initialComments={comments}
-                setComments={setComments}
-              />
             </div>
-          </main>
 
-          {/* Right Sidebar: Table of Contents (Desktop Only) */}
-          <aside className="hidden lg:block lg:col-span-3 lg:col-start-10 relative bg-gray-50 min-h-full rounded-l-2xl -mr-6 lg:-mr-16 pl-8 pr-6 pt-8" aria-label="Table of contents">
-            <nav className="sticky top-32 space-y-10">
-              <div className="space-y-6">
-                <h2 className="text-[10px] font-black uppercase tracking-widest text-[#999] border-b border-gray-200 pb-4">Contents</h2>
-                <div className="flex flex-col gap-5">
-                  {/* Top Level Link to Title */}
-                  <a 
-                    href="#story-top"
-                    className="text-[13px] font-bold text-[#777] hover:text-black transition-colors leading-tight"
-                  >
-                    {blog.title}
-                  </a>
-                  
-                  <div className="flex flex-col gap-3.5 border-l border-gray-200 ml-0.5">
-                    {headings.map((h, i) => (
-                      <a 
-                        key={i} 
-                        href={`#${h.id}`} 
-                        className={`pl-4 text-[12px] font-medium transition-all leading-relaxed hover:text-slate-900 hover:border-l-2 hover:border-teal-500 -ml-[2px] ${
-                          h.level === 'h3' ? 'ml-4 text-slate-400 italic scale-95 origin-left' : 'text-slate-500'
-                        }`}
-                      >
-                        {h.text}
-                      </a>
-                    ))}
-                  </div>
-
-                  {/* Discussion Link */}
-                  <a 
-                    href="#comments-section"
-                    className="text-[12px] font-black uppercase tracking-wider text-[#B0B0B0] hover:text-black pt-3 transition-colors"
-                  >
-                    Discussion
-                  </a>
-                </div>
-              </div>
-            </nav>
-          </aside>
-        </div>
-      </div>
-
-      {/* Share Overlay Modal */}
-      {showShareModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-white/90 backdrop-blur-xl" role="dialog" aria-modal="true" aria-label="Share article">
-          <div className="w-full max-w-lg md:max-w-2xl text-center relative">
-            <button 
-              onClick={() => setShowShareModal(false)}
-              className="absolute -top-12 md:-top-16 left-1/2 -translate-x-1/2 p-3 md:p-4 text-black hover:scale-110 transition-transform bg-gray-50 rounded-full shadow-sm"
-              aria-label="Close share modal"
-            >
-              <X size={20} className="md:w-6 md:h-6" />
-            </button>
-            
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-teal-600 mb-4 block">Spread the Insight</span>
-            <h3 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-playfair font-black mb-8 md:mb-12 text-black leading-tight">
-              Share this dialogue with your world.
-            </h3>
-            
-            <div className="max-w-md mx-auto space-y-8 md:space-y-12">
-              <div className="space-y-4">
-                <span className="text-[11px] font-bold uppercase tracking-widest text-[#999]">Copy Editorial Link</span>
-                <div className="group relative">
-                  <div className="flex items-center gap-3 md:gap-4 p-3 md:p-4 border-2 border-black rounded-xl md:rounded-2xl bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-1 active:translate-y-1 active:shadow-none mb-4">
-                    <span className="flex-1 truncate text-xs md:text-sm font-bold text-black text-left">{pageUrl}</span>
-                    <button 
-                      onClick={copyToClipboard}
-                      className="flex items-center gap-2 px-4 md:px-6 py-2 bg-slate-900 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-teal-600 transition-colors shrink-0"
-                    >
-                      {copySuccess ? (
-                        <>
-                          <Check size={16} /> <span>Copied</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy size={16} /> <span>Copy</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6">
-                <button 
-                  onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(blog.title)}%20${encodeURIComponent(pageUrl)}`, '_blank')}
-                  className="w-full sm:w-48 flex items-center justify-center gap-3 py-3 md:py-4 border-2 border-black rounded-xl md:rounded-2xl text-sm font-black uppercase tracking-widest hover:bg-black hover:text-white transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
-                >
-                  <MessageCircle size={18} /> WhatsApp
-                </button>
-              </div>
-
-              <button 
-                onClick={() => setShowShareModal(false)}
-                className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#BBB] hover:text-black transition-colors"
-              >
-                Continue Reading →
-              </button>
+            {/* Discourse Section */}
+            <div id="comments-section" className="mt-32 scroll-mt-32 border-t border-[#c0c8c3]/30 pt-16">
+              <h3 className="font-newsreader text-4xl font-bold text-[#00261b] mb-12 flex items-center justify-between">
+                <span>Discourse</span>
+                <span className="text-xl bg-[#e4e2de] w-12 h-12 flex items-center justify-center rounded-full text-[#414944]">{comments.length}</span>
+              </h3>
+              <CommentSection blogId={blog._id} initialComments={comments} setComments={setComments} />
             </div>
           </div>
+
+          <aside className="hidden lg:block lg:col-span-2 relative">
+             {/* Right sidebar filler space or ads */}
+          </aside>
+        </main>
+        
+        {/* Related Articles - Expanding the Canopy */}
+        {relatedBlogs && relatedBlogs.length > 0 && (
+          <section className="bg-[#f5f3ef] py-24 md:py-32 w-full border-t border-[#e4e2de]">
+            <div className="max-w-7xl mx-auto px-6">
+              <h3 className="font-newsreader text-3xl md:text-5xl font-bold text-[#00261b] mb-16 px-2">Expanding the Canopy</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
+                {relatedBlogs.map((related) => (
+                  <Link to={`/blog/${related.slug}`} key={related._id} className="group block bg-[var(--background)] rounded-[2rem] p-4 sm:p-5 transition-transform duration-500 hover:-translate-y-2 shadow-sm hover:shadow-[0_20px_40px_rgba(0,38,27,0.06)] border border-[#e4e2de]">
+                    <div className="aspect-[4/3] w-full rounded-[1.5rem] overflow-hidden mb-6 md:mb-8 bg-[#e4e2de] shadow-inner">
+                      {related.coverImage ? (
+                        <img src={related.coverImage} alt={related.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-[0.34,1.56,0.64,1]" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-[#eae8e4] text-[#00261b]/20">Empty Bloom</div>
+                      )}
+                    </div>
+                    <div className="px-2 pb-4">
+                      <span className="font-manrope text-[10px] uppercase tracking-[0.25em] text-[#7b5455] font-black block mb-3 opacity-90 group-hover:opacity-100">{related.category?.name || 'Read'}</span>
+                      <h4 className="font-newsreader text-2xl font-bold text-[#00261b] group-hover:text-[#396756] transition-colors leading-[1.2]">{related.title}</h4>
+                      <p className="mt-4 text-[#414944] text-sm font-medium line-clamp-2 leading-relaxed opacity-80">{related.summary}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Floating Bottom Action Bar (Mobile & Desktop) */}
+        <div className="fixed bottom-6 lg:bottom-8 left-1/2 -translate-x-1/2 w-[90%] sm:w-auto z-[90]">
+          <div className="bg-[var(--background)]/85 backdrop-blur-xl rounded-full px-6 py-3 lg:py-3.5 shadow-[0_20px_40px_rgba(0,38,27,0.1)] border border-white/60 flex items-center justify-between sm:justify-center gap-2 sm:gap-6 w-full relative">
+            
+            <button onClick={handleLike} className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-full transition-colors active:scale-90 ${isLikedByUser ? 'text-[#00261b] bg-[#bcedd7]' : 'text-[#00261b] hover:bg-black/5'}`}>
+              <Heart size={20} className={isLikedByUser ? 'fill-[#00261b]' : ''} strokeWidth={isLikedByUser ? 2 : 1.5} />
+              <span className="font-manrope text-sm font-bold">{blog.likes.toLocaleString()}</span>
+            </button>
+
+            <div className="w-[1px] h-4 bg-[#c0c8c3] opacity-50 shrink-0"></div>
+
+            <a href="#comments-section" className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-full text-[#00261b] hover:bg-black/5 transition-colors active:scale-90">
+              <MessageCircle size={20} strokeWidth={1.5} />
+              <span className="font-manrope text-sm font-bold">{comments.length}</span>
+            </a>
+
+            <div className="w-[1px] h-4 bg-[#c0c8c3] opacity-50 shrink-0"></div>
+
+            <button onClick={toggleSave} className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-full transition-colors active:scale-90 ${isSaved ? 'text-[#00261b] bg-[#e6e5b9]' : 'text-[#00261b] hover:bg-black/5'}`}>
+              <Bookmark size={20} className={isSaved ? 'fill-[#00261b]' : ''} strokeWidth={isSaved ? 2 : 1.5} />
+            </button>
+
+            <div className="w-[1px] h-4 bg-[#c0c8c3] opacity-50 shrink-0"></div>
+
+            <button onClick={copyToClipboard} className="bg-[#00261b] text-white p-2.5 sm:p-3 rounded-full hover:scale-105 active:scale-95 transition-all flex items-center justify-center relative shrink-0 shadow-lg shadow-[#00261b]/20">
+              {copySuccess ? <Check size={18} strokeWidth={2.5} className="text-[#bcedd7]" /> : <Share2 size={18} strokeWidth={2} />}
+              {copySuccess && <span className="absolute -top-12 bg-[#00261b] text-white text-[10px] font-bold px-3 py-1.5 rounded-lg whitespace-nowrap animate-bounce shadow-xl">Copied!</span>}
+            </button>
+          </div>
         </div>
-      )}
-    </article>
+
+      </div>
+    </>
   );
 };
 

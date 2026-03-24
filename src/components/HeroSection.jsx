@@ -66,7 +66,7 @@ const ArtCardFan = ({ image, index, total, user, color }) => {
         </motion.div>
       )}
 
-      {/* Card Image */}
+      {/* Card Container (Living Container Style) */}
       <motion.div
         whileHover={{
           y: -20,
@@ -74,9 +74,11 @@ const ArtCardFan = ({ image, index, total, user, color }) => {
           zIndex: 100,
           transition: { duration: 0.3 }
         }}
-        className="w-[130px] h-[180px] md:w-[150px] md:h-[200px] rounded-[28px] overflow-hidden shadow-2xl cursor-pointer bg-white border border-gray-100"
+        className="w-[110px] h-[150px] md:w-[130px] md:h-[180px] rounded-[2rem] overflow-hidden shadow-2xl cursor-pointer bg-white/10 backdrop-blur-sm"
       >
-        <img src={image} alt={`Story ${index}`} className="w-full h-full object-cover" />
+        <div className="w-full h-full p-2">
+            <img src={image} alt={`Story ${index}`} className="w-full h-full object-cover rounded-[1rem]" />
+        </div>
       </motion.div>
     </motion.div>
   );
@@ -94,30 +96,34 @@ export default function MasterpieceHero() {
   ];
 
   return (
-    <section className="bg-white min-h-screen flex items-center justify-center overflow-hidden pt-20">
-      <div className="max-w-[1200px] mx-auto w-full px-6 flex flex-col items-center text-center">
+    <section className="bg-transparent min-h-fit md:min-h-[70vh] flex justify-center overflow-hidden pt-4 md:pt-6 pb-16 md:pb-32 relative">
+      {/* Intentional Asymmetry: Decorative Bleed Backgrounds */}
+      <div className="absolute top-0 right-[-10%] w-[40%] h-[60%] bg-[#bcedd7]/10 rounded-full blur-[120px] -z-10 animate-pulse" />
+      <div className="absolute bottom-0 left-[-5%] w-[30%] h-[50%] bg-[#ffdad9]/10 rounded-full blur-[100px] -z-10" />
+
+      <div className="max-w-[1100px] mx-auto w-full px-6 flex flex-col items-center text-center relative z-20">
 
         {/* 1. STAGGERED HEADLINE */}
         <motion.div
           initial="initial"
           animate="animate"
           transition={{ staggerChildren: 0.15 }}
-          className="mb-10 relative z-20"
+          className="mb-14 relative"
         >
           <div className="overflow-hidden">
-            <motion.h1 variants={segmentVariants} className="text-[2.5rem] md:text-[4rem] font-bold tracking-tighter text-[#111] leading-none">
+            <motion.h1 variants={segmentVariants} className="text-[2.6rem] md:text-[4.5rem] font-black tracking-tighter text-[#00261b] leading-[0.9] font-newsreader">
               A place to publish
             </motion.h1>
           </div>
           <div className="overflow-hidden">
-            <motion.h1 variants={segmentVariants} className="text-[2.5rem] md:text-[4rem] font-bold tracking-tighter text-[#111] leading-none mb-0">
-              your best stories<span className="text-[#4FD1C5]">.</span>
+            <motion.h1 variants={segmentVariants} className="text-[2.6rem] md:text-[4.5rem] font-black tracking-tighter text-[#00261b] leading-[0.9] mb-0 font-newsreader">
+              your best stories<span className="text-[#a0d1bc]">.</span>
             </motion.h1>
           </div>
         </motion.div>
 
-        {/* 2. ARC CARD FAN */}
-        <div className="relative w-full max-w-[250px] h-[150px] mb-30 flex justify-center">
+        {/* 2. ARC CARD FAN (The Living Container) */}
+        <div className="relative w-full max-w-[250px] h-[150px] mb-32 flex justify-center">
           {cards.map((card, i) => (
             <ArtCardFan
               key={i}
@@ -126,27 +132,27 @@ export default function MasterpieceHero() {
               image={card.image}
               user={card.user}
               color={card.color}
-              tailPosition={card.tailPosition}
             />
           ))}
         </div>
 
         {/* 3. SUBTITLE & BUTTONS */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.5, duration: 1 }}
-          className="flex flex-col items-center gap-8 relative z-20"
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 1.5, duration: 1, ease: [0.34, 1.56, 0.64, 1] }}
+          className="flex flex-col items-center gap-8"
         >
-          <p className="text-[#666] font-medium text-[16px] max-w-[550px] leading-relaxed">
+          <p className="text-[#00261b]/60 font-medium text-[13px] md:text-[15px] max-w-[500px] leading-relaxed font-manrope">
             Writers can share their unique perspectives, and readers can discover stories that inspire and shape the world.
           </p>
 
-          <div className="flex items-center gap-4">
-            <button className="bg-[#111] text-white px-8 py-4 rounded-full font-bold text-sm hover:scale-105 transition-transform shadow-xl">
+          <div className="flex items-center gap-4 font-manrope">
+            <button className="gradient-primary text-white px-8 py-3 rounded-full font-bold text-[11px] uppercase tracking-widest hover:scale-105 transition-all ambient-shadow">
               Start Writing
             </button>
-            <button className="bg-white text-[#111] border border-gray-200 px-8 py-4 rounded-full font-bold text-sm hover:bg-gray-50 transition-colors">
+            <button className="bg-[#e4e2de] text-[#00261b] px-8 py-3 rounded-full font-bold text-[11px] uppercase tracking-widest hover:bg-[#dbdad6] transition-all">
               Explore stories
             </button>
           </div>

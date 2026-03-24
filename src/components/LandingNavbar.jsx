@@ -30,39 +30,38 @@ const LandingNavbar = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
-        isScrolled
-          ? 'bg-white/90 backdrop-blur-md py-4 border-b border-gray-100/50 shadow-sm'
-          : 'bg-white py-6'
-      }`}
+      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 font-manrope ${isScrolled
+          ? 'bg-[var(--background)]/90 backdrop-blur-md py-2 border-b border-[#efeeea] shadow-sm'
+          : 'bg-[var(--background)] py-3'
+        }`}
     >
       <div className="max-w-[1400px] mx-auto px-6 md:px-10 flex items-center justify-between">
         {/* Left: Logo */}
         <motion.div initial="initial" animate="animate" variants={fadeBlur}>
-          <a href="#hero" className="flex items-center gap-3 group">
-            <div className="relative w-10 h-10 flex items-center justify-center rounded-xl overflow-hidden shadow-sm border border-gray-100 group-hover:scale-105 transition-transform duration-500">
+          <a href="#hero" className="flex items-center gap-2.5 group">
+            <div className="relative w-7 h-7 flex items-center justify-center rounded-lg overflow-hidden shadow-sm border border-gray-100 group-hover:scale-105 transition-transform duration-500">
               <img src="/icon.jpg" alt="Scribloom Logo" className="w-full h-full object-cover" />
             </div>
             <div className="flex flex-col">
-              <span className="text-[20px] font-black tracking-tight text-[#111111] leading-none">
-                Scribloom<span className="text-[#4FD1C5]">.</span>
+              <span className="text-[16px] font-black tracking-tight text-[#111111] leading-none font-newsreader">
+                Scribloom<span className="text-[#a0d1bc]">.</span>
               </span>
             </div>
           </a>
         </motion.div>
 
         {/* Center: Nav Items */}
-        <motion.div 
+        <motion.div
           initial="initial"
           animate="animate"
           transition={{ staggerChildren: 0.05, delayChildren: 0.2 }}
-          className="hidden lg:flex items-center gap-8"
+          className="hidden lg:flex items-center gap-5"
         >
           {navLinks.map((link) => (
             <motion.div key={link.name} variants={fadeBlur}>
               <a
                 href={link.path}
-                className="text-[14px] font-bold text-[#111111]/70 hover:text-[#111111] transition-colors flex items-center gap-2"
+                className="text-[12px] font-bold text-[#111111]/70 hover:text-[#111111] transition-colors flex items-center gap-1.5"
               >
                 {link.icon && <span className="opacity-50">{link.icon}</span>}
                 {link.name}
@@ -72,11 +71,11 @@ const LandingNavbar = () => {
         </motion.div>
 
         {/* Right: CTA */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <motion.div initial="initial" animate="animate" variants={fadeBlur} transition={{ delay: 0.4 }}>
-            <Link 
-              to="/get-started" 
-              className="hidden md:block bg-[#111] text-white px-6 py-2.5 rounded-full text-[13px] font-bold hover:scale-105 transition-transform shadow-lg"
+            <Link
+              to="/register"
+              className="hidden md:block bg-[#111] text-white px-4 py-1.5 rounded-full text-[11px] font-bold hover:scale-105 transition-transform shadow-lg"
             >
               Get Started
             </Link>
@@ -84,10 +83,10 @@ const LandingNavbar = () => {
 
           {/* Mobile Menu Toggle */}
           <button
-            className="lg:hidden p-2 text-[#111] hover:bg-gray-50 rounded-lg"
+            className="lg:hidden p-1.5 text-[#111] hover:bg-gray-50 rounded-lg"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
       </div>

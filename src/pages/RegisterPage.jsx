@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { registerUser, loginWithGoogle } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
-import { GoogleLogin } from "@react-oauth/google";
-import { Mail, Lock, Eye, EyeOff, Loader2, ArrowLeft, User, AtSign, ArrowRight } from "lucide-react";
+import { GoogleLogin } from "@react-oauth/google";  
+import { Loader2, User, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { Helmet } from "react-helmet-async";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 // UI Components
 import { useToast } from "@/components/ui/toast";
+import { Checkbox } from "@/components/animate-ui/components/radix/checkbox";
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -20,10 +21,23 @@ const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [activeInput, setActiveInput] = useState(null);
 
   const navigate = useNavigate();
   const { toast } = useToast();
   const { login } = useAuth();
+
+  const transition = { duration: 1, ease: [0.16, 1, 0.3, 1] };
+  
+  const containerVariants = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.2 } }
+  };
+
+  const itemVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -42,13 +56,19 @@ const RegisterPage = () => {
       );
       if (response && response.success) {
         toast({
-          title: "Welcome to MindLoom",
-          description: "Your account has been created successfully. Please log in.",
+          title: "Welcome to Scribloom",
+          description: "Your garden has been prepared. Please log in.",
         });
         navigate("/login");
       }
     } catch (err) {
-      setError(err.message || "Failed to register. Please try again.");
+      const errorMessage = err.message || "Failed to register. Please try again.";
+      setError(errorMessage);
+      toast({
+        variant: "destructive",
+        title: "Registration Failed",
+        description: errorMessage,
+      });
     } finally {
       setLoading(false);
     }
@@ -60,165 +80,152 @@ const RegisterPage = () => {
       const response = await loginWithGoogle(credentialResponse.credential);
       if (response && response.success) {
         toast({
-          title: "Welcome to MindLoom",
-          description: `Logged in successfully.`,
+          title: "Welcome to Scribloom",
+          description: `Garden reached successfully.`,
         });
         login(response.data.user);
         navigate("/home");
       }
     } catch (err) {
-      setError(err.message || "Google registration failed.");
+      const errorMessage = err.message || "Google registration failed.";
+      setError(errorMessage);
+      toast({
+        variant: "destructive",
+        title: "Google Registration Failed",
+        description: errorMessage,
+      });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen w-full flex bg-slate-50 font-sans selection:bg-teal-100 selection:text-teal-900 relative overflow-hidden">
+    <div className="h-screen w-full flex flex-col items-center bg-[var(--background)] font-sans selection:bg-[#a0d1bc] selection:text-[#00261b] relative overflow-hidden">
       <Helmet>
-        <title>Sign Up | MindLoom</title>
+        <title>Sign Up | Scribloom</title>
       </Helmet>
 
-      {/* Decorative Background Elements */}
-      <div className="absolute top-0 right-0 w-1/2 h-full bg-white -skew-x-12 translate-x-32 z-0"></div>
-      <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-teal-400/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
-
-      {/* Back Link */}
-      <Link to="/" className="absolute top-8 left-8 z-50 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-200 text-sm font-bold text-slate-500 hover:text-slate-900 hover:shadow-md transition-all">
-        <ArrowLeft size={16} /> Home
-      </Link>
-
-      <div className="container mx-auto px-6 flex items-center justify-center relative z-10 pt-20 pb-12">
-        <div className="w-full max-w-5xl grid lg:grid-cols-2 gap-16 items-center">
-          
-          {/* Left: Branding & Message */}
-          <div className="hidden lg:block text-left">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <h1 className="text-7xl font-bold tracking-tighter text-slate-900 leading-[0.9] mb-8">
-                Ideas. <br />
-                <span className="text-teal-500">Shared.</span>
-              </h1>
-              <p className="text-xl text-slate-500 max-w-sm font-medium leading-relaxed mb-8">
-                Join a global circle of writers committed to clarity and insight.
-              </p>
-              <div className="flex items-center gap-4">
-                 <div className="flex -space-x-3">
-                    {[12, 45, 67, 88].map(i => (
-                      <img key={i} src={`https://i.pravatar.cc/100?u=${i}`} className="w-10 h-10 rounded-full border-2 border-white bg-slate-100 shadow-sm" alt="Member" />
-                    ))}
-                 </div>
-                 <p className="text-slate-400 text-[10px] font-black tracking-widest uppercase">12k+ Writers Linked</p>
-              </div>
-            </motion.div>
+      <motion.main 
+        variants={containerVariants}
+        initial="initial"
+        animate="animate"
+        className="flex-grow flex flex-col items-center justify-center w-full px-4 py-6 relative z-10"
+      >
+        <motion.div 
+          variants={itemVariants}
+          className="w-full max-w-[360px] bg-white rounded-[2rem] ambient-shadow p-6 md:p-8 flex flex-col items-center text-center relative overflow-hidden"
+        >
+          <div className="mb-3 w-full">
+            <motion.span variants={itemVariants} className="text-[7px] font-black tracking-[0.2em] text-[#00261b] uppercase mb-1 block font-manrope">
+              CREATE YOUR ACCOUNT
+            </motion.span>
+            <motion.h1 variants={itemVariants} className="text-[28px] font-black tracking-tighter text-[#111] leading-tight mb-0.5 font-newsreader">
+              Start your garden.
+            </motion.h1>
+            <motion.p variants={itemVariants} className="text-[11px] font-medium text-[#111]/50 leading-relaxed max-w-[240px] mx-auto font-manrope">
+              Ready to document your journey?
+            </motion.p>
           </div>
 
-          {/* Right: Register Form */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="w-full max-w-[480px] bg-white rounded-[2.5rem] p-10 md:p-12 shadow-2xl shadow-slate-200/50 border border-slate-100 mx-auto"
-          >
-            <div className="mb-10 text-center lg:text-left">
-              <h2 className="text-3xl font-bold text-slate-900 mb-2">Create Portal</h2>
-              <p className="text-slate-500 font-medium">Begin your journey today.</p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                      <User size={18} />
-                    </div>
-                    <input
-                      id="fullName"
-                      type="text"
-                      placeholder="Name"
-                      value={formData.fullName}
-                      onChange={handleChange}
-                      required
-                      className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold text-slate-900 focus:outline-none focus:ring-4 focus:ring-teal-500/5 focus:border-teal-500 transition-all"
-                    />
-                  </div>
-
-                  <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                      <AtSign size={18} />
-                    </div>
-                    <input
-                      id="username"
-                      type="text"
-                      placeholder="User"
-                      value={formData.username}
-                      onChange={handleChange}
-                      required
-                      className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold text-slate-900 focus:outline-none focus:ring-4 focus:ring-teal-500/5 focus:border-teal-500 transition-all"
-                    />
-                  </div>
-              </div>
-
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                  <Mail size={18} />
-                </div>
+          <form onSubmit={handleSubmit} className="w-full space-y-3 text-left font-manrope">
+            <div className="grid grid-cols-2 gap-2.5">
+              <motion.div variants={itemVariants} className="space-y-1">
+                <label className="text-[8px] font-black tracking-widest text-[#111]/40 uppercase ml-1">Full Name</label>
                 <input
-                  id="email"
-                  type="email"
-                  placeholder="Email"
-                  value={formData.email}
+                  id="fullName"
+                  type="text"
+                  placeholder="John Doe"
+                  value={formData.fullName}
                   onChange={handleChange}
                   required
-                  className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold text-slate-900 focus:outline-none focus:ring-4 focus:ring-teal-500/5 focus:border-teal-500 transition-all"
+                  className="w-full px-4 py-2.5 bg-[#f5f3ef] border-transparent rounded-full text-[11px] font-bold text-[#00261b] placeholder:text-[#00261b]/20 focus:outline-none focus:ring-4 focus:ring-[#00261b]/5 transition-all"
                 />
-              </div>
+              </motion.div>
 
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                  <Lock size={18} />
-                </div>
+              <motion.div variants={itemVariants} className="space-y-1">
+                <label className="text-[8px] font-black tracking-widest text-[#111]/40 uppercase ml-1">Username</label>
+                <input
+                  id="username"
+                  type="text"
+                  placeholder="jdoe"
+                  value={formData.username}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-2.5 bg-[#f5f3ef] border-transparent rounded-full text-[11px] font-bold text-[#00261b] placeholder:text-[#00261b]/20 focus:outline-none focus:ring-4 focus:ring-[#00261b]/5 transition-all"
+                />
+              </motion.div>
+            </div>
+
+            <motion.div variants={itemVariants} className="space-y-1">
+              <label className="text-[8px] font-black tracking-widest text-[#111]/40 uppercase ml-1">Email Address</label>
+              <input
+                id="email"
+                type="email"
+                placeholder="hello@scribloom.com"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="w-full px-5 py-3 bg-[#f5f3ef] border-transparent rounded-full text-[12px] font-bold text-[#00261b] placeholder:text-[#00261b]/20 focus:outline-none focus:ring-4 focus:ring-[#00261b]/5 transition-all"
+              />
+            </motion.div>
+
+            <motion.div variants={itemVariants} className="space-y-1">
+              <label className="text-[8px] font-black tracking-widest text-[#111]/40 uppercase ml-1">Password</label>
+              <div className="relative group flex items-center">
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="Password"
+                  placeholder="••••••••"
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="w-full pl-12 pr-12 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold text-slate-900 focus:outline-none focus:ring-4 focus:ring-teal-500/5 focus:border-teal-500 transition-all"
+                  className="w-full px-4 py-2.5 bg-[#f5f3ef] border-transparent rounded-full text-[11px] font-bold text-[#00261b] placeholder:text-[#00261b]/20 focus:outline-none focus:ring-4 focus:ring-[#00261b]/5 transition-all"
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none"
+                  onClick={(e) => { e.preventDefault(); setShowPassword(!showPassword); }}
+                  className="absolute right-4 text-[#111]/30 hover:text-[#111] transition-colors"
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showPassword ? <Eye size={14} /> : <EyeOff size={14} />}
                 </button>
               </div>
+            </motion.div>
 
-              {error && (
-                <div className="p-4 bg-red-50 border border-red-100 rounded-2xl text-[11px] font-bold text-red-600">
-                  {error}
-                </div>
+            <motion.div variants={itemVariants} className="flex items-center gap-2.5 pt-1">
+              <Checkbox 
+                id="terms" 
+                required 
+                className="w-4 h-4 rounded border-[#efeeea] bg-[#f5f3ef] data-[state=checked]:bg-[#111] data-[state=checked]:border-[#111] data-[state=checked]:text-white" 
+              />
+              <p className="text-[10px] font-medium text-[#111]/50 leading-none">
+                <label htmlFor="terms" className="cursor-pointer">I agree to the <span className="text-[#111] font-bold underline">Terms</span> and <span className="text-[#111] font-bold underline">Privacy</span>.</label>
+              </p>
+            </motion.div>
+
+            <motion.button
+              variants={itemVariants}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              type="submit"
+              className="w-full py-2 gradient-primary text-white font-black rounded-full flex items-center justify-center gap-2 ambient-shadow transition-all h-[44px]"
+              disabled={loading}
+            >
+              {loading ? <Loader2 size={14} className="animate-spin" /> : (
+                <>
+                  <span className="text-[11px] uppercase tracking-widest font-manrope">Create Garden</span>
+                  <ArrowRight size={14} />
+                </>
               )}
+            </motion.button>
+          </form>
 
-              <button
-                type="submit"
-                className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl transition-all hover:bg-slate-800 hover:shadow-xl hover:-translate-y-0.5 mt-2"
-                disabled={loading}
-              >
-                {loading ? <Loader2 size={18} className="animate-spin mx-auto" /> : "Join MindLoom"}
-              </button>
-            </form>
-
-            <div className="mt-8 relative flex items-center">
-              <div className="flex-grow border-t border-slate-100"></div>
-              <span className="flex-shrink-0 mx-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">or</span>
-              <div className="flex-grow border-t border-slate-100"></div>
+          <motion.div variants={itemVariants} className="w-full mt-3">
+            <div className="relative flex items-center mb-3">
+              <div className="flex-grow border-t border-[#efeeea]"></div>
+              <span className="flex-shrink-0 mx-3 text-[7px] font-black text-[#111]/30 uppercase tracking-[0.2em]">SIGN IN WITH GOOGLE</span>
+              <div className="flex-grow border-t border-[#efeeea]"></div>
             </div>
-
-            <div className="mt-8">
+            <div className="flex justify-center scale-[0.65]">
               <GoogleLogin
                 onSuccess={handleGoogleSuccess}
                 onError={() => setError("Google registration failed.")}
@@ -229,17 +236,38 @@ const RegisterPage = () => {
                 width="100%"
               />
             </div>
-
-            <p className="mt-10 text-center text-[13px] font-medium text-slate-500">
-              Already have a portal?{" "}
-              <Link to="/login" className="text-teal-600 font-bold hover:text-teal-700 transition-colors">
-                Sign In
-              </Link>
-            </p>
           </motion.div>
 
-        </div>
-      </div>
+          <motion.div variants={itemVariants} className="mt-3">
+             <p className="text-[11px] font-medium text-[#111]/40">
+                Found your garden? <Link to="/login" className="text-[#111] font-black hover:underline ml-1">Log In</Link>
+             </p>
+          </motion.div>
+        </motion.div>
+
+        {/* TRUST BADGE */}
+        <motion.div variants={itemVariants} className="mt-3 flex items-center gap-3 scale-[0.65]">
+            <div className="flex -space-x-3">
+                {[1,2,3].map(i => (
+                    <img key={i} src={`https://i.pravatar.cc/100?u=${i+10}`} className="w-7 h-7 rounded-full border-[2px] border-[var(--background)] grayscale" alt="curator" />
+                ))}
+            </div>
+            <span className="text-[9px] font-black tracking-[0.2em] text-[#111]/30 uppercase">Trusted by 20,000+ Curators</span>
+        </motion.div>
+      </motion.main>
+
+      {/* <footer className="w-full px-8 py-3 flex flex-col md:flex-row items-center justify-between border-t border-[#efeeea] mt-auto relative z-10">
+          <span className="text-[11px] font-black tracking-tighter text-[#111] mb-2 md:mb-0">SCRIBLOOM</span>
+          <div className="flex flex-wrap justify-center gap-5 mb-2 md:mb-0">
+              {['PRIVACY', 'TERMS', 'ARCHIVE', 'ABOUT'].map(item => (
+                  <span key={item} className="text-[9px] font-black tracking-widest text-[#111]/30 hover:text-[#111] cursor-pointer transition-colors">{item}</span>
+              ))}
+          </div>
+          <span className="text-[8px] font-bold text-[#111]/30 uppercase">© 2024 Scribloom.</span>
+      </footer> */}
+
+      {/* Decorative Blur Background (to match the subtle aura in screenshot) */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#a0d1bc]/5 rounded-full blur-[120px] pointer-events-none z-0"></div>
     </div>
   );
 };

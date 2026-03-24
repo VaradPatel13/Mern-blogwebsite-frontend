@@ -46,17 +46,18 @@ const VisionSection = () => {
   ];
 
   return (
-    <section className="bg-white py-16 px-6 md:px-12 overflow-hidden">
+    <section className="bg-transparent py-12 md:py-24 px-4 md:px-8 overflow-hidden min-h-fit md:min-h-[75vh] flex items-center justify-center">
       <div className="max-w-[1100px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
         
         {/* Left Column: Content + Icons */}
         <div className="flex flex-col gap-6">
           <div className="max-w-[500px] flex flex-col gap-5">
             <motion.h2 
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              className="text-[2.5rem] md:text-[4rem] font-bold tracking-tighter text-[#111] leading-[0.95]"
+              transition={{ duration: 1, ease: [0.34, 1.56, 0.64, 1] }}
+              className="text-[2rem] md:text-[3.6rem] font-black tracking-tighter text-[#00261b] leading-[0.9] font-newsreader"
             >
               Our vision for the modern writer.
             </motion.h2>
@@ -65,8 +66,8 @@ const VisionSection = () => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="text-[#666] font-medium text-[16px] max-w-[420px] leading-relaxed"
+              transition={{ delay: 0.2, duration: 1 }}
+              className="text-[#00261b]/60 font-medium text-[13px] md:text-[15px] max-w-[420px] leading-relaxed font-manrope"
             >
               We believe in the power of words to shape the world. Scribloom provides a sophisticated canvas for storytellers to reach their audience and spark meaningful global conversations.
             </motion.p>
@@ -75,8 +76,8 @@ const VisionSection = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-              className="w-fit bg-transparent border border-gray-200 text-[#111] px-8 py-3 rounded-full font-bold text-[13px] hover:bg-gray-50 transition-colors mt-2"
+              transition={{ delay: 0.3, type: "spring" }}
+              className="w-fit bg-[#e4e2de] text-[#00261b] px-8 py-2.5 rounded-full font-bold text-[11px] font-manrope uppercase tracking-widest hover:bg-[#dbdad6] transition-all mt-4 ambient-shadow"
             >
               Read more
             </motion.button>
@@ -90,22 +91,23 @@ const VisionSection = () => {
             transition={{ staggerChildren: 0.08, delayChildren: 0.5 }}
             className="relative h-[220px] mt-6"
           >
-            {icons.map((item, i) => (
+            {/* {icons.map((item, i) => (
               <motion.div
                 key={i}
                 variants={fallBounce}
-                className="absolute shadow-lg flex items-center justify-center bg-white rounded-full border border-gray-100/50"
+                className="absolute ambient-shadow flex items-center justify-center bg-white rounded-full"
                 style={{ 
-                  left: `calc(100px + ${item.x * 0.8}px)`, 
-                  top: `${item.y * 0.7}px`,
-                  width: i === 3 ? '50px' : '58px',
-                  height: i === 3 ? '50px' : '58px',
-                  zIndex: 10 + i
+                   left: `calc(100px + ${item.x * 0.8}px)`, 
+                   top: `${item.y * 0.7}px`,
+                   width: i === 3 ? '40px' : '52px',
+                   height: i === 3 ? '40px' : '52px',
+                   zIndex: 10 + i,
+                   border: 'none'
                 }}
               >
-                <div className="scale-75 text-[#111]">{item.icon}</div>
+                <div className="scale-50 text-[#7b5455]">{item.icon}</div>
               </motion.div>
-            ))}
+            ))} */}
           </motion.div>
         </div>
 
@@ -113,34 +115,34 @@ const VisionSection = () => {
         <div className="flex flex-col">
           {/* Tabs */}
           <div className="flex items-end gap-1 px-4">
-            <div className="bg-gray-50 text-gray-400 px-6 py-2.5 rounded-t-xl font-bold text-[12px]">
+            <div className="bg-[var(--background)] text-[#111]/40 px-4 py-2 rounded-t-xl font-bold text-[10px] font-manrope uppercase tracking-widest border border-b-0 border-[#efeeea]">
               Business
             </div>
-            <div className="bg-[#111] text-white px-8 py-4 rounded-t-[24px] font-bold text-md relative z-10 flex items-center gap-2 pr-10 shadow-xl">
+            <div className="bg-[#111] text-white px-6 py-3 rounded-t-xl font-bold text-[11px] font-manrope uppercase tracking-widest relative z-10 flex items-center gap-2 pr-8 shadow-xl border border-b-0 border-[#111]">
               Personal
-              <div className="absolute top-0 right-0 h-full w-6 bg-[#111] skew-x-[15deg] origin-bottom -z-10 rounded-tr-[24px]" />
+              <div className="absolute top-0 right-0 h-full w-4 bg-[#111] skew-x-[15deg] origin-bottom -z-10 rounded-tr-xl" />
             </div>
           </div>
 
           {/* Grid Container (Folder Look) */}
-          <div className="bg-[#111] p-5 rounded-[32px] rounded-tl-none shadow-[0_40px_80px_-15px_rgba(0,0,0,0.3)] border border-white/10">
+          <div className="bg-[#00261b] p-3 rounded-[2.5rem] rounded-tl-none ambient-shadow">
             <motion.div 
               initial="initial"
               whileInView="animate"
               viewport={{ once: true }}
               transition={{ staggerChildren: 0.05, delayChildren: 0.3 }}
-              className="bg-white rounded-[26px] p-5 grid grid-cols-2 md:grid-cols-3 gap-3 h-[440px] overflow-hidden"
+              className="bg-transparent rounded-[2rem] p-1.5 grid grid-cols-2 md:grid-cols-3 gap-2 h-[260px] overflow-hidden"
             >
               {artCards.map((url, i) => (
                 <motion.div
                   key={i}
                   variants={fallBounce}
-                  className="rounded-2xl overflow-hidden shadow-md border border-gray-100 group cursor-pointer h-full"
+                  className="rounded-[1.5rem] overflow-hidden group cursor-pointer h-full"
                 >
                   <img 
                     src={url} 
                     alt={`Art ${i}`} 
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" 
                   />
                 </motion.div>
               ))}

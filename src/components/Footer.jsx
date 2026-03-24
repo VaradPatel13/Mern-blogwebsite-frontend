@@ -1,47 +1,74 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Twitter, Instagram, Linkedin, Github } from 'lucide-react';
+import { Leaf } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="bg-white border-t border-gray-100 py-12 px-6 md:px-12 relative z-20">
-      <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-        
-        {/* Brand */}
-        <div className="flex items-center gap-3 group mb-2 md:mb-0 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-          <div className="w-9 h-9 rounded-xl border border-gray-100 shadow-sm flex items-center justify-center bg-white group-hover:bg-gray-50 overflow-hidden group-hover:scale-105 transition-all duration-500">
-            <img src="/icon.jpg" alt="Scribloom Logo" className="w-full h-full object-cover" />
+    <footer className="bg-[var(--background)] text-[#1a382c] pt-20 pb-12 px-6 md:px-12 font-manrope w-full mt-auto">
+      <div className="max-w-[1400px] mx-auto">
+        <div className="flex flex-col lg:flex-row justify-between gap-16 lg:gap-8 mb-24">
+          
+          {/* Brand Info */}
+          <div className="flex flex-col items-start gap-5 lg:w-[45%]">
+            <h2 className="text-[36px] font-bold font-newsreader text-[#1a382c] leading-tight tracking-tight">
+              Scribloom
+            </h2>
+            <p className="text-[17px] font-normal leading-relaxed text-[#416a59] font-newsreader max-w-[340px]">
+              Scribloom. Cultivating stories in the digital greenhouse.
+            </p>
+            <div className="mt-4">
+              <button className="flex items-center gap-2.5 px-6 py-3 rounded-full text-[11px] font-bold uppercase tracking-[0.15em] bg-[#eae8e4] text-[#1a382c] hover:bg-[#d5d2cc] transition-colors group">
+                <Leaf size={14} className="fill-[#1a382c]" strokeWidth={2} />
+                Join the Garden
+              </button>
+            </div>
           </div>
-          <span className="text-[18px] font-bold tracking-tight text-[#111] group-hover:text-[#4FD1C5] transition-colors">Scribloom</span>
+
+          {/* Links Area */}
+          <div className="flex flex-col sm:flex-row gap-16 sm:gap-32 lg:w-[45%] lg:justify-end">
+            {/* Manifesto */}
+            <div className="flex flex-col gap-6">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.25em] text-[#9a9996]">
+                Manifesto
+              </h4>
+              <div className="flex flex-col gap-5 text-[16px] text-[#416a59] font-normal font-newsreader">
+                <Link to="#" className="hover:text-[#1a382c] transition-colors">About</Link>
+                <Link to="#" className="hover:text-[#1a382c] transition-colors">Archive</Link>
+                <Link to="#" className="hover:text-[#1a382c] transition-colors">Editorial Guidelines</Link>
+                <Link to="#" className="hover:text-[#1a382c] transition-colors">Privacy</Link>
+                <Link to="#" className="hover:text-[#1a382c] transition-colors">Terms</Link>
+              </div>
+            </div>
+
+            {/* Connectivity */}
+            <div className="flex flex-col gap-6">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.25em] text-[#9a9996]">
+                Connectivity
+              </h4>
+              <div className="flex flex-col gap-5 text-[16px] text-[#416a59] font-normal font-newsreader">
+                <Link to="#" className="hover:text-[#1a382c] transition-colors">Newsletter</Link>
+                <Link to="#" className="hover:text-[#1a382c] transition-colors">RSS</Link>
+                <Link to="#" className="hover:text-[#1a382c] transition-colors">Twitter</Link>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Links */}
-        <div className="flex flex-wrap justify-center items-center gap-6 md:gap-10 text-[14px] font-medium text-[#777]">
-          <Link to="/home" className="hover:text-[#111] transition-colors">Our Story</Link>
-          <Link to="/home" className="hover:text-[#111] transition-colors">Membership</Link>
-          <Link to="/home" className="hover:text-[#111] transition-colors">Write</Link>
-          <Link to="/home" className="hover:text-[#111] transition-colors">Privacy</Link>
-          <Link to="/home" className="hover:text-[#111] transition-colors">Terms</Link>
+        {/* Bottom Line */}
+        <div className="pt-8 border-t border-[#efeeea] flex flex-col md:flex-row justify-between items-center gap-6 text-[12px] font-medium text-[#9a9996]">
+          <p>© {new Date().getFullYear()} Scribloom. Cultivating stories in the digital greenhouse.</p>
+          <div className="flex items-center gap-4 uppercase tracking-[0.25em] text-[9px] font-bold text-[#b5b4b1]">
+             <span className="w-8 h-[1px] bg-[#efeeea]"></span>
+             EST. MMXIV
+             <span className="w-8 h-[1px] bg-[#efeeea]"></span>
+          </div>
         </div>
-
-        {/* Socials */}
-        <div className="flex items-center gap-5 text-[#999]">
-          <a href="#" className="hover:text-[#111] transition-colors"><Twitter size={18} /></a>
-          <a href="#" className="hover:text-[#111] transition-colors"><Instagram size={18} /></a>
-          <a href="#" className="hover:text-[#111] transition-colors"><Linkedin size={18} /></a>
-          <a href="#" className="hover:text-[#111] transition-colors"><Github size={18} /></a>
-        </div>
-      </div>
-      
-      {/* Copyright */}
-      <div className="max-w-[1200px] mx-auto mt-10 pt-8 border-t border-gray-50 flex flex-col md:flex-row justify-between items-center gap-4 text-[13px] text-[#999] font-medium">
-        <p>© {new Date().getFullYear()} Scribloom. All rights reserved.</p>
-        <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="hover:text-[#111] transition-colors">
-          Back to top
-        </button>
       </div>
     </footer>
   );
 };
 
 export default Footer;
+
+
+

@@ -3,9 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { loginUser, loginWithGoogle } from "../services/authService";
 import { GoogleLogin } from "@react-oauth/google";
-import { Mail, Lock, Eye, EyeOff, Loader2, ArrowLeft, ArrowRight } from "lucide-react";
+import { Loader2, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { Helmet } from "react-helmet-async";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 // UI Components
 import { useToast } from "@/components/ui/toast";
@@ -20,6 +20,18 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  const transition = { duration: 1, ease: [0.16, 1, 0.3, 1] };
+
+  const containerVariants = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.2 } }
+  };
+
+  const itemVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -29,13 +41,19 @@ const LoginPage = () => {
       if (response && response.success) {
         toast({
           title: "Welcome back",
-          description: `Logged in successfully.`,
+          description: `Garden reached successfully.`,
         });
         login(response.data.user);
         navigate("/home");
       }
     } catch (err) {
-      setError(err.message || "Failed to login. Please check your credentials.");
+      const errorMessage = err.message || "Failed to login. Please check your credentials.";
+      setError(errorMessage);
+      toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: errorMessage,
+      });
     } finally {
       setLoading(false);
     }
@@ -48,147 +66,147 @@ const LoginPage = () => {
       if (response && response.success) {
         toast({
           title: "Welcome back",
-          description: `Logged in successfully.`,
+          description: `Garden reached successfully.`,
         });
         login(response.data.user);
         navigate("/home");
       }
     } catch (err) {
-      setError(err.message || "Google login failed.");
+      const errorMessage = err.message || "Google login failed.";
+      setError(errorMessage);
+      toast({
+        variant: "destructive",
+        title: "Google Login Failed",
+        description: errorMessage,
+      });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen w-full flex bg-slate-50 font-sans selection:bg-teal-100 selection:text-teal-900 relative overflow-hidden">
+    <div className="h-screen w-full flex flex-col items-center bg-[var(--background)] font-manrope selection:bg-[#a0d1bc] selection:text-[#00261b] relative overflow-hidden">
       <Helmet>
-        <title>Sign In | MindLoom</title>
+        <title>Sign In | Scribloom</title>
       </Helmet>
 
-      {/* Decorative Background Elements */}
-      <div className="absolute top-0 right-0 w-1/2 h-full bg-white -skew-x-12 translate-x-32 z-0"></div>
-      <div className="absolute -top-24 -left-24 w-96 h-96 bg-teal-400/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
-
-      {/* Back Link */}
-      <Link to="/" className="absolute top-8 left-8 z-50 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-200 text-sm font-bold text-slate-500 hover:text-slate-900 hover:shadow-md transition-all">
-        <ArrowLeft size={16} /> Home
-      </Link>
-
-      <div className="container mx-auto px-6 flex items-center justify-center relative z-10">
-        <div className="w-full max-w-5xl grid lg:grid-cols-2 gap-16 items-center">
-          
-          {/* Left: Branding & Message */}
-          <div className="hidden lg:block text-left">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <h1 className="text-7xl font-bold tracking-tighter text-slate-900 leading-[0.9] mb-8">
-                Ideas. <br />
-                <span className="text-teal-500">Sign In.</span>
-              </h1>
-              <p className="text-xl text-slate-500 max-w-sm font-medium leading-relaxed">
-                Enter your portal to continue weaving stories that matter.
-              </p>
-            </motion.div>
-          </div>
-
-          {/* Right: Login Form */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="w-full max-w-[440px] bg-white rounded-[2.5rem] p-10 md:p-14 shadow-2xl shadow-slate-200/50 border border-slate-100 mx-auto"
+      <motion.main
+        variants={containerVariants}
+        initial="initial"
+        animate="animate"
+        className="flex-grow flex flex-col items-center justify-center w-full px-4 py-6 relative z-10"
+      >
+        <div className="text-center mb-5">
+          <motion.h1
+            variants={itemVariants}
+            className="text-[32px] md:text-[40px] font-black tracking-tighter text-[#111] leading-none mb-1.5 font-newsreader"
           >
-            <div className="mb-10 text-center lg:text-left">
-              <h2 className="text-3xl font-bold text-slate-900 mb-2">Welcome Back</h2>
-              <p className="text-slate-500 font-medium">Please enter your details.</p>
-            </div>
+            Welcome back.
+          </motion.h1>
+          <motion.p
+            variants={itemVariants}
+            className="text-[12px] font-medium text-[#111]/50 leading-relaxed font-manrope"
+          >
+            Ready to access the archives?
+          </motion.p>
+        </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="space-y-2">
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                    <Mail size={18} />
-                  </div>
-                  <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold text-slate-900 focus:outline-none focus:ring-4 focus:ring-teal-500/5 focus:border-teal-500 focus:bg-white transition-all"
-                  />
-                </div>
+        <motion.div
+          variants={itemVariants}
+          className="w-full max-w-[360px] bg-white rounded-[2rem] ambient-shadow p-6 md:p-8 flex flex-col items-center text-center relative overflow-hidden"
+        >
+          <form onSubmit={handleSubmit} className="w-full space-y-4 text-left font-manrope">
+            <motion.div variants={itemVariants} className="space-y-1">
+              <label className="text-[8px] font-black tracking-widest text-[#111]/40 uppercase ml-1">Email Address</label>
+              <div className="relative group">
+                <input
+                  type="email"
+                  placeholder="curator@scribloom.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full px-5 py-3 bg-[#f5f3ef] border-transparent rounded-full text-[11px] font-bold text-[#00261b] placeholder:text-[#00261b]/20 focus:outline-none focus:ring-4 focus:ring-[#00261b]/5 transition-all"
+                />
               </div>
+            </motion.div>
 
-              <div className="space-y-2">
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                    <Lock size={18} />
-                  </div>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    className="w-full pl-12 pr-12 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold text-slate-900 focus:outline-none focus:ring-4 focus:ring-teal-500/5 focus:border-teal-500 focus:bg-white transition-all"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none"
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
+            <motion.div variants={itemVariants} className="space-y-1">
+              <div className="flex items-center justify-between">
+                <label className="text-[8px] font-black tracking-widest text-[#111]/40 uppercase ml-1">Password</label>
+                <Link to="/forgot-password"
+                      className="text-[8px] font-black tracking-widest text-[#111]/60 uppercase hover:text-[#111] cursor-pointer transition-colors">
+                  Forgot?
+                </Link>
               </div>
+              <div className="relative group flex items-center">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="w-full px-5 py-3 bg-[#f5f3ef] border-transparent rounded-full text-[11px] font-bold text-[#00261b] placeholder:text-[#00261b]/20 focus:outline-none focus:ring-4 focus:ring-[#00261b]/5 transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={(e) => { e.preventDefault(); setShowPassword(!showPassword); }}
+                  className="absolute right-4 text-[#111]/30 hover:text-[#111] transition-colors"
+                >
+                  {showPassword ? <Eye size={14} /> : <EyeOff size={14} />}
+                </button>
+              </div>
+            </motion.div>
 
-              {error && (
-                <div className="p-4 bg-red-50 border border-red-100 rounded-2xl text-[11px] font-bold text-red-600">
-                  {error}
-                </div>
+            <motion.button
+              variants={itemVariants}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              type="submit"
+              className="w-full py-2 gradient-primary text-white font-black rounded-full flex items-center justify-center gap-2 ambient-shadow transition-all h-[46px]"
+              disabled={loading}
+            >
+              {loading ? <Loader2 size={14} className="animate-spin" /> : (
+                <>
+                  <span className="text-[11px] font-manrope uppercase tracking-widest">Access Archives</span>
+                  <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+                </>
               )}
+            </motion.button>
 
-              <button
-                type="submit"
-                className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl transition-all hover:bg-slate-800 hover:shadow-xl hover:-translate-y-0.5"
-                disabled={loading}
-              >
-                {loading ? <Loader2 size={18} className="animate-spin mx-auto" /> : "Sign In"}
-              </button>
-            </form>
+            <motion.div variants={itemVariants} className="w-full mt-4">
+              <div className="relative flex items-center mb-3">
+                <div className="flex-grow border-t border-[#efeeea]"></div>
+                <span className="flex-shrink-0 mx-4 text-[8px] font-black text-[#111]/30 uppercase tracking-[0.2em]">secure archives access</span>
+                <div className="flex-grow border-t border-[#efeeea]"></div>
+              </div>
+              <div className="flex justify-center scale-[0.65]">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => setError("Google login failed.")}
+                  useOneTap
+                  theme="outline"
+                  size="large"
+                  shape="pill"
+                  width="100%"
+                />
+              </div>
+            </motion.div>
+          </form>
 
-            <div className="mt-8 relative flex items-center">
-              <div className="flex-grow border-t border-slate-100"></div>
-              <span className="flex-shrink-0 mx-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">or</span>
-              <div className="flex-grow border-t border-slate-100"></div>
-            </div>
-
-            <div className="mt-8">
-              <GoogleLogin
-                onSuccess={handleGoogleSuccess}
-                onError={() => setError("Google login failed.")}
-                useOneTap
-                theme="outline"
-                size="large"
-                shape="pill"
-                width="100%"
-              />
-            </div>
-
-            <p className="mt-10 text-center text-[13px] font-medium text-slate-500">
-              New here?{" "}
-              <Link to="/register" className="text-teal-600 font-bold hover:text-teal-700 transition-colors">
-                Join MindLoom
-              </Link>
+          <motion.div variants={itemVariants} className="mt-4 text-center font-manrope">
+            <p className="text-[11px] font-medium text-[#111]/40">
+              New here? <Link to="/register" className="text-[#111] font-black hover:underline cursor-pointer ml-1">Switch to Register</Link>
             </p>
           </motion.div>
+        </motion.div>
 
-        </div>
-      </div>
+
+      </motion.main>
+
+
+
+      {/* Decorative Blur Background */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#a0d1bc]/5 rounded-full blur-[100px] pointer-events-none z-0"></div>
     </div>
   );
 };

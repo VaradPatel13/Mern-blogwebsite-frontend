@@ -1,22 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css'; // Reverted to Snow theme for a persistent toolbar
 import { createBlog } from '../services/blogService';
 import { getAllTags, createTag } from '../services/tagService';
 import { getAllCategories } from '../services/categoryService';
 import ImageUpload from '../components/ImageUpload';
+import NotionEditor from '../components/editor/NotionEditor';
 import { useToast } from '@/components/ui/toast';
-import { Plus, ArrowLeft, Image as ImageIcon, Layout, Tag, Settings, Save, Send } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { 
+  Plus, ArrowLeft, Image as ImageIcon, Layout, Tag, Settings, Save, Send, 
+  X, PenLine, BookOpen, Sidebar as SidebarIcon 
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const CreatePostPage = () => {
   const [title, setTitle] = useState('');
-  const [body, setBody] = useState('');
   const [coverImage, setCoverImage] = useState(null);
   const [category, setCategory] = useState('');
   const [tags, setTags] = useState([]);
   const [status, setStatus] = useState('draft');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // FIX 1: Performance Refactor - No body state, use editorRef instead
+  const editorRef = useRef(null);
 
   const [availableCategories, setAvailableCategories] = useState([]);
   const [availableTags, setAvailableTags] = useState([]);
@@ -36,18 +41,15 @@ const CreatePostPage = () => {
     try {
       const catResponse = await getAllCategories();
       if (catResponse.success) setAvailableCategories(catResponse.data);
-
       const tagResponse = await getAllTags();
       if (tagResponse.success) setAvailableTags(tagResponse.data);
     } catch (err) {
-      console.error("Failed to fetch categories or tags", err);
+      console.error("Failed to fetch data", err);
     }
   };
 
   const handleTagChange = (tagId) => {
-    setTags(prev =>
-      prev.includes(tagId) ? prev.filter(t => t !== tagId) : [...prev, tagId]
-    );
+    setTags(prev => prev.includes(tagId) ? prev.filter(t => t !== tagId) : [...prev, tagId]);
   };
 
   const handleAddNewTag = async () => {
@@ -58,29 +60,30 @@ const CreatePostPage = () => {
         setAvailableTags(prev => [...prev, response.data]);
         setTags(prev => [...prev, response.data._id]);
         setNewTagName('');
-        toast({ title: "Tag added" });
       }
     } catch (err) {
-      toast({ variant: "destructive", title: "Error", description: err.message || 'Failed to create tag.' });
+      toast({ variant: "destructive", title: "Error", description: err.message });
     }
   };
 
-  const handleSubmit = async (e, publishStatus) => {
-    e.preventDefault();
+  const handleSubmit = async (publishStatus) => {
     setError('');
     const finalStatus = publishStatus || status;
 
-    if (!title || !body || !coverImage || !category) {
-      setError('Title, body content, cover image, and category are required before saving.');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    // FIX 1: Retrieve editor body ONLY ON SUBMIT
+    const editorContent = editorRef.current?.getEditorJson();
+
+    if (!title || !editorContent || !coverImage || !category) {
+      setError('Title, content, cover image, and category are required.');
+      setSidebarOpen(true); 
       return;
     }
 
     setLoading(true);
-
     const formData = new FormData();
     formData.append('title', title);
-    formData.append('body', body);
+    // Data Handling: Safely stringify the JSON payload from Tiptap Ref
+    formData.append('body', JSON.stringify(editorContent));
     formData.append('coverImage', coverImage);
     formData.append('category', category);
     formData.append('status', finalStatus);
@@ -89,200 +92,189 @@ const CreatePostPage = () => {
     try {
       const response = await createBlog(formData);
       if (response.success) {
-        toast({
-          title: finalStatus === 'published' ? "Published successfully" : "Draft saved",
-          description: `Your story is now ${finalStatus}.`
-        });
+        toast({ title: finalStatus === 'published' ? "Published successfully" : "Draft saved" });
         navigate('/dashboard');
       }
     } catch (err) {
       setError(err.message || 'Failed to save story.');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="max-w-7xl mx-auto font-sans pt-12 pb-24 px-6"
-    >
+    <div className="h-screen w-full flex bg-[#fbf9f5] font-manrope selection:bg-[#bcedd7] overflow-hidden">
+      
+      {/* 1. LEFT RAIL (Icons Only) */}
+      <nav className="w-18 border-r border-[#c0c8c3]/20 flex flex-col items-center py-8 gap-10 bg-white/50 backdrop-blur-sm z-20 shrink-0">
+        <Link to="/home" className="p-3 text-[#00261b] hover:bg-[#bcedd7]/20 rounded-2xl transition-all">
+          <BookOpen size={24} />
+        </Link>
+        <div className="flex flex-col gap-6 mt-10">
+          <button className="p-3 text-[#00261b] bg-[#bcedd7]/40 rounded-2xl shadow-sm transition-all shadow-md active:scale-95"><PenLine size={24} strokeWidth={2.5}/></button>
+          <button className="p-3 text-[#414944]/40 hover:text-[#00261b] transition-colors"><Settings size={24}/></button>
+        </div>
+        <div className="mt-auto flex flex-col items-center gap-6">
+           <div className="w-10 h-10 rounded-full bg-[#00261b] text-white flex items-center justify-center font-bold text-sm">V</div>
+        </div>
+      </nav>
 
-      {/* Header Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12 pb-8 border-b border-slate-100">
-        <div className="flex items-center gap-6">
-          <Link to="/dashboard" className="p-3 text-slate-400 hover:text-slate-900 bg-slate-50 border border-slate-100 hover:border-slate-300 hover:bg-white hover:shadow-lg rounded-2xl transition-all">
-            <ArrowLeft size={20} />
-          </Link>
-          <div>
-            <h1 className="text-3xl lg:text-4xl font-bold tracking-tighter text-slate-900 mb-1">New Story</h1>
-            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-teal-600">Auto-saving as Draft</p>
+      <div className="flex-1 flex flex-col min-w-0 relative">
+        
+        {/* 2. TOP HEADER */}
+        <header className="h-18 px-8 flex items-center justify-between border-b border-[#c0c8c3]/10 bg-[#fbf9f5]/80 backdrop-blur-md sticky top-0 z-30 shrink-0">
+          <div className="flex items-center gap-6">
+            <Link to="/dashboard" className="text-[#414944] hover:text-[#00261b] transition-colors"><ArrowLeft size={18} /></Link>
+            <div className="flex items-center gap-3">
+              <span className="w-2 h-2 rounded-full bg-[#00261b] animate-bounce" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-[#414944]/50">Canvas Mode — Ready for Bloom</span>
+            </div>
           </div>
-        </div>
-        <div className="flex items-center gap-4">
-          <button
-            onClick={(e) => handleSubmit(e, 'draft')}
-            disabled={loading}
-            className="flex items-center gap-2 px-6 py-3 text-sm font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 hover:text-slate-900 rounded-2xl transition-all hover:shadow-md"
-          >
-            <Save size={16} /> Save Draft
-          </button>
-          <button
-            onClick={(e) => handleSubmit(e, 'published')}
-            disabled={loading}
-            className="flex items-center gap-2 px-8 py-3 text-sm font-bold text-white bg-slate-900 hover:bg-teal-600 rounded-2xl transition-all hover:shadow-xl hover:-translate-y-0.5"
-          >
-            <Send size={16} /> Publish
-          </button>
-        </div>
-      </div>
-
-      {error && (
-        <div className="bg-red-50 text-red-600 border border-red-100 px-6 py-4 rounded-2xl mb-10 text-[11px] font-black uppercase tracking-widest shadow-sm">
-          {error}
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-12">
-
-        {/* Editor Column */}
-        <div className="space-y-6">
-          {/* Title Input */}
-          <div className="bg-white rounded-[2rem] border border-slate-100 p-8 shadow-xl shadow-slate-200/50">
-            <input
-              type="text"
-              placeholder="Enter a captivating title..."
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full text-4xl lg:text-5xl font-bold tracking-tighter text-slate-900 placeholder:text-slate-200 border-none focus:ring-0 bg-transparent px-0 py-2 resize-none outline-none leading-[1.1]"
-            />
+          
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className={`p-3 rounded-xl transition-all ${sidebarOpen ? 'bg-[#bcedd7] text-[#00261b]' : 'hover:bg-white text-[#414944]'}`}
+              title="Post Details"
+            >
+              <SidebarIcon size={20} />
+            </button>
+            <button
+               onClick={() => handleSubmit('published')}
+               disabled={loading}
+               className="px-8 py-2.5 bg-[#00261b] text-white text-[11px] font-black uppercase tracking-widest rounded-full shadow-lg hover:shadow-xl hover:bg-[#214f3f] transition-all hover:-translate-y-0.5"
+            >
+              Cultivate
+            </button>
           </div>
+        </header>
 
-          {/* Quill Editor */}
-          <div className="bg-white rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/50 overflow-hidden">
-            <div className="w-full">
-              <ReactQuill
-                theme="snow"
-                value={body}
-                onChange={setBody}
-                placeholder="Weave your thoughts here..."
-                className="quill-premium-editor text-lg text-slate-700 leading-relaxed min-h-[500px]"
-                modules={{
-                  toolbar: [
-                    [{ 'header': [2, 3, false] }],
-                    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-                    [{'list': 'ordered'}, {'list': 'bullet'}],
-                    ['link', 'image', 'code-block'],
-                    ['clean']
-                  ]
-                }}
+        {/* 3. CENTER CANVAS (Writing Area) */}
+        <main 
+          className="flex-1 overflow-y-auto scroll-smooth flex justify-center py-20 px-6 cursor-text"
+          onClick={(e) => {
+             // If clicking in the main blank space, focus the editor ref
+             if (e.target === e.currentTarget) {
+                editorRef.current?.focus();
+             }
+          }}
+        >
+          <div className="w-full max-w-[720px] flex flex-col gap-14">
+            
+            {error && (
+              <div className="bg-[#ffdad6]/20 p-4 rounded-2xl text-[#ba1a1a] text-[11px] font-black uppercase tracking-widest border border-[#ffdad6] flex items-center gap-3">
+                <span className="w-6 h-6 rounded-full bg-[#ba1a1a] text-white flex items-center justify-center shrink-0">!</span>
+                {error}
+              </div>
+            )}
+
+            {/* Notion-style TITLE: no borders, large, seamless */}
+            <div>
+              <textarea
+                id="post-title"
+                placeholder="Untitled"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                rows={1}
+                style={{ outline: 'none', border: 'none', boxShadow: 'none', resize: 'none' }}
+                className="w-full text-[2.75rem] font-extrabold tracking-tight text-[#37352f] placeholder:text-[#e0dfd9] bg-transparent p-0 leading-tight block"
+                onInput={(e) => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }}
               />
             </div>
-          </div>
-        </div>
 
-        {/* Sidebar Settings Configuration */}
-        <div className="space-y-8">
-
-          {/* Cover Image Settings */}
-          <div className="bg-white border border-slate-100 rounded-[2rem] p-8 shadow-xl shadow-slate-200/50">
-            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-6">
-              <ImageIcon size={14} className="text-teal-500" /> Featured Image
-            </h3>
-            <ImageUpload onFileChange={setCoverImage} />
-            <p className="text-[10px] text-slate-400 mt-4 uppercase tracking-widest text-center">Format: 16:9 Recommended</p>
-          </div>
-
-          {/* Category Settings */}
-          <div className="bg-white border border-slate-100 rounded-[2rem] p-8 shadow-xl shadow-slate-200/50">
-            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-6">
-              <Layout size={14} className="text-teal-500" /> Primary Topic
-            </h3>
-            <div className="relative">
-                <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full text-sm font-bold text-slate-700 bg-slate-50 border border-slate-100 rounded-xl px-5 py-4 appearance-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 focus:outline-none transition-all cursor-pointer"
-                >
-                <option value="" disabled>Select primary topic</option>
-                {availableCategories.map(cat => (
-                    <option key={cat._id} value={cat._id}>{cat.name}</option>
-                ))}
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-5 text-slate-400">
-                    <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-                </div>
+            {/* Notion Block Editor */}
+            <div>
+              <NotionEditor ref={editorRef} />
             </div>
           </div>
+        </main>
 
-          {/* Tags Settings */}
-          <div className="bg-white border border-slate-100 rounded-[2rem] p-8 shadow-xl shadow-slate-200/50">
-            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-6">
-              <Tag size={14} className="text-teal-500" /> Related Tags
-            </h3>
-
-            <div className="flex flex-wrap gap-2 mb-6">
-              {availableTags.map(tag => (
-                <button
-                  key={tag._id}
-                  type="button"
-                  onClick={() => handleTagChange(tag._id)}
-                  className={`px-4 py-2 text-[11px] font-bold uppercase tracking-widest rounded-xl transition-all border ${tags.includes(tag._id)
-                      ? 'bg-slate-900 text-white border-slate-900 shadow-lg shadow-slate-900/20'
-                      : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900'
-                    }`}
-                >
-                  {tag.name}
-                </button>
-              ))}
-            </div>
-
-            <div className="flex items-center gap-3 pt-6 border-t border-slate-50">
-              <input
-                type="text"
-                placeholder="New tag..."
-                value={newTagName}
-                onChange={(e) => setNewTagName(e.target.value)}
-                className="w-full text-sm font-bold bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all placeholder:text-slate-300"
+        {/* 4. SETTINGS SIDEBAR (Slide-over) */}
+        <AnimatePresence>
+          {sidebarOpen && (
+            <>
+              {/* Overlay for small screens */}
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setSidebarOpen(false)}
+                className="absolute inset-0 bg-[#00261b]/10 backdrop-blur-sm z-40 lg:hidden"
               />
-              <button
-                type="button"
-                onClick={handleAddNewTag}
-                className="shrink-0 w-12 h-12 flex items-center justify-center bg-slate-900 hover:bg-teal-600 text-white rounded-xl transition-all hover:shadow-lg"
+              <motion.aside 
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                className="absolute right-0 top-0 bottom-0 w-full max-w-[380px] bg-white shadow-2xl z-50 overflow-y-auto p-10 flex flex-col gap-10 border-l border-[#c0c8c3]/20"
               >
-                <Plus size={18} />
-              </button>
-            </div>
-          </div>
-
-          {/* Publishing Settings */}
-          <div className="bg-slate-50 border border-slate-100 rounded-[2rem] p-8 shadow-inner focus-within:bg-white focus-within:shadow-xl transition-all duration-500">
-            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-6">
-              <Settings size={14} className="text-slate-500" /> Visibility
-            </h3>
-            <div className="space-y-4">
-              <label className="flex items-center gap-4 p-4 bg-white border border-slate-100 rounded-2xl cursor-pointer hover:border-teal-500 hover:shadow-md transition-all">
-                <input type="radio" value="published" checked={status === 'published'} onChange={() => setStatus('published')} className="text-teal-500 focus:ring-teal-500 w-5 h-5 accent-teal-500" />
-                <div className="flex flex-col">
-                  <span className="text-sm font-bold text-slate-900">Public</span>
-                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Visible to World</span>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-black text-[#00261b] uppercase tracking-widest">Metadata Settings</h3>
+                  <button onClick={() => setSidebarOpen(false)} className="text-[#414944] hover:text-[#00261b] p-2 hover:bg-[#f5f3ef] rounded-full"><X size={20}/></button>
                 </div>
-              </label>
-              <label className="flex items-center gap-4 p-4 bg-white border border-slate-100 rounded-2xl cursor-pointer hover:border-teal-500 hover:shadow-md transition-all">
-                <input type="radio" value="draft" checked={status === 'draft'} onChange={() => setStatus('draft')} className="text-teal-500 focus:ring-teal-500 w-5 h-5 accent-teal-500" />
-                <div className="flex flex-col">
-                  <span className="text-sm font-bold text-slate-900">Draft</span>
-                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Only You</span>
-                </div>
-              </label>
-            </div>
-          </div>
 
-        </div>
+                {/* Featured Visual */}
+                <section className="space-y-4">
+                   <header className="flex items-center gap-3 text-[10px] font-black text-[#414944]/50 uppercase tracking-[0.2em] border-b border-[#c0c8c3]/20 pb-3">
+                     <ImageIcon size={14}/> Featured Visual
+                   </header>
+                   <ImageUpload onFileChange={setCoverImage} />
+                </section>
+
+                {/* Ecosystem Selector */}
+                <section className="space-y-4">
+                  <header className="flex items-center gap-3 text-[10px] font-black text-[#414944]/50 uppercase tracking-[0.2em] border-b border-[#c0c8c3]/20 pb-3">
+                     <Layout size={14}/> Ecosystem Topic
+                   </header>
+                  <select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="w-full bg-[#fbf9f5] border-transparent rounded-2xl px-5 py-4 text-sm font-bold text-[#00261b] focus:ring-0 outline-none hover:bg-[#f5f3ef] transition-colors cursor-pointer"
+                  >
+                    <option value="" disabled>Select Ecosystem...</option>
+                    {availableCategories.map(cat => <option key={cat._id} value={cat._id}>{cat.name}</option>)}
+                  </select>
+                </section>
+
+                {/* Tags Explorer */}
+                <section className="space-y-4">
+                   <header className="flex items-center gap-3 text-[10px] font-black text-[#414944]/50 uppercase tracking-[0.2em] border-b border-[#c0c8c3]/20 pb-3">
+                     <Tag size={14}/> Botanical Tags
+                   </header>
+                   <div className="flex flex-wrap gap-2">
+                     {availableTags.map(tag => (
+                       <button
+                         key={tag._id}
+                         onClick={(e) => { e.preventDefault(); handleTagChange(tag._id); }}
+                         className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${tags.includes(tag._id) ? 'bg-[#00261b] text-white underline decoration-wavy' : 'bg-[#fbf9f5] text-[#414944] hover:bg-[#efeeea]'}`}
+                       >
+                         {tag.name}
+                       </button>
+                     ))}
+                   </div>
+                   <div className="flex items-center gap-2 pt-4">
+                      <input 
+                        type="text" 
+                        placeholder="New tag..." 
+                        value={newTagName}
+                        onChange={(e) => setNewTagName(e.target.value)}
+                        className="flex-1 bg-[#fbf9f5] border-transparent rounded-xl px-4 py-3 text-xs font-bold focus:ring-0 outline-none" 
+                      />
+                      <button onClick={(e) => { e.preventDefault(); handleAddNewTag(); }} className="p-3 bg-[#00261b] text-white rounded-xl"><Plus size={16}/></button>
+                   </div>
+                </section>
+
+                <div className="mt-auto space-y-4">
+                   <button onClick={() => handleSubmit('draft')} className="w-full py-4 text-[10px] font-black uppercase tracking-widest text-[#414944] bg-[#fbf9f5] hover:bg-[#efeeea] rounded-2xl transition-all">Save as Greenhouse Draft</button>
+                   <p className="text-[10px] text-center text-[#414944]/40 font-bold uppercase tracking-widest leading-relaxed">Changes are auto-saved to cloud infrastructure during bloom.</p>
+                </div>
+              </motion.aside>
+            </>
+          )}
+        </AnimatePresence>
+
       </div>
-    </motion.div>
+    </div>
   );
 };
 

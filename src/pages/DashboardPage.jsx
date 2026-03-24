@@ -1,23 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { getMyBlogs } from '../services/uesrService';
 import { deleteBlog } from '../services/blogService';
 import { useAuth } from '../context/AuthContext';
-import { Plus, Heart, Edit, Trash2, Eye, Calendar, LayoutDashboard, User } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Brain, TrendingUp, FileEdit, Settings, Plus, Leaf, Eye, Heart, ArrowRight, Menu, X, Trash2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const DashboardPage = () => {
   const [myBlogs, setMyBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('all');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { user } = useAuth();
 
-  useEffect(() => {
-    fetchMyBlogs();
-  }, []);
-
-  const fetchMyBlogs = async () => {
+  const fetchMyBlogs = useCallback(async () => {
     setLoading(true);
     try {
       const response = await getMyBlogs();
@@ -29,10 +26,14 @@ const DashboardPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const handleDelete = async (blogId) => {
-    if (window.confirm('Are you sure you want to permanently delete this post?')) {
+  useEffect(() => {
+    fetchMyBlogs();
+  }, [fetchMyBlogs]);
+
+  const handleDelete = useCallback(async (blogId) => {
+    if (window.confirm('Are you sure you want to permanently prune this bloom?')) {
       try {
         await deleteBlog(blogId);
         fetchMyBlogs();
@@ -40,218 +41,209 @@ const DashboardPage = () => {
         setError(err.message || 'Failed to delete post.');
       }
     }
-  };
+  }, [fetchMyBlogs]);
 
-  const totalViews = myBlogs.reduce((acc, blog) => acc + (blog.views || 0), 0);
-  const totalLikes = myBlogs.reduce((acc, blog) => acc + (blog.likes || 0), 0);
-  const publishedBlogs = myBlogs.filter(blog => blog.status === 'published');
-  const draftBlogs = myBlogs.filter(blog => blog.status === 'draft');
+  // useMemo: derive stats once from myBlogs, not on every render
+  const totalViews = useMemo(() => myBlogs.reduce((acc, blog) => acc + (blog.views || 0), 0), [myBlogs]);
+  const totalLikes = useMemo(() => myBlogs.reduce((acc, blog) => acc + (blog.likes || 0), 0), [myBlogs]);
+  const publishedBlogs = useMemo(() => myBlogs.filter(blog => blog.status === 'published'), [myBlogs]);
+  const draftBlogs = useMemo(() => myBlogs.filter(blog => blog.status === 'draft'), [myBlogs]);
 
-  const filteredBlogs = activeTab === 'all' ? myBlogs :
+  // useMemo: filteredBlogs only changes when tab or data changes
+  const filteredBlogs = useMemo(() =>
+    activeTab === 'all' ? myBlogs :
     activeTab === 'published' ? publishedBlogs :
-      draftBlogs;
-
-  const LoadingSkeleton = () => (
-    <div className="space-y-4">
-      {[1, 2, 3].map(i => (
-        <div key={i} className="bg-white border rounded-[2rem] border-slate-100 p-8 animate-pulse shadow-sm">
-          <div className="h-6 bg-slate-100 rounded-lg w-3/4 mb-4"></div>
-          <div className="h-4 bg-slate-100 rounded-lg w-1/4 mb-4"></div>
-          <div className="flex space-x-4">
-            <div className="h-4 bg-slate-100 rounded-lg w-16"></div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
+    draftBlogs
+  , [activeTab, myBlogs, publishedBlogs, draftBlogs]);
 
   return (
-    <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="w-full font-sans pt-12"
-    >
-      {/* Header Section */}
-      <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tighter text-slate-900 mb-3">Dashboard</h1>
-          <p className="text-slate-500 font-medium">Manage your publications and track your performance.</p>
-        </div>
-        <Link
-          to="/create-post"
-          className="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all hover:shadow-xl hover:-translate-y-0.5 active:scale-95 shadow-sm"
-        >
-          <Plus size={18} />
-          <span>Write a story</span>
-        </Link>
-      </div>
-
-      {/* KPI Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-        <div className="bg-white border border-slate-100 p-8 rounded-[2rem] shadow-xl shadow-slate-200/50 flex flex-col hover:shadow-teal-900/5 transition-shadow">
-          <div className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Total Stories</div>
-          <div className="text-4xl font-bold tracking-tighter text-slate-900">{myBlogs.length}</div>
-        </div>
-        <div className="bg-white border border-slate-100 p-8 rounded-[2rem] shadow-xl shadow-slate-200/50 flex flex-col hover:shadow-teal-900/5 transition-shadow">
-          <div className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Total Views</div>
-          <div className="text-4xl font-bold tracking-tighter text-slate-900">{totalViews}</div>
-        </div>
-        <div className="bg-white border border-slate-100 p-8 rounded-[2rem] shadow-xl shadow-slate-200/50 flex flex-col hover:shadow-teal-900/5 transition-shadow">
-          <div className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Total Likes</div>
-          <div className="text-4xl font-bold tracking-tighter text-slate-900">{totalLikes}</div>
-        </div>
-        <div className="bg-white border border-teal-100 p-8 rounded-[2rem] shadow-xl shadow-teal-500/10 flex flex-col bg-teal-50/50 hover:shadow-teal-500/20 transition-shadow">
-          <div className="text-[11px] font-black text-teal-600 uppercase tracking-[0.2em] mb-2">Published</div>
-          <div className="text-4xl font-bold tracking-tighter text-teal-600">{publishedBlogs.length}</div>
-        </div>
-      </div>
-
-      {error && (
-        <div className="bg-red-50 text-red-600 border border-red-100 p-4 rounded-xl mb-8 text-[11px] font-bold tracking-wider uppercase">
-          {error}
-        </div>
-      )}
-
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-12">
-        {/* Left Side: Story List */}
-        <div>
-          {/* Tabs */}
-          <div className="flex items-center gap-8 border-b border-slate-100 mb-8 overflow-x-auto">
-            {[
-              { key: 'all', label: 'All filter', count: myBlogs.length },
-              { key: 'published', label: 'Published', count: publishedBlogs.length },
-              { key: 'draft', label: 'Drafts', count: draftBlogs.length }
-            ].map(tab => (
-              <button
-                key={tab.key}
-                onClick={() => setActiveTab(tab.key)}
-                className={`pb-4 text-sm font-bold flex items-center gap-2 whitespace-nowrap transition-all border-b-2 ${activeTab === tab.key
-                    ? 'border-slate-900 text-slate-900'
-                    : 'border-transparent text-slate-400 hover:text-slate-900'
-                  }`}
-              >
-                <span>{tab.label === 'All filter' ? 'All Stories' : tab.label}</span>
-                <span className={`px-2 py-0.5 rounded-md text-xs font-black tracking-widest ${activeTab === tab.key ? 'bg-slate-100 text-slate-900' : 'bg-slate-50 text-slate-400'}`}>
-                  {tab.count}
-                </span>
-              </button>
-            ))}
-          </div>
-
-          {loading ? (
-            <LoadingSkeleton />
-          ) : filteredBlogs.length > 0 ? (
-            <div className="space-y-6">
-              {filteredBlogs.map((blog, idx) => (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.05 }}
-                  key={blog._id}
-                  className="group bg-white rounded-[2rem] border border-slate-100 p-6 sm:p-8 transition-all hover:shadow-2xl hover:shadow-slate-200/50 hover:bg-slate-50/50"
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-4">
-                        {blog.status === 'published' ? (
-                          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-teal-600 bg-teal-50 px-2 py-1.5 rounded-md">Published</span>
-                        ) : (
-                          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 bg-slate-100 px-2 py-1.5 rounded-md">Draft</span>
-                        )}
-                        <span className="text-xs font-bold tracking-widest uppercase text-slate-400 flex items-center gap-1.5">
-                          <Calendar size={14} className="text-slate-300" />
-                          {new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                        </span>
-                      </div>
-                      <h2 className="text-2xl font-bold tracking-tighter text-slate-900 mb-2 group-hover:text-teal-600 transition-colors">
-                        <Link to={`/blog/${blog.slug}`}>{blog.title || 'Untitled Story'}</Link>
-                      </h2>
-
-                      <div className="flex items-center gap-6 text-slate-400 text-sm font-bold mt-6">
-                        <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg" title="Views">
-                          <Eye size={16} /> <span>{blog.views || 0}</span>
-                        </div>
-                        <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg" title="Likes">
-                          <Heart size={16} /> <span>{blog.likes || 0}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 border-t sm:border-t-0 border-slate-100 pt-6 sm:pt-0 shrink-0">
-                      <Link
-                        to={`/edit-post/${blog._id}`}
-                        className="flex items-center justify-center w-12 h-12 text-slate-500 bg-slate-50 border border-slate-100 hover:text-slate-900 hover:bg-white hover:shadow-sm rounded-2xl transition-all"
-                        title="Edit Story"
-                      >
-                        <Edit size={18} />
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(blog._id)}
-                        className="flex items-center justify-center w-12 h-12 text-red-500 bg-red-50 border border-red-100 hover:text-red-700 hover:bg-red-100 rounded-2xl transition-all"
-                        title="Delete Story"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
+    <div className="flex min-h-[calc(100vh-80px)] bg-[var(--background)] font-manrope selection:bg-[#bcedd7] selection:text-[#002116] w-full">
+      
+      {/* Main Content Canvas */}
+      <main className="flex-1 relative overflow-hidden flex flex-col pt-8 lg:pt-16 pb-20 max-w-[1400px] mx-auto w-full">
+        {/* Asymmetric Decorative Element */}
+        <div className="absolute -top-24 -right-24 w-[300px] md:w-[400px] h-[300px] md:h-[400px] bg-[#bcedd7]/40 rounded-full blur-[80px] md:blur-[100px] pointer-events-none"></div>
+        
+        <div className="flex-1 max-w-6xl mx-auto w-full px-6 md:px-12 pt-8 lg:pt-16 pb-24 relative z-10">
+          
+          {/* Header Section */}
+          <header className="mb-16 flex flex-col-reverse md:flex-row md:items-end justify-between gap-8">
+            <div>
+              <span className="inline-block text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-[#7b5455] mb-2 md:mb-3">Welcome back, Curator</span>
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-newsreader font-bold text-[#00261b] tracking-tighter leading-none">Your Garden.</h2>
             </div>
-          ) : (
-            <div className="text-center py-24 bg-slate-50 border border-slate-100 border-dashed rounded-[3rem]">
-              <div className="w-20 h-20 bg-white shadow-xl shadow-slate-200/50 rounded-[2rem] flex items-center justify-center mx-auto mb-6">
-                <LayoutDashboard className="w-10 h-10 text-slate-300" />
-              </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-2 tracking-tighter">No stories yet.</h3>
-              <p className="text-slate-500 mb-8 font-medium">Get started by weaving your first idea.</p>
-              <Link
-                to="/create-post"
-                className="inline-flex items-center gap-2 px-8 py-3.5 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all hover:shadow-xl hover:-translate-y-0.5"
-              >
-                Write a story
-              </Link>
-            </div>
-          )}
-        </div>
-
-        {/* Right Side: Quick Profile */}
-        <div className="hidden xl:block">
-          <div className="sticky top-28 bg-white border border-slate-100 rounded-[2.5rem] p-8 shadow-xl shadow-slate-200/50">
-            <div className="flex flex-col items-center justify-center text-center">
-              <div className="w-24 h-24 mb-6 rounded-2xl overflow-hidden shadow-lg border-2 border-white ring-1 ring-slate-100 bg-white">
-                <img
-                  src={user?.avatar || `https://i.pravatar.cc/150?u=${user?.username}`}
-                  alt={user?.fullName}
-                  className="w-full h-full object-cover"
+            <div className="text-left md:text-right hidden sm:block">
+              <Link to="/my-profile" className="inline-block w-16 h-16 rounded-full overflow-hidden border-2 border-[#eae8e4] hover:scale-110 transition-transform bg-[#eae8e4]">
+                <img 
+                   src={user?.avatar || `https://i.pravatar.cc/150?u=${user?.username || 'user'}`} 
+                   alt="Profile" 
+                   className="w-full h-full object-cover" 
                 />
-              </div>
-              <h3 className="text-xl font-bold tracking-tight text-slate-900">{user?.fullName}</h3>
-              <p className="text-[11px] font-black text-teal-600 mb-8 uppercase tracking-[0.2em] mt-1">@{user?.username}</p>
-
-              <div className="w-full space-y-2 mb-8 bg-slate-50 p-4 rounded-2xl">
-                <div className="flex justify-between items-center text-sm font-bold py-2 border-b border-slate-200/50 last:border-0 last:pb-0">
-                  <span className="text-slate-400">Stories</span>
-                  <span className="text-slate-900 bg-white px-2.5 py-1 rounded-md shadow-sm border border-slate-100">{myBlogs.length}</span>
-                </div>
-                <div className="flex justify-between items-center text-sm font-bold py-2 border-b border-slate-200/50 last:border-0 last:pb-0">
-                  <span className="text-slate-400">Total Views</span>
-                  <span className="text-slate-900 bg-white px-2.5 py-1 rounded-md shadow-sm border border-slate-100">{totalViews}</span>
-                </div>
-              </div>
-
-              <Link
-                to={`/my-profile`}
-                className="w-full flex items-center justify-center gap-2 px-4 py-4 bg-slate-900 text-white font-bold text-sm rounded-2xl hover:bg-slate-800 transition-all hover:shadow-xl shadow-sm"
-              >
-                <User size={16} /> View Profile
               </Link>
             </div>
-          </div>
-        </div>
+          </header>
 
-      </div>
-    </motion.div>
+          {/* Stats Bento Grid */}
+          <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
+            <div className="md:col-span-2 bg-[#f5f3ef] p-8 md:p-10 rounded-2xl flex items-center justify-between overflow-hidden relative group shadow-[0_20px_40px_rgba(0,38,27,0.02)]">
+              <div className="relative z-10">
+                <p className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-[#414944] mb-4">Total Cultivations</p>
+                <div className="flex items-baseline gap-2 md:gap-3">
+                  <span className="text-5xl md:text-7xl font-newsreader font-bold text-[#00261b]">{myBlogs.length}</span>
+                  <span className="text-[#00261b]/40 font-newsreader text-xl md:text-3xl">Blooms</span>
+                </div>
+              </div>
+              <div className="absolute right-0 bottom-0 opacity-[0.03] translate-y-1/4 group-hover:-translate-y-4 group-hover:opacity-[0.06] transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)]">
+                <Leaf size={320} strokeWidth={0.5} className="text-[#00261b]" />
+              </div>
+            </div>
+            
+            <div className="bg-[#00261b] text-[#bcedd7] p-8 md:p-10 rounded-2xl relative overflow-hidden group shadow-[0_20px_40px_rgba(0,38,27,0.06)]">
+              <p className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-[#bcedd7]/60 mb-4">Total Reach</p>
+              <div className="flex items-baseline gap-2">
+                <span className="text-5xl md:text-7xl font-newsreader font-bold -tracking-wider">{totalViews}</span>
+              </div>
+              <div className="mt-4 flex items-center gap-2">
+                <Eye size={16} />
+                <span className="text-[10px] md:text-xs font-bold uppercase tracking-tighter">Organic Views</span>
+              </div>
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/5 rounded-full blur-xl group-hover:scale-150 transition-transform duration-700"></div>
+            </div>
+          </section>
+
+          {/* Blog Feed Section */}
+          <section>
+            
+            {/* Filter Pills */}
+            <div className="flex flex-wrap items-center justify-between gap-6 mb-12">
+              <div className="flex flex-wrap gap-3">
+                <button 
+                  onClick={() => setActiveTab('all')} 
+                  className={`px-6 py-2.5 rounded-full font-bold text-[11px] uppercase tracking-widest transition-all shadow-sm ${activeTab === 'all' ? 'bg-[#00261b] text-white' : 'bg-[#eae8e4] text-[#414944] hover:bg-[#d6d4d0]'}`}
+                >
+                  All Blooms ({myBlogs.length})
+                </button>
+                <button 
+                  onClick={() => setActiveTab('published')} 
+                  className={`px-6 py-2.5 rounded-full font-bold text-[11px] uppercase tracking-widest transition-all shadow-sm ${activeTab === 'published' ? 'bg-[#00261b] text-white' : 'bg-[#eae8e4] text-[#414944] hover:bg-[#d6d4d0]'}`}
+                >
+                  Published ({publishedBlogs.length})
+                </button>
+                <button 
+                  onClick={() => setActiveTab('draft')} 
+                  className={`px-6 py-2.5 rounded-full font-bold text-[11px] uppercase tracking-widest transition-all shadow-sm ${activeTab === 'draft' ? 'bg-[#00261b] text-white' : 'bg-[#eae8e4] text-[#414944] hover:bg-[#d6d4d0]'}`}
+                >
+                  Drafts ({draftBlogs.length})
+                </button>
+              </div>
+
+              <Link to="/create-post" className="inline-flex items-center gap-2 px-6 py-3 bg-[#0a251c] text-white text-[12px] font-bold uppercase tracking-widest rounded-xl hover:bg-[#1a382c] transition-all shadow-md active:scale-95">
+                <Plus size={16} strokeWidth={2.5} /> New Post
+              </Link>
+            </div>
+
+            <div className="flex items-center gap-4 mb-10 md:mb-16">
+              <span className="h-px flex-1 bg-[#c0c8c3]/30"></span>
+              <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#414944]">Recent Growth</h3>
+              <span className="h-px flex-1 bg-[#c0c8c3]/30"></span>
+            </div>
+
+            {loading ? (
+               <div className="flex justify-center items-center py-20 min-h-[300px]">
+                 <div className="w-12 h-12 border-4 border-[#c0c8c3]/20 border-t-[#00261b] rounded-full animate-spin"></div>
+               </div>
+            ) : error ? (
+               <div className="text-center py-10 text-[#ba1a1a] bg-[#ffdad6]/20 font-bold rounded-2xl border border-[#ffdad6]">{error}</div>
+            ) : filteredBlogs.length === 0 ? (
+               <div className="text-center py-24 bg-[#f5f3ef]/50 border border-[#c0c8c3]/20 border-dashed rounded-[2rem] flex flex-col items-center">
+                 <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-6 shadow-sm text-[#c0c8c3]">
+                    <Leaf size={40} strokeWidth={1.5} />
+                 </div>
+                 <h4 className="text-2xl font-newsreader font-bold text-[#00261b] mb-2 tracking-tighter">No blooms found in this section.</h4>
+                 <p className="text-[#414944] font-medium mb-8 max-w-sm">When you publish or draft a story, it will naturally take root here.</p>
+                 <Link to="/create-post" className="inline-flex items-center gap-2 px-8 py-4 bg-[#00261b] text-white font-bold rounded-2xl hover:bg-[#214f3f] hover:-translate-y-1 transition-all shadow-xl shadow-[#00261b]/10 hover:shadow-2xl">
+                   <Plus size={18} /> Start Writing
+                 </Link>
+               </div>
+            ) : (
+              <div className="space-y-16 lg:space-y-24">
+                {filteredBlogs.map((blog, idx) => {
+                  const isEven = idx % 2 === 0;
+                  return (
+                    <article key={blog._id} className={`group relative flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-8 lg:gap-12 items-center`}>
+                      
+                      {/* Image Thumbnail */}
+                      <div className="w-full lg:w-2/5 aspect-[4/3] sm:aspect-[16/9] lg:aspect-[4/3] rounded-2xl overflow-hidden bg-[#e4e2de] transition-transform duration-500 ease-[0.34,1.56,0.64,1] group-hover:-translate-y-2 group-hover:shadow-2xl group-hover:shadow-[#00261b]/10 shrink-0 border border-[#c0c8c3]/10 relative">
+                        {blog.coverImage ? (
+                           <img loading="lazy" src={blog.coverImage} alt={blog.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                        ) : (
+                           <div className="w-full h-full flex flex-col items-center justify-center bg-[#f5f3ef] text-[#00261b]/20">
+                             <Leaf size={48} className="mb-2" />
+                           </div>
+                        )}
+                        <Link to={`/blog/${blog.slug}`} className="absolute inset-0" aria-label="View blog" />
+                      </div>
+                      
+                      {/* Content Body */}
+                      <div className={`flex-1 py-2 w-full ${isEven ? 'text-left' : 'lg:text-right text-left'}`}>
+                        
+                        {/* Meta Tags */}
+                        <div className={`flex items-center gap-4 mb-4 md:mb-6 ${isEven ? '' : 'lg:justify-end'}`}>
+                          {blog.status === 'published' ? (
+                            <span className="px-4 py-1.5 bg-[#bcedd7] text-[#002116] text-[10px] font-bold uppercase tracking-[0.2em] rounded-full shadow-sm">Published</span>
+                          ) : (
+                            <span className="px-4 py-1.5 bg-[#eae8e4] text-[#414944] text-[10px] font-bold uppercase tracking-[0.2em] rounded-full shadow-sm">Draft</span>
+                          )}
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-[#414944]/60">
+                            {new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                          </span>
+                        </div>
+                        
+                        {/* Title */}
+                        <h4 className="text-3xl md:text-4xl lg:text-[40px] font-newsreader font-black text-[#00261b] mb-4 md:mb-6 leading-[1.1] transition-colors group-hover:text-[#396756] tracking-tighter">
+                          <Link to={`/blog/${blog.slug}`} className="hover:underline decoration-[#bcedd7] decoration-[3px] underline-offset-4 overflow-wrap break-word">{blog.title || 'Untitled Bloom'}</Link>
+                        </h4>
+                        
+                        {/* Stats */}
+                        <div className={`flex gap-6 items-center text-[#414944]/80 ${isEven ? '' : 'lg:justify-end'} mb-8`}>
+                          <div className="flex items-center gap-2">
+                            <Eye size={18} strokeWidth={2.5} />
+                            <span className="font-bold text-sm bg-[#f5f3ef] px-2 py-0.5 rounded-md">{blog.views || 0}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Heart size={18} strokeWidth={2.5} />
+                            <span className="font-bold text-sm bg-[#f5f3ef] px-2 py-0.5 rounded-md">{blog.likes || 0}</span>
+                          </div>
+                        </div>
+                        
+                        {/* Action Buttons */}
+                        <div className={`flex items-center gap-6 ${isEven ? '' : 'lg:justify-end'}`}>
+                          <Link 
+                             to={`/edit-post/${blog._id}`} 
+                             className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[#00261b] hover:text-[#396756] transition-colors group/edit"
+                          >
+                            Edit Bloom <ArrowRight size={16} className="group-hover/edit:translate-x-1 transition-transform" />
+                          </Link>
+                          
+                          <button 
+                             onClick={() => handleDelete(blog._id)}
+                             className="inline-flex items-center justify-center p-2 text-[#414944]/30 hover:text-[#ba1a1a] hover:bg-[#ffdad6] rounded-xl transition-all"
+                             title="Prune this bloom"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                        
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+        </div>
+      </main>
+    </div>
   );
 };
 

@@ -1,28 +1,16 @@
 import React from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import MainNavbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 const MainLayout = () => {
-  const location = useLocation();
-
   return (
-    <div className="bg-slate-50 min-h-screen font-sans selection:bg-teal-100 selection:text-teal-900 flex flex-col">
-      {/* Editorial Top Navigation */}
-      <div className="sticky top-0 z-50 w-full bg-white shadow-sm border-b border-slate-200">
-        <MainNavbar />
-      </div>
-
-      {/* Main App Content Area */}
-      <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-8 pb-16">
+    <div className="w-full flex-grow flex flex-col min-h-screen bg-[var(--background)] selection:bg-[#a0d1bc]/30 selection:text-[#00261b]">
+      <MainNavbar />
+      <main className="flex-grow w-full">
         <Outlet />
       </main>
-
-      {/* Simple Footer for the Internal App */}
-      <footer className="mt-auto py-8 border-t border-slate-200 bg-white text-center">
-        <p className="text-sm font-semibold text-slate-500">
-          MindLoom. &copy; {new Date().getFullYear()} All rights reserved.
-        </p>
-      </footer>
+      <Footer />
     </div>
   );
 };

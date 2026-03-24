@@ -100,7 +100,7 @@ const CommentSection = ({ blogId, initialComments, setComments }) => {
                     ))
                 ) : (
                     <div className="py-12 text-center">
-                        <p className="text-slate-400 font-medium italic">No responses yet. Be the first to share your thoughts.</p>
+                        <p className="text-slate-400 font-medium">No responses yet. Be the first to share your thoughts.</p>
                     </div>
                 )}
             </div>

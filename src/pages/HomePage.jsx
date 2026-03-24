@@ -1,122 +1,98 @@
-import React, { useState, useEffect } from 'react';
-import { getAllBlogs } from '../services/blogService';
-import { getAllCategories, getBlogsByCategory } from '../services/categoryService';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import BlogPostCard from '../components/BlogPostCard';
-import BlogPostCardSkeleton from '../components/BlogPostCardSkeleton';
 import CategorySlider from '../components/CategorySlider';
 import HomeSidebar from '../components/HomeSidebar';
 import FeaturedPostCard from '../components/FeaturedPostCard';
 import { motion } from "framer-motion";
+import { ArrowUpRight } from "lucide-react";
+import { Link } from 'react-router-dom';
+import useBlogs from '../hooks/useBlogs';
+import useCategories from '../hooks/useCategories';
 
 const HomePage = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await getAllCategories();
-        if (response.success) setCategories(response.data);
-      } catch (err) {
-        console.error("Failed to fetch categories:", err);
-      }
-    };
-    fetchCategories();
-  }, []);
-
-  useEffect(() => {
-    const fetchBlogs = async () => {
-      setLoading(true);
-      setError('');
-      try {
-        const response = selectedCategory
-          ? await getBlogsByCategory(selectedCategory)
-          : await getAllBlogs();
-
-        if (response.success) {
-          setBlogs(response.data.docs || response.data);
-        }
-      } catch (err) {
-        setError(err.message || 'Could not fetch blog posts.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    const timer = setTimeout(() => fetchBlogs(), 300);
-    return () => clearTimeout(timer);
-  }, [selectedCategory]);
-
-  const renderSkeletonLoader = () => (
-    <div className="space-y-8">
-      <div className="h-[500px] w-full bg-slate-100 rounded-[3rem] animate-pulse"></div>
-      {Array.from({ length: 3 }).map((_, index) => (
-        <div key={index} className="h-64 w-full bg-slate-50 rounded-[2rem] animate-pulse"></div>
-      ))}
-    </div>
-  );
+  const { categories } = useCategories();
+  const { blogs, loading, error } = useBlogs(selectedCategory);
 
   const featuredPost = blogs.length > 0 ? blogs[0] : null;
   const remainingPosts = blogs.length > 1 ? blogs.slice(1) : [];
+
 
   return (
     <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="bg-white min-h-screen selection:bg-teal-100 selection:text-teal-900"
+        className="bg-[var(--background)] min-h-screen selection:bg-[#a0d1bc]/30 selection:text-[#00261b]"
     >
       <Helmet>
-        <title>MindLoom | Ideas Woven.</title>
+        <title>Scribloom | Digital Archives</title>
       </Helmet>
 
-      {/* Modern Category Navigation */}
-      <div className="sticky top-[80px] z-[45] bg-white/70 backdrop-blur-xl border-b border-slate-50">
-        <div className="max-w-7xl mx-auto px-6">
+      {/* Sticky Category Navigation */}
+      <div className="sticky top-0 md:top-16 lg:top-18 z-[45]">
           <CategorySlider
             categories={categories}
             selectedCategory={selectedCategory}
             onSelectCategory={setSelectedCategory}
           />
-        </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 pt-12 pb-32">
-        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-16 relative items-start">
+      <div className="max-w-[1400px] mx-auto px-6 pt-10 pb-20 font-manrope">
+        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-12 lg:gap-20 relative">
 
-          {/* Main Feed Area */}
-          <main className="w-full lg:col-span-8">
+          {/* Left Sidebar */}
+          <div className="lg:col-span-3 order-2 lg:order-1">
+             <div className="sticky top-40">
+                <HomeSidebar />
+             </div>
+          </div>
+
+          {/* Main Content Area */}
+          <main className="lg:col-span-9 order-1 lg:order-2">
             {loading ? (
-              renderSkeletonLoader()
+               <div className="space-y-12 animate-pulse">
+                   <div className="w-full aspect-[21/10] bg-[#efeeea] rounded-[40px]" />
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                       {[1, 2, 3, 4].map(i => <div key={i} className="aspect-square bg-[#efeeea] rounded-[24px]" />)}
+                   </div>
+               </div>
             ) : error ? (
-              <div className="p-10 bg-red-50 text-red-600 rounded-[2rem] border border-red-100 text-center">
-                 <p className="text-sm font-bold uppercase tracking-widest">{error}</p>
-              </div>
-            ) : blogs.length > 0 ? (
-              <div className="">
-                {featuredPost && <FeaturedPostCard post={featuredPost} />}
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3 mb-12 px-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-teal-500"></span>
-                    <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">Latest Feed</h3>
-                  </div>
-                  {remainingPosts.map((post) => (
-                    <BlogPostCard key={post._id} post={post} />
-                  ))}
-                </div>
+              <div className="p-10 bg-red-50 text-red-600 rounded-[32px] border border-red-100 text-center">
+                 <p className="text-sm font-black uppercase tracking-widest">{error}</p>
               </div>
             ) : (
-              <div className="text-center py-40 px-6 bg-slate-50 rounded-[3rem] border border-slate-100 border-dashed">
-                <h3 className="text-3xl font-bold text-slate-900 mb-4 tracking-tighter">No ideas found.</h3>
-                <p className="text-slate-500 font-medium max-w-xs mx-auto">Be the first to weave a story here.</p>
+              <div className="flex flex-col gap-16">
+                {/* Hero Section */}
+                {featuredPost && !selectedCategory && <FeaturedPostCard post={featuredPost} />}
+                
+                {/* Grid Section */}
+                <div className="flex flex-col gap-10">
+                   <div className="flex items-center justify-between px-2">
+                      <h3 className="text-[32px] font-black text-[#111] font-newsreader">
+                          {selectedCategory ? `${selectedCategory} Archives` : 'Recent Thoughts'}
+                      </h3>
+                      <Link to="#" className="flex items-center gap-1 text-[11px] font-black uppercase tracking-widest text-[#111]/30 hover:text-[#a0d1bc] transition-all">
+                          View All <ArrowUpRight size={14} />
+                      </Link>
+                   </div>
+                   
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-16">
+                      {(selectedCategory ? blogs : remainingPosts).map((post) => (
+                        <BlogPostCard key={post._id} post={post} />
+                      ))}
+                   </div>
+
+                   {blogs.length === 0 && (
+                      <div className="text-center py-40 bg-white/50 rounded-[40px] border border-[#efeeea] border-dashed">
+                        <h3 className="text-2xl font-black text-[#111] font-newsreader mb-4">The archives are silent.</h3>
+                        <p className="text-[#111]/40 text-sm font-medium">Be the first to curate a thought here.</p>
+                      </div>
+                   )}
+                </div>
               </div>
             )}
           </main>
-
-          {/* Right Sidebar */}
-          <HomeSidebar />
         </div>
       </div>
     </motion.div>
@@ -124,3 +100,4 @@ const HomePage = () => {
 };
 
 export default HomePage;
+

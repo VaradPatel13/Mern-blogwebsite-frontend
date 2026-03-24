@@ -20,16 +20,16 @@ const segmentVariants = {
 
 const CommunitySection = () => {
   const cards = [
-    { image: img1, user: "howard", color: "bg-[#A13333]", rotation: -8, x: 0, y: 0 },
+    { image: img1, user: "howard", color: "bg-[#7b5455]", rotation: -8, x: 0, y: 0 },
     { image: img2, x: 120, y: 20, rotation: 5 },
-    { image: img3, user: "robin", color: "bg-[#111]", x: 240, y: 80, rotation: -2 },
+    { image: img3, user: "robin", color: "bg-[#00261b]", x: 240, y: 80, rotation: -2 },
     { image: img4, x: 360, y: 160, rotation: 12 },
     { image: img5, x: 480, y: 220, rotation: -5 },
   ];
 
   return (
-    <section className="bg-[#fcfdfd] py-16 px-6 md:px-12 overflow-hidden min-h-[80vh] flex items-center relative">
-      <div className="max-w-[1100px] mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+    <section className="bg-transparent py-10 px-4 md:px-8 overflow-hidden min-h-fit md:min-h-[75vh] flex items-center justify-center relative">
+      <div className="max-w-[1000px] mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
 
         {/* Left: Text Content */}
         <div className="flex flex-col gap-5 max-w-[550px] relative z-20">
@@ -39,8 +39,8 @@ const CommunitySection = () => {
             viewport={{ once: true }}
             className="flex items-center gap-2"
           >
-            <div className="w-1.5 h-1.5 rounded-full bg-[#A13333]" />
-            <span className="text-[11px] font-bold tracking-[0.2em] text-[#A13333] uppercase">
+            <div className="w-1.5 h-1.5 rounded-full bg-[#7b5455]" />
+            <span className="label-metadata text-[#7b5455]">
               COMMUNITY
             </span>
           </motion.div>
@@ -52,32 +52,32 @@ const CommunitySection = () => {
             transition={{ staggerChildren: 0.1 }}
             className="flex flex-col"
           >
-            <div className="overflow-hidden h-[50px] md:h-[70px]">
-              <motion.h2 variants={segmentVariants} className="text-[2.5rem] md:text-[4rem] font-bold tracking-tighter text-[#111] leading-none">
+            <div className="overflow-hidden">
+              <motion.h2 variants={segmentVariants} className="text-[1.8rem] md:text-[3.2rem] font-black tracking-tighter text-[#00261b] leading-[0.9] font-newsreader">
                 Write, Share,
               </motion.h2>
             </div>
-            <div className="overflow-hidden h-[50px] md:h-[70px]">
-              <motion.h2 variants={segmentVariants} className="text-[2.5rem] md:text-[4rem] font-bold tracking-tighter text-[#111] leading-none">
-                <span className="text-[#A13333] italic font-serif">&</span> connect with
+            <div className="overflow-hidden">
+              <motion.h2 variants={segmentVariants} className="text-[1.8rem] md:text-[3.2rem] font-black tracking-tighter text-[#00261b] leading-[0.9] font-newsreader">
+                <span className="text-[#7b5455]">&</span> connect with
               </motion.h2>
             </div>
-            <div className="overflow-hidden h-[50px] md:h-[70px]">
-              <motion.h2 variants={segmentVariants} className="text-[2.5rem] md:text-[4rem] font-bold tracking-tighter text-[#111] leading-none">
+            <div className="overflow-hidden">
+              <motion.h2 variants={segmentVariants} className="text-[1.8rem] md:text-[3.2rem] font-black tracking-tighter text-[#00261b] leading-[0.9] font-newsreader">
                 our readers.
               </motion.h2>
             </div>
           </motion.div>
 
-          <motion.p 
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.5, duration: 1 }}
-            className="text-[#666] font-medium text-[16px] max-w-[420px] leading-relaxed"
-          >
-            Dynamic community where writers and readers seamlessly merge. Scribloom brings together creators and enthusiasts to share stories.
-          </motion.p>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5, duration: 1, ease: [0.34, 1.56, 0.64, 1] }}
+              className="text-[#00261b]/60 font-medium text-[13px] md:text-[15px] max-w-[420px] leading-relaxed font-manrope mt-2"
+            >
+              Dynamic community where writers and readers seamlessly merge. Scribloom brings together creators and enthusiasts to share stories.
+            </motion.div>
         </div>
 
         {/* Right: Card Stack Animation */}
@@ -110,7 +110,7 @@ const CommunitySection = () => {
                     transition={{ delay: 1.2 + i * 0.2, type: "spring", stiffness: 200 }}
                     className={`absolute -top-10 -left-6 z-50`}
                   >
-                    <div className={`${card.color} text-white px-4 py-1.5 rounded-full text-[12px] font-bold shadow-xl border-2 border-white/20 relative z-10 antialiased`}>
+                    <div className={`${card.color} text-white px-3 py-1 rounded-full text-[10px] font-bold shadow-xl border-2 border-white/20 relative z-10 antialiased`}>
                       @{card.user}
                     </div>
                     <div className={`w-3 h-3 ${card.color} rotate-45 absolute -bottom-1 left-6 z-0`} />
@@ -119,9 +119,9 @@ const CommunitySection = () => {
 
                 <motion.div
                   whileHover={{ y: -15, rotate: 0, scale: 1.05, zIndex: 100 }}
-                  className="w-[150px] h-[200px] md:w-[170px] md:h-[220px] rounded-[24px] overflow-hidden shadow-[0_40px_80px_-15px_rgba(0,0,0,0.25)] border-2 border-white bg-white"
+                  className="w-[100px] h-[140px] md:w-[120px] md:h-[160px] rounded-[1.5rem] overflow-hidden ambient-shadow bg-white p-1.5"
                 >
-                  <img src={card.image} alt="Blog card" className="w-full h-full object-cover" />
+                  <img src={card.image} alt="Blog card" className="w-full h-full object-cover rounded-[1rem]" />
                 </motion.div>
               </motion.div>
             );

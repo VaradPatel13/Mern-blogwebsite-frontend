@@ -23,9 +23,13 @@ const CategorySlider = ({ categories, selectedCategory, onSelectCategory }) => {
     const slider = scrollRef.current;
     if (slider) {
       slider.addEventListener('scroll', checkScroll);
+      window.addEventListener('resize', checkScroll);
     }
     return () => {
-      if (slider) slider.removeEventListener('scroll', checkScroll);
+      if (slider) {
+        slider.removeEventListener('scroll', checkScroll);
+        window.removeEventListener('resize', checkScroll);
+      }
     };
   }, [categories]);
 
@@ -55,57 +59,51 @@ const CategorySlider = ({ categories, selectedCategory, onSelectCategory }) => {
   };
 
   return (
-    <div className="relative w-full border-b border-slate-100 bg-white/50 pt-2">
-      {/* Scrollable Container */}
-      <div
-        ref={scrollRef}
-        className="flex items-center gap-6 overflow-x-auto scrollbar-hide cursor-grab active:cursor-grabbing select-none px-6 md:px-0"
-        onMouseDown={handleMouseDown}
-        onMouseLeave={handleMouseLeave}
-        onMouseUp={handleMouseUp}
-        onMouseMove={handleMouseMove}
-      >
-        <button
-          onClick={() => onSelectCategory(null)}
-          className={`whitespace-nowrap pb-3 text-sm font-semibold transition-all border-b-2 ${!selectedCategory
-              ? 'border-slate-900 text-slate-900'
-              : 'border-transparent text-slate-500 hover:text-slate-900'
-            }`}
-        >
-          For you
-        </button>
-        {categories.map((category) => (
-          <button
-            key={category._id}
-            onClick={() => onSelectCategory(category.slug)}
-            className={`whitespace-nowrap pb-3 text-sm font-semibold transition-all border-b-2 ${selectedCategory === category.slug
-                ? 'border-slate-900 text-slate-900'
-                : 'border-transparent text-slate-500 hover:text-slate-900'
-              }`}
+    <div className="relative w-full py-4 bg-[var(--background)] border-b border-[#efeeea] font-manrope">
+      <div className="max-w-[1400px] mx-auto px-6 flex items-center gap-6">
+        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-[#111]/30 shrink-0">Explore Tags</span>
+        
+        <div className="relative flex-1 overflow-hidden">
+          {/* Scrollable Container */}
+          <div
+            ref={scrollRef}
+            className="flex items-center gap-3 overflow-x-auto scrollbar-hide cursor-grab active:cursor-grabbing select-none"
+            onMouseDown={handleMouseDown}
+            onMouseLeave={handleMouseLeave}
+            onMouseUp={handleMouseUp}
+            onMouseMove={handleMouseMove}
           >
-            {category.name}
-          </button>
-        ))}
+            <button
+              onClick={() => onSelectCategory(null)}
+              className={`whitespace-nowrap px-4 py-1.5 text-[11px] font-bold rounded-full transition-all border ${!selectedCategory
+                  ? 'bg-[#111] border-[#111] text-white shadow-lg shadow-black/5'
+                  : 'bg-[#efeeea] border-transparent text-[#111]/40 hover:text-[#111] hover:bg-white hover:border-[#efeeea]'
+                }`}
+            >
+              All Topics
+            </button>
+            {categories.map((category) => (
+              <button
+                key={category._id}
+                onClick={() => onSelectCategory(category.slug)}
+                className={`whitespace-nowrap px-4 py-1.5 text-[11px] font-bold rounded-full transition-all border ${selectedCategory === category.slug
+                    ? 'bg-[#111] border-[#111] text-white shadow-lg shadow-black/5'
+                    : 'bg-[#efeeea] border-transparent text-[#111]/40 hover:text-[#111] hover:bg-white hover:border-[#efeeea]'
+                  }`}
+              >
+                {category.name}
+              </button>
+            ))}
+          </div>
+
+          {/* Fade Gradients & Arrows */}
+          <div className={`absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-[var(--background)] to-transparent pointer-events-none transition-opacity duration-300 ${showLeft ? 'opacity-100' : 'opacity-0'}`}></div>
+          <div className={`absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-[var(--background)] to-transparent pointer-events-none transition-opacity duration-300 ${showRight ? 'opacity-100' : 'opacity-0'}`}></div>
+        </div>
       </div>
-
-      {/* Fade Gradients & Arrows */}
-      {showLeft && (
-        <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-white to-transparent pointer-events-none flex items-center">
-          <button onClick={() => handleScroll('left')} className="pointer-events-auto ml-1 p-1 bg-white rounded-full shadow-sm border border-slate-100 text-slate-600 hover:text-slate-900">
-            <ChevronLeft size={20} />
-          </button>
-        </div>
-      )}
-
-      {showRight && (
-        <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-white to-transparent pointer-events-none flex items-center justify-end">
-          <button onClick={() => handleScroll('right')} className="pointer-events-auto mr-1 p-1 bg-white rounded-full shadow-sm border border-slate-100 text-slate-600 hover:text-slate-900">
-            <ChevronRight size={20} />
-          </button>
-        </div>
-      )}
     </div>
   );
 };
 
 export default CategorySlider;
+

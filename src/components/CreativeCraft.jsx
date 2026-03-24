@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, useTransform } from 'framer-motion';
-import { Bold, Italic, Underline, Type, AlignLeft, Sparkles, ChevronRight } from 'lucide-react';
+import { Bold, Underline, Type, AlignLeft, Sparkles, ChevronRight } from 'lucide-react';
 
 const segmentVariants = {
   initial: { opacity: 0, y: 30, filter: "blur(8px)" },
@@ -14,7 +14,7 @@ const segmentVariants = {
 
 const CreativeCraft = () => {
   return (
-    <section className="bg-white py-24 px-6 md:px-12 overflow-hidden flex items-center relative z-10">
+    <section className="bg-transparent py-10 md:py-24 px-4 md:px-8 min-h-fit md:min-h-[75vh] overflow-hidden flex items-center justify-center relative z-10">
       <div className="max-w-[1100px] mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         
         {/* Left: Floating Canvas / Editor UI */}
@@ -26,7 +26,7 @@ const CreativeCraft = () => {
           className="relative order-2 lg:order-1"
         >
           {/* Main Canvas Container */}
-          <div className="bg-[#fcfdfd] border border-gray-100 rounded-[44px] p-8 md:p-12 shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] relative overflow-hidden group">
+          <div className="bg-white rounded-[2rem] p-5 md:p-8 ambient-shadow relative overflow-hidden group">
             
             <div className="flex flex-col gap-8">
               {/* Fake Title - Typing Effect */}
@@ -40,7 +40,7 @@ const CreativeCraft = () => {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: 0.5 + i * 0.1, duration: 0.5 }}
-                      className="text-[1.8rem] md:text-[2.2rem] font-bold tracking-tight text-[#111] leading-tight font-serif italic"
+                      className="text-[1.2rem] md:text-[1.8rem] font-black tracking-tighter text-[#00261b] leading-tight font-newsreader"
                     >
                       {word}
                     </motion.span>
@@ -51,13 +51,13 @@ const CreativeCraft = () => {
               {/* Staggered Text Lines - Writing Story Animation */}
               <div className="flex flex-col gap-4 relative">
                 {[0.9, 0.8, 1, 0.6, 0.85].map((w, i) => (
-                  <div key={i} className="relative w-full h-2.5 bg-gray-50 rounded-full overflow-hidden">
+                  <div key={i} className="relative w-full h-2 bg-[#f5f3ef] rounded-full overflow-hidden">
                     <motion.div
                       initial={{ width: "0%" }}
                       whileInView={{ width: `${w * 100}%` }}
                       viewport={{ once: true }}
                       transition={{ delay: 1.2 + i * 0.4, duration: 1.5, ease: "easeInOut" }}
-                      className="h-full bg-gray-200 rounded-full origin-left"
+                      className="h-full bg-[#efeeea] rounded-full origin-left"
                     />
                     {/* Blinking Cursor */}
                     {i === 4 && (
@@ -87,7 +87,6 @@ const CreativeCraft = () => {
               >
                 {[
                   { icon: <Bold size={16} />, label: "B" },
-                  { icon: <Italic size={16} />, label: "I" },
                   { icon: <Type size={16} />, label: "T" },
                   { icon: <Sparkles size={16} />, color: "text-teal-500" }
                 ].map((item, i) => (
@@ -95,7 +94,7 @@ const CreativeCraft = () => {
                     key={i}
                     animate={{ y: [0, -8, 0] }}
                     transition={{ repeat: Infinity, duration: 3 + i, ease: "easeInOut" }}
-                    className="w-10 h-10 rounded-full bg-white border border-gray-100 shadow-lg flex items-center justify-center text-[#444] hover:border-teal-300 transition-colors cursor-pointer"
+                    className="w-10 h-10 rounded-full bg-[#f5f3ef] ambient-shadow flex items-center justify-center text-[#00261b] hover:bg-[#bcedd7] transition-colors cursor-pointer"
                   >
                     {item.icon}
                   </motion.div>
@@ -130,19 +129,19 @@ const CreativeCraft = () => {
             className="flex flex-col gap-4"
           >
             <div className="overflow-hidden">
-               <motion.h2 variants={segmentVariants} className="text-[2.5rem] md:text-[4rem] font-bold tracking-tighter text-[#111] leading-[0.95]">
+               <motion.h2 variants={segmentVariants} className="text-[1.8rem] md:text-[3.2rem] font-black tracking-tighter text-[#00261b] leading-[0.9] font-newsreader">
                  Master the art of 
                </motion.h2>
             </div>
             <div className="overflow-hidden">
-               <motion.h2 variants={segmentVariants} className="text-[2.5rem] md:text-[4rem] font-bold tracking-tighter text-[#111] leading-[0.95]">
+               <motion.h2 variants={segmentVariants} className="text-[1.8rem] md:text-[3.2rem] font-black tracking-tighter text-[#00261b] leading-[0.9] font-newsreader">
                  storytelling.
                </motion.h2>
             </div>
             
             <motion.p 
               variants={segmentVariants}
-              className="mt-2 text-[#666] font-medium text-[16px] leading-relaxed"
+              className="mt-2 text-[#00261b]/60 font-medium text-[13px] md:text-[15px] leading-relaxed font-manrope max-w-[420px]"
             >
               Experience a clutter-free environment designed to let your ideas flow. Scribloom strips away the noise so you can focus on what matters most: your craft. 
             </motion.p>
@@ -152,11 +151,11 @@ const CreativeCraft = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.6, type: "spring" }}
-            className="w-fit flex items-center gap-2 bg-[#111] text-white px-10 py-4 rounded-full font-bold text-sm hover:scale-105 transition-transform overflow-hidden relative shadow-2xl group"
+            transition={{ delay: 0.6, type: "spring", stiffness: 100, damping: 10 }}
+            className="w-fit flex items-center gap-3 gradient-primary text-white px-8 py-3.5 rounded-full font-bold text-[11px] uppercase tracking-widest font-manrope hover:scale-105 transition-all ambient-shadow"
           >
-            <span className="relative z-10 font-bold tracking-tight">Start creating your story</span>
-            <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+            <span className="relative z-10 font-[700] tracking-tight">Start creating your story</span>
+            <ChevronRight size={18} className="translate-y-[1px]" />
           </motion.button>
         </div>
 
