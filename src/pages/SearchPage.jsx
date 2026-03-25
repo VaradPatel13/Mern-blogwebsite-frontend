@@ -1,26 +1,25 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { searchSite } from '../services/searchService';
 import BlogPostCard from '../components/BlogPostCard';
 import { Search, ArrowLeft } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 
 const SearchResultSkeleton = () => (
-  <div className="animate-pulse grid grid-cols-1 md:grid-cols-2 gap-10">
-    {[1, 2, 3, 4].map(i => (
+  <div className="animate-pulse grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+    {[1, 2, 3, 4, 5, 6].map(i => (
       <div key={i} className="flex flex-col gap-4">
         <div className="aspect-[16/10] bg-[#eae8e4] rounded-[24px]"></div>
         <div className="h-4 bg-[#eae8e4] rounded-lg w-1/3"></div>
         <div className="h-7 bg-[#e4e2de] rounded-lg w-full"></div>
         <div className="h-7 bg-[#e4e2de] rounded-lg w-4/5"></div>
-        <div className="h-4 bg-[#eae8e4] rounded-lg w-full"></div>
-        <div className="h-4 bg-[#eae8e4] rounded-lg w-5/6"></div>
       </div>
     ))}
   </div>
 );
 
 const SearchPage = () => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q');
   const [results, setResults] = useState({ blogs: [], users: [] });
@@ -65,21 +64,61 @@ const SearchPage = () => {
             Return to Garden
           </Link>
 
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-10 h-10 bg-[#eae8e4] rounded-2xl flex items-center justify-center shrink-0">
-              <Search size={18} className="text-[#714949]" aria-hidden="true" />
-            </div>
-            <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#00261b]/40">
-              Archive Search
-            </span>
-          </div>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
+            <div className="flex-1 max-w-3xl">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-10 h-10 bg-[#eae8e4] rounded-2xl flex items-center justify-center shrink-0">
+                  <Search size={18} className="text-[#00261b]" aria-hidden="true" />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#00261b]/40">
+                  Archive Search
+                </span>
+              </div>
 
-          <h1 className="font-newsreader text-5xl md:text-6xl lg:text-[72px] font-bold text-[#00261b] tracking-tighter leading-[1.05]">
-            {query
-              ? <span>Results for <em className="text-[#7b5455] not-italic">"{query}"</em></span>
-              : 'Search the Archive'
-            }
-          </h1>
+              <h1 className="font-newsreader text-5xl md:text-6xl lg:text-[72px] font-bold text-[#00261b] tracking-tighter leading-[1.05]">
+                {query
+                  ? <span>Results for <em className="text-[#7b5455] not-italic">"{query}"</em></span>
+                  : 'Search the Archive'
+                }
+              </h1>
+            </div>
+
+            <div className="w-full md:max-w-sm">
+              <form 
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const q = e.target.q.value.trim();
+                  if (q) {
+                    navigate(`/search?q=${encodeURIComponent(q)}`);
+                  }
+                }}
+                className="relative group"
+              >
+                <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-[#00261b]/30 pointer-events-none group-focus-within:text-[#00261b] transition-colors" strokeWidth={2.5} />
+                <input
+                  type="text"
+                  name="q"
+                  defaultValue={query || ''}
+                  placeholder="Type your search..."
+                  className="w-full pl-14 pr-4 py-4 text-lg bg-white border border-[#eae8e4] rounded-[2rem] font-bold text-[#00261b] placeholder:text-[#00261b]/10 focus:outline-none focus:ring-4 focus:ring-[#a0d1bc]/20 focus:border-[#00261b] transition-all shadow-xl shadow-black/5"
+                />
+                <button 
+                  type="submit"
+                  disabled={loading}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 px-5 py-2.5 bg-[#00261b] text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-[#1a382c] transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-wait flex items-center gap-2"
+                >
+                  {loading ? (
+                    <>
+                      <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      Searching...
+                    </>
+                  ) : (
+                    'Find'
+                  )}
+                </button>
+              </form>
+            </div>
+          </div>
         </header>
 
         {/* Results */}

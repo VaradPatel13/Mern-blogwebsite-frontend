@@ -69,6 +69,15 @@ const MainNavbar = () => {
             <>
               {/* Action Icons */}
               <div className="flex items-center gap-6 pr-2">
+                {/* Search Mobile Only */}
+                <Link
+                  to="/search"
+                  className="md:hidden text-[#55816c] hover:text-[#1a382c] transition-colors"
+                  aria-label="Search archives"
+                >
+                  <Search size={22} strokeWidth={2.2} />
+                </Link>
+
                 <Link
                   to="/create-post"
                   className="text-[#55816c] hover:text-[#1a382c] transition-colors"
@@ -76,13 +85,6 @@ const MainNavbar = () => {
                 >
                   <PenLine size={20} strokeWidth={2.2} aria-hidden="true" />
                 </Link>
-                <button
-                  className="text-[#55816c] hover:text-[#1a382c] transition-colors relative"
-                  aria-label="Notifications"
-                >
-                  <Bell size={20} strokeWidth={2.2} aria-hidden="true" />
-                  <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-[#8b5a5a] rounded-full border-2 border-white" aria-hidden="true"></span>
-                </button>
               </div>
 
               {/* Profile Dropdown */}
