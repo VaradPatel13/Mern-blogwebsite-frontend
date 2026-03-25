@@ -1,6 +1,5 @@
-import React, { forwardRef, useImperativeHandle, useCallback } from 'react';
+import React, { forwardRef, useImperativeHandle } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
-import { BubbleMenu, FloatingMenu } from '@tiptap/react/menus';
 
 import 'highlight.js/styles/github.css';
 
@@ -27,23 +26,32 @@ const NotionEditor = forwardRef(({ content }, ref) => {
       StarterKit.configure({
         heading: { levels: [1, 2, 3] },
         codeBlock: false,
+        // Enable dropcursor so users see where the block will land
+        dropcursor: {
+          color: '#37352f',
+          width: 2,
+        },
       }),
       Placeholder.configure({
         placeholder: ({ node }) => {
           if (node.type.name === 'heading') return 'Heading';
           return "Type '/' for commands";
         },
+        showOnlyWhenEditable: true,
+        showOnlyCurrent: true,
       }),
       SlashCommand.configure({
         suggestion: {
           items: ({ query }) =>
-            getSuggestionItems().filter(item =>
-              item.title.toLowerCase().startsWith(query.toLowerCase())
-            ).slice(0, 8),
+            getSuggestionItems()
+              .filter(item =>
+                item.title.toLowerCase().startsWith(query.toLowerCase())
+              )
+              .slice(0, 8),
           render: renderItems,
         },
       }),
-      Image.configure({ inline: false }),
+      Image.configure({ inline: false, allowBase64: true }),
       Link.configure({ openOnClick: false, autolink: true }),
       Typography,
       TaskList,
@@ -53,28 +61,37 @@ const NotionEditor = forwardRef(({ content }, ref) => {
     content,
     editorProps: {
       attributes: {
-        class: 'notion-editor-prose',
+        class: 'focus:outline-none',
         spellCheck: 'true',
+      },
+      // Allow drops inside the editor
+      handleDrop: (view, event, slice, moved) => {
+        // Let ProseMirror handle the default drop behaviour
+        return false;
       },
     },
   });
 
   useImperativeHandle(ref, () => ({
     getEditorJson: () => editor?.getJSON(),
+    getEditorHtml: () => editor?.getHTML(),
     focus: () => editor?.chain().focus().run(),
   }));
 
   if (!editor) return null;
 
   return (
-    // Outer gutter wrapper — Notion leaves ~96px on the left for the drag handle
-    <div className="relative w-full" style={{ paddingLeft: '46px' }}>
+    <div className="relative w-full" style={{ paddingLeft: '48px' }}>
+      {/* Drag handle sits in the left gutter */}
       <NotionDragHandle editor={editor} />
+
+      {/* Text selection bubble menu */}
       <NotionBubbleMenu editor={editor} />
+
+      {/* Main editable area */}
       <EditorContent
         editor={editor}
-        className="w-full cursor-text"
-        // Click below last block → append new paragraph and focus
+        className="w-full min-h-[60vh] cursor-text"
         onClick={() => {
           if (!editor.isFocused) {
             editor.chain().focus('end').run();

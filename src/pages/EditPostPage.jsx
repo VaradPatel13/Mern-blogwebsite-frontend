@@ -1,20 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
 import { getBlogById, updateBlog } from '../services/blogService';
 import ImageUpload from '../components/ImageUpload';
+import NotionEditor from '../components/editor/NotionEditor';
 import { useToast } from '@/components/ui/toast';
-import { ArrowLeft, Save, Send, ImageIcon as ImageIcon2, Image as ImageIcon, Settings, Loader2 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import {
+  ArrowLeft, Image as ImageIcon, Settings, Save, Send,
+  X, PenLine, BookOpen, Sidebar as SidebarIcon, Loader2,
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const EditPostPage = () => {
   const { id } = useParams();
   const [title, setTitle] = useState('');
-  const [body, setBody] = useState('');
   const [coverImage, setCoverImage] = useState(null);
   const [existingCoverImageUrl, setExistingCoverImageUrl] = useState('');
   const [status, setStatus] = useState('draft');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [initialContent, setInitialContent] = useState(null);
+
+  const editorRef = useRef(null);
+
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -29,9 +35,19 @@ const EditPostPage = () => {
         if (response.success) {
           const blog = response.data;
           setTitle(blog.title || '');
-          setBody(blog.body || '');
           setStatus(blog.status || 'draft');
           setExistingCoverImageUrl(blog.coverImage || '');
+
+          // Parse stored body — it could be TipTap JSON string or legacy HTML
+          if (blog.body) {
+            try {
+              const parsed = JSON.parse(blog.body);
+              setInitialContent(parsed);
+            } catch {
+              // Legacy HTML body — wrap in a doc structure for TipTap
+              setInitialContent(blog.body);
+            }
+          }
         }
       } catch (err) {
         setError(err.message || 'Failed to load story data.');
@@ -42,22 +58,21 @@ const EditPostPage = () => {
     fetchBlogData();
   }, [id]);
 
-  const handleSubmit = async (e, publishStatus) => {
-    e.preventDefault();
+  const handleSubmit = async (publishStatus) => {
     setError('');
     const finalStatus = publishStatus || status;
 
-    if (!title || !body) {
-      setError('Title and story content are required.');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    const editorContent = editorRef.current?.getEditorJson();
+
+    if (!title || !editorContent) {
+      setError('Title and content are required.');
       return;
     }
 
     setSaving(true);
-
     const formData = new FormData();
     formData.append('title', title);
-    formData.append('body', body);
+    formData.append('body', JSON.stringify(editorContent));
     formData.append('status', finalStatus);
 
     if (coverImage) {
@@ -68,14 +83,13 @@ const EditPostPage = () => {
       const response = await updateBlog(id, formData);
       if (response.success) {
         toast({
-          title: finalStatus === 'published' ? "Story Published" : "Draft updated",
-          description: `Your edits have been saved.`
+          title: finalStatus === 'published' ? 'Story Published' : 'Draft updated',
+          description: 'Your edits have been saved.',
         });
         navigate('/dashboard');
       }
     } catch (err) {
       setError(err.message || 'Failed to update post.');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setSaving(false);
     }
@@ -83,153 +97,183 @@ const EditPostPage = () => {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4 bg-[var(--background)]">
-        <div className="w-12 h-12 border-4 border-[#c0c8c3]/20 border-t-[#00261b] rounded-full animate-spin"></div>
-        <p className="text-[#00261b] font-black uppercase tracking-widest text-xs">Unearthing Bloom...</p>
+      <div className="h-screen w-full flex items-center justify-center bg-[#fbf9f5]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-[#c0c8c3]/20 border-t-[#00261b] rounded-full animate-spin"></div>
+          <p className="text-[#00261b] font-black uppercase tracking-widest text-xs">Loading editor...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-[calc(100vh-80px)] bg-[var(--background)] font-manrope selection:bg-[#bcedd7] selection:text-[#002116] pb-24 relative overflow-hidden flex flex-col pt-8 lg:pt-16 w-full">
-      
-      {/* Decorative Blob */}
-      <div className="absolute -top-32 -right-32 w-[500px] h-[500px] bg-[#a0d1bc]/20 rounded-full blur-[120px] pointer-events-none z-0"></div>
+    <div className="h-screen w-full flex bg-[#fbf9f5] font-manrope selection:bg-[#bcedd7] overflow-hidden">
 
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="max-w-[1400px] mx-auto w-full px-6 lg:px-12 relative z-10"
-      >
+      {/* 1. LEFT RAIL (Icons Only) */}
+      <nav className="w-18 border-r border-[#c0c8c3]/20 flex flex-col items-center py-8 gap-10 bg-white/50 backdrop-blur-sm z-20 shrink-0">
+        <Link to="/home" className="p-3 text-[#00261b] hover:bg-[#bcedd7]/20 rounded-2xl transition-all">
+          <BookOpen size={24} />
+        </Link>
+        <div className="flex flex-col gap-6 mt-10">
+          <button className="p-3 text-[#00261b] bg-[#bcedd7]/40 rounded-2xl shadow-sm transition-all shadow-md active:scale-95"><PenLine size={24} strokeWidth={2.5}/></button>
+          <button className="p-3 text-[#414944]/40 hover:text-[#00261b] transition-colors"><Settings size={24}/></button>
+        </div>
+        <div className="mt-auto flex flex-col items-center gap-6">
+           <div className="w-10 h-10 rounded-full bg-[#00261b] text-white flex items-center justify-center font-bold text-sm">V</div>
+        </div>
+      </nav>
 
-        {/* Header Actions */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12 pb-8 border-b border-[#c0c8c3]/30">
+      <div className="flex-1 flex flex-col min-w-0 relative">
+
+        {/* 2. TOP HEADER */}
+        <header className="h-18 px-8 flex items-center justify-between border-b border-[#c0c8c3]/10 bg-[#fbf9f5]/80 backdrop-blur-md sticky top-0 z-30 shrink-0">
           <div className="flex items-center gap-6">
-            <Link to="/dashboard" className="w-12 h-12 flex items-center justify-center text-[#414944] hover:text-[#00261b] bg-[#eae8e4] hover:bg-[#d6d4d0] shadow-sm hover:shadow-md rounded-full transition-all duration-300">
-              <ArrowLeft size={20} strokeWidth={2.5} />
-            </Link>
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#7b5455] mb-2 hidden sm:block">Modification Mode</p>
-              <h1 className="text-4xl lg:text-5xl font-newsreader font-black tracking-tighter text-[#00261b] leading-none mb-1">Editing Bloom</h1>
+            <Link to="/dashboard" className="text-[#414944] hover:text-[#00261b] transition-colors"><ArrowLeft size={18} /></Link>
+            <div className="flex items-center gap-3">
+              <span className="w-2 h-2 rounded-full bg-[#7b5455] animate-pulse" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-[#414944]/50">Editing Mode — Refining Bloom</span>
             </div>
           </div>
-          <div className="flex items-center gap-4 w-full sm:w-auto mt-4 sm:mt-0">
+
+          <div className="flex items-center gap-4">
             <button
-              onClick={(e) => handleSubmit(e, 'draft')}
-              disabled={saving}
-              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-8 py-4 text-[11px] uppercase tracking-widest font-black text-[#414944] bg-[#eae8e4] border border-transparent hover:border-[#c0c8c3] hover:bg-white rounded-2xl transition-all shadow-sm active:scale-95"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className={`p-3 rounded-xl transition-all ${sidebarOpen ? 'bg-[#bcedd7] text-[#00261b]' : 'hover:bg-white text-[#414944]'}`}
+              title="Post Details"
             >
-              {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} strokeWidth={2.5} />} Save Draft
+              <SidebarIcon size={20} />
             </button>
             <button
-              onClick={(e) => handleSubmit(e, 'published')}
+              onClick={() => handleSubmit('draft')}
               disabled={saving}
-              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-10 py-4 text-[11px] uppercase tracking-widest font-black text-[#bcedd7] bg-[#00261b] hover:bg-[#214f3f] rounded-2xl transition-all shadow-[0_15px_30px_rgba(0,38,27,0.15)] hover:shadow-[0_20px_40px_rgba(0,38,27,0.25)] hover:-translate-y-1 active:translate-y-0 active:scale-95"
+              className="px-6 py-2.5 text-[11px] font-black uppercase tracking-widest text-[#414944] bg-[#eae8e4] hover:bg-white rounded-full transition-all flex items-center gap-2"
             >
-              {saving ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} strokeWidth={2.5} />} {status === 'published' ? 'Update Published' : 'Publish Now'}
+              {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />} Save Draft
+            </button>
+            <button
+               onClick={() => handleSubmit('published')}
+               disabled={saving}
+               className="px-8 py-2.5 bg-[#00261b] text-white text-[11px] font-black uppercase tracking-widest rounded-full shadow-lg hover:shadow-xl hover:bg-[#214f3f] transition-all hover:-translate-y-0.5 flex items-center gap-2"
+            >
+              {saving ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+              {status === 'published' ? 'Update' : 'Publish'}
             </button>
           </div>
-        </div>
+        </header>
 
-        {error && (
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-[#ffdad6]/30 text-[#ba1a1a] border border-[#ffdad6] px-8 py-5 rounded-[1.5rem] mb-12 text-[11px] font-black uppercase tracking-widest shadow-sm backdrop-blur-sm flex items-center gap-3">
-            <span className="w-8 h-8 rounded-full bg-[#ba1a1a] text-white flex items-center justify-center text-lg shrink-0">!</span>
-            {error}
-          </motion.div>
-        )}
+        {/* 3. CENTER CANVAS */}
+        <main
+          className="flex-1 overflow-y-auto scroll-smooth flex justify-center py-20 px-6"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              editorRef.current?.focus();
+            }
+          }}
+        >
+          <div className="w-full max-w-[720px] flex flex-col gap-14">
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-10 lg:gap-16">
+            {error && (
+              <div className="bg-[#ffdad6]/20 p-4 rounded-2xl text-[#ba1a1a] text-[11px] font-black uppercase tracking-widest border border-[#ffdad6] flex items-center gap-3">
+                <span className="w-6 h-6 rounded-full bg-[#ba1a1a] text-white flex items-center justify-center shrink-0">!</span>
+                {error}
+              </div>
+            )}
 
-          {/* Editor Column */}
-          <div className="space-y-8">
-            
-            {/* Title Input */}
-            <div className="bg-[#f5f3ef] rounded-[2rem] border border-[#c0c8c3]/20 p-8 md:p-10 shadow-[0_20px_40px_rgba(0,38,27,0.02)] transition-shadow focus-within:shadow-[0_20px_40px_rgba(0,38,27,0.05)] focus-within:bg-white">
-              <input
-                type="text"
-                placeholder="Enter a captivating title..."
+            {/* Notion-style TITLE */}
+            <div>
+              <textarea
+                id="post-title"
+                placeholder="Untitled"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full text-4xl lg:text-5xl font-newsreader font-black tracking-tighter text-[#00261b] placeholder:text-[#c0c8c3] border-none focus:ring-0 bg-transparent px-0 py-2 resize-none outline-none leading-[1.1] md:leading-[1]"
+                rows={1}
+                style={{ outline: 'none', border: 'none', boxShadow: 'none', resize: 'none' }}
+                className="w-full text-[2.75rem] font-extrabold tracking-tight text-[#37352f] placeholder:text-[#e0dfd9] bg-transparent p-0 leading-tight block"
+                onInput={(e) => { e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }}
               />
             </div>
 
-            {/* Quill Editor */}
-            <div className="bg-[#f5f3ef] rounded-[2rem] border border-[#c0c8c3]/20 shadow-[0_20px_40px_rgba(0,38,27,0.02)] overflow-hidden focus-within:shadow-[0_20px_40px_rgba(0,38,27,0.05)] focus-within:bg-white transition-all">
-              <div className="w-full">
-                <ReactQuill
-                  theme="snow"
-                  value={body}
-                  onChange={setBody}
-                  placeholder="Weave your thoughts here..."
-                  className="quill-premium-editor text-lg text-[#1b1c1a] font-medium leading-relaxed min-h-[500px]"
-                  modules={{
-                    toolbar: [
-                      [{ 'header': [2, 3, false] }],
-                      ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-                      [{'list': 'ordered'}, {'list': 'bullet'}],
-                      ['link', 'image', 'code-block'],
-                      ['clean']
-                    ]
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Sidebar Settings Configuration */}
-          <div className="space-y-8">
-
-            {/* Cover Image Settings */}
-            <div className="bg-[#f5f3ef] border border-[#c0c8c3]/20 rounded-[2rem] p-8 shadow-[0_20px_40px_rgba(0,38,27,0.02)]">
-              <h3 className="text-[10px] font-black text-[#414944]/60 uppercase tracking-[0.2em] flex items-center gap-3 mb-6 pb-4 border-b border-[#c0c8c3]/30">
-                <ImageIcon size={16} className="text-[#00261b]" strokeWidth={2.5} /> Featured Visual
-              </h3>
-              
-              {existingCoverImageUrl && !coverImage && (
-                <div className="mb-6 relative rounded-[1.5rem] overflow-hidden border border-[#c0c8c3]/20 shadow-md">
-                  <img src={existingCoverImageUrl} alt="Current cover" className="w-full h-auto object-cover aspect-[16/9]" />
-                  <div className="absolute inset-0 bg-black/10"></div>
-                </div>
+            {/* Notion Block Editor — pre-loaded with existing content */}
+            <div>
+              {initialContent !== null ? (
+                <NotionEditor ref={editorRef} content={initialContent} />
+              ) : (
+                <NotionEditor ref={editorRef} />
               )}
-
-              <ImageUpload onFileChange={setCoverImage} />
-              <p className="text-[9px] text-[#414944]/60 mt-5 uppercase tracking-widest text-center font-bold">Upload to overwrite current visual</p>
             </div>
-
-            {/* Publishing Settings */}
-            <div className="bg-[#e4e2de]/40 border border-[#c0c8c3]/30 rounded-[2rem] p-8 shadow-[inset_0_-10px_40px_rgba(255,255,255,0.5),0_10px_20px_rgba(0,38,27,0.02)] focus-within:bg-[#f5f3ef] transition-colors duration-500">
-              <h3 className="text-[10px] font-black text-[#414944]/60 uppercase tracking-[0.2em] flex items-center gap-3 mb-6 pb-4 border-b border-[#c0c8c3]/30">
-                <Settings size={16} className="text-[#00261b]" strokeWidth={2.5} /> Visibility Control
-              </h3>
-              <div className="space-y-4">
-                <label className="flex items-center gap-5 p-5 bg-white border-2 border-[#efeeea] rounded-2xl cursor-pointer hover:border-[#00261b] hover:shadow-md transition-all group">
-                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${status === 'published' ? 'border-[#0a251c] bg-[#0a251c]' : 'border-[#c0c8c3] group-hover:border-[#0a251c]'}`}>
-                    {status === 'published' && <div className="w-2 h-2 rounded-full bg-[#bcedd7]" />}
-                  </div>
-                  <input type="radio" value="published" checked={status === 'published'} onChange={() => setStatus('published')} className="hidden" />
-                  <div className="flex flex-col">
-                    <span className="text-[15px] font-bold text-[#00261b]">World Wide</span>
-                    <span className="text-[10px] font-black text-[#414944]/60 uppercase tracking-widest mt-0.5">Publicly visible</span>
-                  </div>
-                </label>
-                <label className="flex items-center gap-5 p-5 bg-white border-2 border-[#efeeea] rounded-2xl cursor-pointer hover:border-[#00261b] hover:shadow-md transition-all group">
-                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${status === 'draft' ? 'border-[#0a251c] bg-[#0a251c]' : 'border-[#c0c8c3] group-hover:border-[#0a251c]'}`}>
-                    {status === 'draft' && <div className="w-2 h-2 rounded-full bg-[#bcedd7]" />}
-                  </div>
-                  <input type="radio" value="draft" checked={status === 'draft'} onChange={() => setStatus('draft')} className="hidden" />
-                  <div className="flex flex-col">
-                    <span className="text-[15px] font-bold text-[#00261b]">Greenhouse Draft</span>
-                    <span className="text-[10px] font-black text-[#414944]/60 uppercase tracking-widest mt-0.5">Only you can see</span>
-                  </div>
-                </label>
-              </div>
-            </div>
-
           </div>
-        </div>
-      </motion.div>
+        </main>
+
+        {/* 4. SETTINGS SIDEBAR */}
+        <AnimatePresence>
+          {sidebarOpen && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setSidebarOpen(false)}
+                className="absolute inset-0 bg-[#00261b]/10 backdrop-blur-sm z-40 lg:hidden"
+              />
+              <motion.aside
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                className="absolute right-0 top-0 bottom-0 w-full max-w-[380px] bg-white shadow-2xl z-50 overflow-y-auto p-10 flex flex-col gap-10 border-l border-[#c0c8c3]/20"
+              >
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-black text-[#00261b] uppercase tracking-widest">Post Settings</h3>
+                  <button onClick={() => setSidebarOpen(false)} className="text-[#414944] hover:text-[#00261b] p-2 hover:bg-[#f5f3ef] rounded-full"><X size={20}/></button>
+                </div>
+
+                {/* Featured Visual */}
+                <section className="space-y-4">
+                  <header className="flex items-center gap-3 text-[10px] font-black text-[#414944]/50 uppercase tracking-[0.2em] border-b border-[#c0c8c3]/20 pb-3">
+                    <ImageIcon size={14}/> Featured Visual
+                  </header>
+                  {existingCoverImageUrl && !coverImage && (
+                    <div className="relative rounded-xl overflow-hidden border border-[#c0c8c3]/20 shadow-md">
+                      <img src={existingCoverImageUrl} alt="Current cover" className="w-full h-auto object-cover aspect-[16/9]" />
+                    </div>
+                  )}
+                  <ImageUpload onFileChange={setCoverImage} />
+                  <p className="text-[9px] text-[#414944]/60 uppercase tracking-widest text-center font-bold">Upload to replace current image</p>
+                </section>
+
+                {/* Visibility Control */}
+                <section className="space-y-4">
+                  <header className="flex items-center gap-3 text-[10px] font-black text-[#414944]/50 uppercase tracking-[0.2em] border-b border-[#c0c8c3]/20 pb-3">
+                    <Settings size={14}/> Visibility
+                  </header>
+                  <div className="space-y-3">
+                    {[
+                      { value: 'published', label: 'Published', desc: 'Publicly visible' },
+                      { value: 'draft', label: 'Draft', desc: 'Only you can see' },
+                    ].map(opt => (
+                      <label key={opt.value} className={`flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border-2 ${status === opt.value ? 'border-[#00261b] bg-[#fbf9f5]' : 'border-[#efeeea] hover:border-[#c0c8c3]'}`}>
+                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${status === opt.value ? 'border-[#00261b] bg-[#00261b]' : 'border-[#c0c8c3]'}`}>
+                          {status === opt.value && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                        </div>
+                        <input type="radio" value={opt.value} checked={status === opt.value} onChange={() => setStatus(opt.value)} className="hidden" />
+                        <div>
+                          <p className="text-sm font-bold text-[#00261b]">{opt.label}</p>
+                          <p className="text-[10px] text-[#414944]/60 uppercase tracking-widest">{opt.desc}</p>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                </section>
+
+                <div className="mt-auto">
+                  <p className="text-[10px] text-center text-[#414944]/40 font-bold uppercase tracking-widest leading-relaxed">Changes are saved when you click Save Draft or Publish.</p>
+                </div>
+              </motion.aside>
+            </>
+          )}
+        </AnimatePresence>
+
+      </div>
     </div>
   );
 };

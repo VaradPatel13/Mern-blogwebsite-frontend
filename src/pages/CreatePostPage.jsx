@@ -151,7 +151,7 @@ const CreatePostPage = () => {
 
         {/* 3. CENTER CANVAS (Writing Area) */}
         <main 
-          className="flex-1 overflow-y-auto scroll-smooth flex justify-center py-20 px-6 cursor-text"
+          className="flex-1 overflow-y-auto scroll-smooth flex justify-center py-20 px-6"
           onClick={(e) => {
              // If clicking in the main blank space, focus the editor ref
              if (e.target === e.currentTarget) {

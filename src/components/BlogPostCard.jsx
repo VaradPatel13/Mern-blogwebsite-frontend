@@ -1,15 +1,12 @@
 import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from "framer-motion";
+import { getSnippet } from '../utils/blogTextUtils';
 
 const BlogPostCard = ({ post }) => {
   if (!post) return null;
 
-  const rawText = post.body
-    ? new DOMParser().parseFromString(post.body, 'text/html').body.textContent
-    : '';
-  const trimmedText = rawText.startsWith(post.title) ? rawText.slice(post.title.length).trim() : rawText;
-  const snippet = trimmedText ? trimmedText.slice(0, 100) + '...' : '';
+  const snippet = getSnippet(post.body, post.title, 100);
 
   return (
     <motion.div

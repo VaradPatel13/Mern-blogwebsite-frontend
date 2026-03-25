@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import CommentSection from '../components/CommentSection';
 import Footer from '../components/Footer';
 import BlogPostSkeleton from '../components/BlogPostSkeleton';
+import TiptapRenderer from '../components/TiptapRenderer';
 import useBlog from '../hooks/useBlog';
 import { Heart, MessageCircle, Bookmark, Share2, ArrowRight, List, ChevronDown, Check } from 'lucide-react';
 
@@ -98,25 +99,67 @@ const BlogPostPage = () => {
 
   const isLikedByUser = user && blog.likedBy.includes(user._id);
 
-  const headings = blog?.body
-    ? Array.from(new DOMParser().parseFromString(blog.body, 'text/html').querySelectorAll('h2, h3'))
-        .map((h, i) => ({ 
-          id: `section-${i}`, 
-          text: h.innerText,
-          level: h.tagName.toLowerCase() 
-        }))
-    : [];
+  // Parse body content — could be TipTap JSON string, JSON object, or legacy HTML
+  let parsedBody = null;
+  let isJsonContent = false;
+  if (blog?.body) {
+    if (typeof blog.body === 'object') {
+      parsedBody = blog.body;
+      isJsonContent = true;
+    } else {
+      try {
+        parsedBody = JSON.parse(blog.body);
+        isJsonContent = true;
+      } catch {
+        parsedBody = blog.body; // legacy HTML
+      }
+    }
+  }
 
-  let hIndex = 0;
-  const processedBody = blog?.body?.replace(/<h([23])>(.*?)<\/h[23]>/g, (match, level, content) => {
-    return `<h${level} id="section-${hIndex++}" class="scroll-mt-24 clear-both break-words">${content}</h${level}>`;
-  });
+  // Extract headings for ToC
+  const extractHeadingsFromJson = (node, result = []) => {
+    if (!node) return result;
+    if (node.type === 'heading' && node.attrs?.level >= 2 && node.attrs?.level <= 3) {
+      const text = node.content?.map(c => c.text || '').join('') || '';
+      result.push({ id: `section-${result.length}`, text, level: `h${node.attrs.level}` });
+    }
+    if (node.content) node.content.forEach(child => extractHeadingsFromJson(child, result));
+    return result;
+  };
 
-  const wordCount = blog?.body ? blog.body.replace(/<[^>]*>/g, '').trim().split(/\s+/).length : 0;
+  const headings = isJsonContent
+    ? extractHeadingsFromJson(parsedBody)
+    : (blog?.body
+        ? Array.from(new DOMParser().parseFromString(blog.body, 'text/html').querySelectorAll('h2, h3'))
+            .map((h, i) => ({ id: `section-${i}`, text: h.innerText, level: h.tagName.toLowerCase() }))
+        : []);
+
+  // Extract plain text for word count
+  const extractTextFromJson = (node) => {
+    if (!node) return '';
+    if (node.type === 'text') return node.text || '';
+    if (node.content) return node.content.map(extractTextFromJson).join(' ');
+    return '';
+  };
+
+  const bodyText = isJsonContent
+    ? extractTextFromJson(parsedBody)
+    : (blog?.body ? blog.body.replace(/<[^>]*>/g, '') : '');
+
+  const wordCount = bodyText.trim().split(/\s+/).filter(Boolean).length;
   const minutesRead = Math.max(1, Math.ceil(wordCount / 225));
 
+  // For legacy HTML — inject heading IDs
+  let processedBody = null;
+  if (!isJsonContent && blog?.body) {
+    let hIndex = 0;
+    processedBody = blog.body.replace(/<h([23])>(.*?)<\/h[23]>/g, (match, level, content) => {
+      return `<h${level} id="section-${hIndex++}" class="scroll-mt-24 clear-both break-words">${content}</h${level}>`;
+    });
+  }
+
   const pageUrl = typeof window !== 'undefined' ? window.location.href : '';
-  const plainTextSummary = blog.summary || (blog.body ? blog.body.replace(/<[^>]*>/g, '').slice(0, 160) : '');
+  const plainTextSummary = blog.summary || bodyText.slice(0, 160);
 
   return (
     <>
@@ -213,35 +256,28 @@ const BlogPostPage = () => {
                   </ul>
                 </div>
               )}
-              
-              <div className="p-8 rounded-3xl bg-[#f5f3ef] border border-[#c0c8c3]/20 shadow-sm relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-[#bcedd7]/20 rounded-full blur-xl -translate-y-1/2 translate-x-1/2"></div>
-                <h4 className="font-newsreader text-2xl font-bold text-[#00261b] mb-3 relative z-10">Subscribe</h4>
-                <p className="text-xs text-[#414944] mb-6 font-manrope leading-relaxed relative z-10">Get the latest botanical tech insights directly to your greenhouse.</p>
-                <div className="relative z-10">
-                  <input type="email" placeholder="Email address" className="w-full bg-transparent border-none border-b border-[#c0c8c3] focus:ring-0 focus:border-[#00261b] px-0 py-2 text-sm text-[#00261b] placeholder:text-[#717974] outline-none font-bold" />
-                  <button className="absolute right-0 top-1/2 -translate-y-1/2 text-[#00261b] hover:text-[#396756] transition-transform hover:translate-x-1 p-2">
-                    <ArrowRight size={18} strokeWidth={2} />
-                  </button>
-                </div>
-              </div>
+
             </div>
           </aside>
 
           {/* Article Prose Content */}
           <div className="lg:col-span-7 w-full overflow-hidden shrink-0">
-            <article 
-              className="font-manrope text-lg lg:text-[19px] leading-loose text-[#1b1c1a]/90 break-words
-              prose-p:mb-8 prose-p:font-medium
-              prose-headings:font-newsreader prose-headings:font-bold prose-headings:text-[#00261b] prose-headings:tracking-tight prose-headings:break-words
-              prose-blockquote:my-16 prose-blockquote:py-6 prose-blockquote:pl-8 prose-blockquote:border-l-[6px] prose-blockquote:border-[#7b5455]/20 prose-blockquote:not-italic prose-blockquote:font-newsreader prose-blockquote:text-2xl md:prose-blockquote:text-3xl prose-blockquote:text-[#00261b] prose-blockquote:leading-snug
-              prose-h2:text-3xl lg:prose-h2:text-4xl prose-h2:mb-6 prose-h2:mt-16 
-              prose-h3:text-2xl lg:prose-h3:text-3xl prose-h3:mb-4 prose-h3:mt-12
-              prose-img:rounded-2xl prose-img:w-full prose-img:shadow-lg prose-img:my-12 prose-img:mx-0 
-              prose-a:text-[#396756] prose-a:font-bold prose-a:underline prose-a:underline-offset-4 hover:prose-a:text-[#00261b]
-              max-w-none w-full"
-              dangerouslySetInnerHTML={{ __html: processedBody }} 
-            />
+            <article className="font-manrope text-lg lg:text-[19px] leading-loose text-[#1b1c1a]/90 break-words max-w-none w-full">
+              {isJsonContent ? (
+                <TiptapRenderer content={parsedBody} />
+              ) : (
+                <div
+                  className="prose-p:mb-8 prose-p:font-medium
+                    prose-headings:font-newsreader prose-headings:font-bold prose-headings:text-[#00261b] prose-headings:tracking-tight prose-headings:break-words
+                    prose-blockquote:my-16 prose-blockquote:py-6 prose-blockquote:pl-8 prose-blockquote:border-l-[6px] prose-blockquote:border-[#7b5455]/20 prose-blockquote:not-italic prose-blockquote:font-newsreader prose-blockquote:text-2xl md:prose-blockquote:text-3xl prose-blockquote:text-[#00261b] prose-blockquote:leading-snug
+                    prose-h2:text-3xl lg:prose-h2:text-4xl prose-h2:mb-6 prose-h2:mt-16
+                    prose-h3:text-2xl lg:prose-h3:text-3xl prose-h3:mb-4 prose-h3:mt-12
+                    prose-img:rounded-2xl prose-img:w-full prose-img:shadow-lg prose-img:my-12 prose-img:mx-0
+                    prose-a:text-[#396756] prose-a:font-bold prose-a:underline prose-a:underline-offset-4 hover:prose-a:text-[#00261b]"
+                  dangerouslySetInnerHTML={{ __html: processedBody }}
+                />
+              )}
+            </article>
 
             {/* Author Bio Box */}
             <div className="mt-24 p-8 md:p-12 rounded-[2rem] bg-[#efeeea] border-t-4 border-[#00261b]/10 flex flex-col md:flex-row gap-8 items-center md:items-start shadow-sm">
