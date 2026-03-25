@@ -27,7 +27,7 @@ const LatestStories = () => {
       image: img1,
       date: "Mar 12, 2024",
       aspect: "aspect-[16/10]",
-      gridSpan: "lg:col-span-12 xl:col-span-7",
+      gridSpan: "md:col-span-2 lg:col-span-12 xl:col-span-7",
     },
     {
       id: 2,
@@ -36,7 +36,7 @@ const LatestStories = () => {
       image: img2,
       date: "Mar 10, 2024",
       aspect: "aspect-square",
-      gridSpan: "lg:col-span-6 xl:col-span-5",
+      gridSpan: "md:col-span-1 lg:col-span-6 xl:col-span-5",
     },
     {
       id: 3,
@@ -45,16 +45,16 @@ const LatestStories = () => {
       image: img3,
       date: "Mar 08, 2024",
       aspect: "aspect-[3/4]",
-      gridSpan: "lg:col-span-6 xl:col-span-4",
+      gridSpan: "md:col-span-1 lg:col-span-6 xl:col-span-4",
     },
     {
       id: 4,
-      title: "Finding inspiration in the quiet corners of your city.",
+      title: "Finding inspiration in the corners of your city.",
       category: "TRAVEL",
       image: img4,
       date: "Mar 05, 2024",
       aspect: "aspect-video",
-      gridSpan: "lg:col-span-7 xl:col-span-5",
+      gridSpan: "md:col-span-1 lg:col-span-7 xl:col-span-5",
     },
     {
       id: 5,
@@ -63,7 +63,7 @@ const LatestStories = () => {
       image: img5,
       date: "Mar 01, 2024",
       aspect: "aspect-square",
-      gridSpan: "lg:col-span-5 xl:col-span-3",
+      gridSpan: "md:col-span-1 lg:col-span-5 xl:col-span-3",
     }
   ];
 

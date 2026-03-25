@@ -7,6 +7,7 @@ import VisionSection from '@/components/VisionSection';
 import CreativeCraft from '@/components/CreativeCraft';
 import LatestStories from '@/components/LatestStories';
 import CommunityFind from '@/components/CommunityFind';
+import LandingNavbar from '@/components/LandingNavbar';
 import ScrollToTopButton from '@/components/ui/ScrollToTopButton';
 
 const LandingPage = () => {
@@ -21,7 +22,7 @@ const LandingPage = () => {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "Scribloom",
-    "url": "https://scribloom.com", // Replace with your actual domain
+    "url": "https://scribloom.com",
     "description": "Cultivating stories in the digital greenhouse. A dynamic community where writers and readers seamlessly merge.",
     "publisher": {
       "@type": "Organization",
@@ -31,61 +32,57 @@ const LandingPage = () => {
 
   return (
     <>
-      {/* Comprehensive SEO Head */}
       <Helmet>
-        {/* Core Metadata */}
         <title>Scribloom - Cultivating Stories in the Digital Greenhouse</title>
         <meta name="description" content="Join Scribloom, a dynamic platform and community where creative writers and avid readers seamlessly connect, share ideas, and cultivate compelling stories." />
         <meta name="keywords" content="blogging platform, read stories, write articles, creative writing, digital greenhouse, Scribloom community, interactive blogs" />
-        <meta name="author" content="Scribloom" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://scribloom.com" /> {/* Replace when deployed */}
-
-        {/* Open Graph / Facebook */}
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://scribloom.com/" />
-        <meta property="og:title" content="Scribloom - The Digital Greenhouse for Writers" />
-        <meta property="og:description" content="Discover, write, and share exceptional stories built for a modern reading experience." />
-        <meta property="og:site_name" content="Scribloom" />
-        {/* <meta property="og:image" content="https://scribloom.com/og-image.jpg" /> */}
-
-        {/* Twitter */}
-        <meta property="twitter:card" content="summary_large_image" />
-        <meta property="twitter:url" content="https://scribloom.com/" />
-        <meta property="twitter:title" content="Scribloom - The Digital Greenhouse" />
-        <meta property="twitter:description" content="A premium blogging platform uniting writers and readers." />
-        {/* <meta property="twitter:image" content="https://scribloom.com/og-image.jpg" /> */}
-
-        {/* Structured Data */}
+        <link rel="canonical" href="https://scribloom.com" />
         <script type="application/ld+json">
           {JSON.stringify(structuredData)}
         </script>
       </Helmet>
 
-      {/* Main Responsive Application Wrapper */}
+      <LandingNavbar />
+
       <div 
         ref={containerRef} 
-        className="w-full min-h-screen overflow-x-hidden font-manrope text-[#00261b]"
+        className="w-full min-h-screen overflow-x-hidden font-manrope text-[#00261b] bg-[var(--background)]"
       >
-        
-        {/* Responsive Content Container */}
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="mx-auto w-full max-w-full 2xl:max-w-[1400px] flex flex-col items-center relative z-10"
         >
-          <main className="w-full flex flex-col flex-1">
-            <MasterpieceHero scrollProgress={scrollYProgress} />
-            <CommunitySection scrollProgress={scrollYProgress} />
-            <VisionSection scrollProgress={scrollYProgress} />
-            <CreativeCraft scrollProgress={scrollYProgress} />
-            <LatestStories scrollProgress={scrollYProgress} />
-            <CommunityFind scrollProgress={scrollYProgress} />
+          <main className="w-full flex flex-col flex-1 divide-y divide-[#efeeea]/30">
+            <section id="hero" className="w-full pt-20">
+              <MasterpieceHero scrollProgress={scrollYProgress} />
+            </section>
+            
+            <section id="community" className="w-full">
+              <CommunitySection scrollProgress={scrollYProgress} />
+            </section>
+            
+            <section id="vision" className="w-full">
+              <VisionSection scrollProgress={scrollYProgress} />
+            </section>
+            
+            <section id="craft" className="w-full">
+              <CreativeCraft scrollProgress={scrollYProgress} />
+            </section>
+            
+            <section id="stories" className="w-full">
+              <LatestStories scrollProgress={scrollYProgress} />
+            </section>
+            
+            <section id="find" className="w-full">
+              <CommunityFind scrollProgress={scrollYProgress} />
+            </section>
           </main>
         </motion.div>
 
-        {/* Floating Utilities */}
         <div className="relative z-[100]">
           <ScrollToTopButton />
         </div>
