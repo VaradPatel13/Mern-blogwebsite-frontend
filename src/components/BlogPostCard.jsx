@@ -17,7 +17,7 @@ const BlogPostCard = ({ post }) => {
         className="group"
     >
         <Link to={`/blog/${post.slug}`} className="block">
-            <article className="flex flex-col gap-6 bg-[#f5f3ef] p-6 rounded-[2rem] transition-all duration-500 hover:bg-white ambient-shadow">
+            <article className="flex flex-col gap-4 md:gap-6 bg-[#f5f3ef] p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] transition-all duration-500 hover:bg-white ambient-shadow h-full">
                 {/* Image Wrap */}
                 <div className="w-full aspect-[16/10] overflow-hidden rounded-[1rem] relative">
                     <img
@@ -32,24 +32,24 @@ const BlogPostCard = ({ post }) => {
                 </div>
 
                 {/* Content */}
-                <div className="flex flex-col gap-3 px-2">
-                    <div className="flex items-center gap-2.5 label-metadata">
-                        <span className="text-[#a0d1bc] border-b border-transparent group-hover:border-[#a0d1bc] transition-all">
+                <div className="flex flex-col gap-2 md:gap-3 px-1 md:px-2 flex-grow">
+                    <div className="flex items-center gap-2 label-metadata flex-wrap">
+                        <span className="text-[#a0d1bc] border-b border-transparent group-hover:border-[#a0d1bc] transition-all text-[11px] md:text-[13px] font-black uppercase tracking-wider">
                             {post.category?.name || 'Archive'}
                         </span>
                         <span className="opacity-30">•</span>
-                        <span className="text-[#1a382c]/40 font-bold">
+                        <span className="text-[#1a382c]/40 font-bold text-[10px] md:text-[12px] uppercase tracking-wide">
                             {post.createdAt 
-                                ? new Intl.DateTimeFormat('en-US', { month: 'long', day: '2-digit', year: 'numeric' }).format(new Date(post.createdAt)) 
+                                ? new Intl.DateTimeFormat('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).format(new Date(post.createdAt)) 
                                 : 'Recently'}
                         </span>
                     </div>
 
-                    <h2 className="text-[20px] md:text-[24px] font-black text-[#00261b] leading-[1.15] tracking-tight font-newsreader group-hover:text-[#7b5455] transition-colors">
+                    <h2 className="text-[18px] md:text-[24px] font-black text-[#00261b] leading-[1.2] tracking-tight font-newsreader group-hover:text-[#7b5455] transition-colors line-clamp-2">
                         {post.title}
                     </h2>
 
-                    <p className="text-[13px] text-[#00261b]/50 font-medium leading-relaxed line-clamp-2 font-manrope">
+                    <p className="text-[12px] md:text-[14px] text-[#00261b]/50 font-medium leading-relaxed line-clamp-2 md:line-clamp-3 font-manrope">
                         {snippet}
                     </p>
                 </div>

@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { motion, useScroll } from 'framer-motion';
+import { motion, useScroll, AnimatePresence } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import MasterpieceHero from '@/components/HeroSection';
 import CommunitySection from '@/components/CommunitySection';
@@ -44,12 +44,12 @@ const LandingPage = () => {
         </script>
       </Helmet>
 
-      <LandingNavbar />
-
       <div 
         ref={containerRef} 
         className="w-full min-h-screen overflow-x-hidden font-manrope text-[#00261b] bg-[var(--background)]"
       >
+        <LandingNavbar />
+        
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

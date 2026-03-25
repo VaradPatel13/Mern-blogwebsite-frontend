@@ -46,8 +46,8 @@ const VisionSection = () => {
   ];
 
   return (
-    <section className="bg-transparent py-12 md:py-24 px-4 md:px-8 overflow-hidden min-h-fit md:min-h-[75vh] flex items-center justify-center">
-      <div className="max-w-[1100px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+    <section className="bg-transparent py-14 md:py-24 px-4 md:px-8 overflow-hidden min-h-fit md:min-h-[75vh] flex items-center justify-center">
+      <div className="max-w-[1100px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start">
         
         {/* Left Column: Content + Icons */}
         <div className="flex flex-col gap-6">
@@ -83,13 +83,13 @@ const VisionSection = () => {
             </motion.button>
           </div>
 
-          {/* Falling Icon Cluster */}
+          {/* Falling Icon Cluster - Hidden on mobile to save space since icons are currently disabled */}
           <motion.div 
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
             transition={{ staggerChildren: 0.08, delayChildren: 0.5 }}
-            className="relative h-[220px] mt-6"
+            className="relative hidden lg:block h-[220px] mt-6"
           >
             {/* {icons.map((item, i) => (
               <motion.div
@@ -118,9 +118,9 @@ const VisionSection = () => {
             <div className="bg-[var(--background)] text-[#111]/40 px-4 py-2 rounded-t-xl font-bold text-[10px] font-manrope uppercase tracking-widest border border-b-0 border-[#efeeea]">
               Business
             </div>
-            <div className="bg-[#111] text-white px-6 py-3 rounded-t-xl font-bold text-[11px] font-manrope uppercase tracking-widest relative z-10 flex items-center gap-2 pr-8 shadow-xl border border-b-0 border-[#111]">
+            <div className="bg-[#00261b] text-white px-6 py-3 rounded-t-xl font-bold text-[11px] font-manrope uppercase tracking-widest relative z-10 flex items-center gap-2 pr-8 shadow-xl border border-b-0 border-[#00261b]">
               Personal
-              <div className="absolute top-0 right-0 h-full w-4 bg-[#111] skew-x-[15deg] origin-bottom -z-10 rounded-tr-xl" />
+              <div className="absolute top-0 right-0 h-full w-4 bg-[#00261b] skew-x-[15deg] origin-bottom -z-10 rounded-tr-xl" />
             </div>
           </div>
 

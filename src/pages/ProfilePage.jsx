@@ -87,7 +87,7 @@ const ProfilePage = () => {
           <p className="text-lg font-bold text-teal-700 mb-4">@{profile.username}</p>
 
           <p className="text-slate-600 font-medium leading-relaxed max-w-xl mx-auto sm:mx-0">
-            MindLoom Writer since {new Date(profile.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}.
+            Scribloom Writer since {new Date(profile.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}.
           </p>
         </div>
       </div>

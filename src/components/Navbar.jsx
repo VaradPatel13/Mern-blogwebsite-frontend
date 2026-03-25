@@ -34,7 +34,7 @@ const MainNavbar = () => {
   }, []);
 
   return (
-    <header className="sticky top-0 z-[100] w-full bg-transparent font-manrope">
+    <header className="sticky top-0 z-[100] w-full bg-[var(--background)]/90 backdrop-blur-md border-b border-[#efeeea] font-manrope">
       <div className="max-w-[1400px] mx-auto px-6 h-16 md:h-18 flex items-center justify-between gap-8">
 
         {/* Left: Brand */}
@@ -122,13 +122,13 @@ const MainNavbar = () => {
                           animate={{ opacity: 1, y: 0, scale: 1 }}
                           exit={{ opacity: 0, y: 15, scale: 0.95 }}
                           transition={{ duration: 0.2, ease: [0.34, 1.56, 0.64, 1] }}
-                          className="absolute right-0 mt-3 w-[280px] glass-surface rounded-[2rem] ambient-shadow overflow-hidden z-50 p-2"
+                          className="absolute right-0 mt-3 w-[280px] bg-[#00261b] rounded-[2rem] shadow-2xl border border-[#a0d1bc]/20 overflow-hidden z-50 p-2"
                           role="menu"
                           aria-label="User navigation menu"
                         >
                         {/* User Summary */}
-                        <div className="px-5 py-4 mb-2 bg-[var(--background)] rounded-[18px] border border-[#efeeea]/50">
-                          <p className="font-black text-[#111] text-[13px] truncate">{user?.fullName}</p>
+                        <div className="px-5 py-4 mb-2 bg-white/5 rounded-[18px] border border-white/5">
+                          <p className="font-black text-white text-[13px] truncate">{user?.fullName}</p>
                           <p className="text-[10px] font-black text-[#a0d1bc] truncate uppercase tracking-widest mt-0.5">@{user?.username}</p>
                         </div>
 
@@ -143,20 +143,20 @@ const MainNavbar = () => {
                               key={idx}
                               to={item.to}
                               onClick={() => setDropdownOpen(false)}
-                              className="flex items-center gap-3 px-4 py-3 text-[12px] font-bold text-[#111]/60 hover:text-[#111] hover:bg-[var(--background)] rounded-[14px] transition-all group"
+                              className="flex items-center gap-3 px-4 py-3 text-[12px] font-bold text-white/60 hover:text-white hover:bg-white/10 rounded-[14px] transition-all group"
                               role="menuitem"
                             >
-                              <span className="text-[#111]/30 group-hover:text-[#a0d1bc] transition-colors">{item.icon}</span>
+                              <span className="text-white/30 group-hover:text-[#a0d1bc] transition-colors">{item.icon}</span>
                               {item.label}
                             </Link>
                           ))}
                         </div>
 
                         {/* Logout */}
-                        <div className="mt-2 pt-2 border-t border-[#efeeea] px-1">
+                        <div className="mt-2 pt-2 border-t border-white/5 px-1">
                           <button
                             onClick={handleLogout}
-                            className="w-full flex items-center gap-3 px-4 py-3 text-[12px] font-bold text-red-500 hover:text-red-600 hover:bg-red-50 rounded-[14px] transition-all"
+                            className="w-full flex items-center gap-3 px-4 py-3 text-[12px] font-bold text-red-400 hover:text-red-500 hover:bg-red-500/10 rounded-[14px] transition-all"
                             role="menuitem"
                           >
                             <LogOut size={16} /> Sign out

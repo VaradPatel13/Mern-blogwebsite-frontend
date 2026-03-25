@@ -5,6 +5,7 @@ import { deleteBlog } from '../services/blogService';
 import { useAuth } from '../context/AuthContext';
 import { Brain, TrendingUp, FileEdit, Settings, Plus, Leaf, Eye, Heart, ArrowRight, Menu, X, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import MobileBottomNav from '../components/MobileBottomNav';
 
 const DashboardPage = () => {
   const [myBlogs, setMyBlogs] = useState([]);
@@ -243,6 +244,10 @@ const DashboardPage = () => {
           </section>
         </div>
       </main>
+
+      {/* Bottom Floating Navigation (Mobile Only) */}
+      <MobileBottomNav />
+      
     </div>
   );
 };

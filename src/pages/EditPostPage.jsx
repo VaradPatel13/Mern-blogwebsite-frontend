@@ -126,34 +126,27 @@ const EditPostPage = () => {
       <div className="flex-1 flex flex-col min-w-0 relative">
 
         {/* 2. TOP HEADER */}
-        <header className="h-18 px-8 flex items-center justify-between border-b border-[#c0c8c3]/10 bg-[#fbf9f5]/80 backdrop-blur-md sticky top-0 z-30 shrink-0">
-          <div className="flex items-center gap-6">
-            <Link to="/dashboard" className="text-[#414944] hover:text-[#00261b] transition-colors"><ArrowLeft size={18} /></Link>
+        <header className="h-18 px-4 md:px-8 flex items-center justify-between border-b border-[#c0c8c3]/10 bg-[#fbf9f5]/80 backdrop-blur-md sticky top-0 z-30 shrink-0">
+          <div className="flex items-center gap-4 md:gap-6">
+            <Link to="/dashboard" className="text-[#414944] hover:text-[#00261b] p-2 -ml-2 transition-colors"><ArrowLeft size={18} /></Link>
             <div className="flex items-center gap-3">
               <span className="w-2 h-2 rounded-full bg-[#7b5455] animate-pulse" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-[#414944]/50">Editing Mode — Refining Bloom</span>
+              <span className="hidden sm:block text-[10px] font-black uppercase tracking-widest text-[#414944]/50">Editing Mode — Refining Bloom</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className={`p-3 rounded-xl transition-all ${sidebarOpen ? 'bg-[#bcedd7] text-[#00261b]' : 'hover:bg-white text-[#414944]'}`}
+              className={`p-2.5 rounded-xl transition-all ${sidebarOpen ? 'bg-[#bcedd7] text-[#00261b]' : 'hover:bg-white text-[#414944]'}`}
               title="Post Details"
             >
               <SidebarIcon size={20} />
             </button>
             <button
-              onClick={() => handleSubmit('draft')}
-              disabled={saving}
-              className="px-6 py-2.5 text-[11px] font-black uppercase tracking-widest text-[#414944] bg-[#eae8e4] hover:bg-white rounded-full transition-all flex items-center gap-2"
-            >
-              {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />} Save Draft
-            </button>
-            <button
                onClick={() => handleSubmit('published')}
                disabled={saving}
-               className="px-8 py-2.5 bg-[#00261b] text-white text-[11px] font-black uppercase tracking-widest rounded-full shadow-lg hover:shadow-xl hover:bg-[#214f3f] transition-all hover:-translate-y-0.5 flex items-center gap-2"
+               className="px-6 py-2.5 md:px-8 bg-[#00261b] text-white text-[11px] font-black uppercase tracking-widest rounded-full shadow-lg hover:shadow-xl hover:bg-[#214f3f] transition-all hover:-translate-y-0.5 flex items-center gap-2"
             >
               {saving ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
               {status === 'published' ? 'Update' : 'Publish'}

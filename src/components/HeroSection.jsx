@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 import img1 from '../assets/photo-1499750310107-5fef28a66643.jpg';
@@ -76,10 +77,10 @@ const ArtCardFan = ({ image, index, total, user, color, isMobile, isTablet }) =>
           zIndex: 100,
           transition: { duration: 0.3 }
         }}
-        className="w-[100px] h-[140px] md:w-[130px] md:h-[180px] rounded-[1.5rem] md:rounded-[2rem] overflow-hidden shadow-2xl cursor-pointer bg-white/10 backdrop-blur-sm"
+        className="w-[100px] h-[140px] md:w-[130px] md:h-[180px] rounded-[1.2rem] md:rounded-[1.8rem] overflow-hidden shadow-2xl cursor-pointer"
       >
-        <div className="w-full h-full p-1.5 md:p-2">
-            <img src={image} alt={`Story ${index}`} className="w-full h-full object-cover rounded-[1rem]" />
+        <div className="w-full h-full">
+            <img src={image} alt={`Story ${index}`} className="w-full h-full object-cover" />
         </div>
       </motion.div>
     </motion.div>
@@ -157,17 +158,21 @@ export default function MasterpieceHero() {
           transition={{ delay: 1.5, duration: 1, ease: [0.34, 1.56, 0.64, 1] }}
           className="flex flex-col items-center gap-6 md:gap-8"
         >
-          <p className="text-[#00261b]/60 font-medium text-[12px] md:text-[15px] max-w-[400px] md:max-w-[500px] leading-relaxed font-manrope">
+          <p className="text-[#00261b]/60 font-medium text-[12px] md:text-[16px] max-w-[400px] md:max-w-[500px] leading-relaxed font-manrope">
             Writers can share their unique perspectives, and readers can discover stories that inspire and shape the world.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center gap-4 font-manrope w-full sm:w-auto">
-            <button className="w-full sm:w-auto gradient-primary text-white px-8 py-3 rounded-full font-bold text-[11px] uppercase tracking-widest hover:scale-105 transition-all shadow-xl">
-              Start Writing
-            </button>
-            <button className="w-full sm:w-auto bg-[#e4e2de] text-[#00261b] px-8 py-3 rounded-full font-bold text-[11px] uppercase tracking-widest hover:bg-[#dbdad6] transition-all">
-              Explore stories
-            </button>
+            <Link to="/register" className="w-full sm:w-auto">
+              <button className="w-full sm:w-auto gradient-primary text-white px-10 py-4 rounded-full font-black text-[12px] md:text-[13px] uppercase tracking-widest hover:scale-105 transition-all shadow-xl">
+                Start Writing
+              </button>
+            </Link>
+            <Link to="/register" className="w-full sm:w-auto">
+              <button className="w-full sm:w-auto bg-[#e4e2de] text-[#00261b] px-10 py-4 rounded-full font-black text-[12px] md:text-[13px] uppercase tracking-widest hover:bg-[#dbdad6] transition-all">
+                Explore stories
+              </button>
+            </Link>
           </div>
         </motion.div>
 

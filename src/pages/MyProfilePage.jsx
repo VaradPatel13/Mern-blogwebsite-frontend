@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Mail, CalendarIcon, ShieldCheck, Edit3 } from 'lucide-react';
+import MobileBottomNav from '../components/MobileBottomNav';
 
 const MyProfilePage = () => {
   const { user } = useAuth();
@@ -41,22 +42,24 @@ const MyProfilePage = () => {
         </div>
 
         {/* Content */}
-        <div className="flex flex-col md:flex-row gap-16 md:gap-32 items-start">
+        <div className="flex flex-col gap-10 items-center">
           
-          {/* Main Identity (Left) */}
-          <div className="flex flex-col items-center md:items-start gap-6">
-            <div className="w-32 h-32 sm:w-48 sm:h-48 rounded-full border border-[#c0c8c3]/40 bg-[#eae8e4] flex items-center justify-center text-[#00261b] font-newsreader font-black text-6xl shadow-sm overflow-hidden">
+          {/* Main Identity (Centered) */}
+          <div className="flex flex-col items-center gap-6 text-center">
+            <div className="w-40 h-40 sm:w-56 sm:h-56 rounded-full border border-[#c0c8c3]/40 bg-[#eae8e4] flex items-center justify-center text-[#00261b] font-newsreader font-black text-7xl shadow-xl overflow-hidden relative">
+              <div className="absolute inset-0 bg-[#a0d1bc]/5 animate-pulse"></div>
               {user?.avatar ? (
-                <img src={user.avatar} alt={displayUser.fullName} className="w-full h-full object-cover" />
+                <img src={user.avatar} alt={displayUser.fullName} className="w-full h-full object-cover relative z-10" />
               ) : (
-                displayUser.avatarInitial
+                <span className="relative z-10">{displayUser.avatarInitial}</span>
               )}
             </div>
-            <div className="text-center md:text-left">
-              <h2 className="text-[32px] font-newsreader font-black text-[#00261b] leading-tight tracking-tight mb-1">
+            
+            <div className="max-w-xl mx-auto">
+              <h2 className="text-4xl md:text-5xl font-newsreader font-black text-[#00261b] leading-tight tracking-tighter mb-2">
                 {displayUser.fullName}
               </h2>
-              <p className="text-[14px] font-bold text-[#7b5455] tracking-wider">
+              <p className="text-[16px] font-bold text-[#7b5455] tracking-[0.2em] uppercase">
                 {displayUser.handle}
               </p>
             </div>
@@ -100,6 +103,9 @@ const MyProfilePage = () => {
         </div>
 
       </motion.div>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav />
     </div>
   );
 };

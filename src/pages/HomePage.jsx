@@ -30,7 +30,7 @@ const HomePage = () => {
       </Helmet>
 
       {/* Sticky Category Navigation */}
-      <div className="sticky top-0 md:top-16 lg:top-18 z-[45]">
+      <div className="sticky top-16 md:top-[72px] z-[45] bg-[var(--background)]">
           <CategorySlider
             categories={categories}
             selectedCategory={selectedCategory}
@@ -77,7 +77,7 @@ const HomePage = () => {
                       </Link>
                    </div>
                    
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-16">
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-10 md:gap-y-16">
                       {(selectedCategory ? blogs : remainingPosts).map((post) => (
                         <BlogPostCard key={post._id} post={post} />
                       ))}

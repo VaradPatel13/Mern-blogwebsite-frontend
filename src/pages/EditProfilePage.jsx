@@ -5,6 +5,7 @@ import { updateUserDetails, updateUserAvatar, changePassword, sendMobileOtp, ver
 import { useToast } from "@/components/ui/toast";
 import { Camera, User, Lock, Smartphone, CheckCircle2, ChevronRight, Loader2, Shield, ArrowLeft, Home, Edit3 } from 'lucide-react';
 import ImageUpload from '../components/ImageUpload';
+import MobileBottomNav from '../components/MobileBottomNav';
 
 const EditProfilePage = () => {
   const { user, login } = useAuth();
@@ -143,10 +144,10 @@ const EditProfilePage = () => {
       
 
 
-      <div className="flex min-h-screen pt-20 max-w-[1400px] mx-auto">
+      <div className="flex min-h-screen pt-12 md:pt-16 max-w-[1400px] mx-auto">
         
         {/* Main Content Canvas */}
-        <main className="flex-1 px-6 lg:px-16 pt-12 pb-32 max-w-5xl w-full mx-auto">
+        <main className="flex-1 px-6 lg:px-16 pt-4 md:pt-8 pb-32 max-w-5xl w-full mx-auto">
           
           {/* Breadcrumb */}
           <div className="mb-8 flex items-center gap-2 text-xs font-bold font-manrope text-[#414944]/60 tracking-widest uppercase">
@@ -159,7 +160,7 @@ const EditProfilePage = () => {
           <header className="mb-16">
             <h1 className="text-5xl md:text-6xl lg:text-[72px] font-newsreader font-bold text-[#00261b] tracking-tighter mb-6 leading-[1.1]">Account Settings</h1>
             <p className="text-lg md:text-xl font-manrope text-[#414944] max-w-2xl leading-relaxed font-medium">
-              Refine your digital presence and safeguard your creative flourishing. These details define your identity within the Scribloom ecosystem.
+              These details define your identity within the Scribloom ecosystem.
             </p>
           </header>
 
@@ -383,34 +384,7 @@ const EditProfilePage = () => {
 
 
       {/* Bottom Floating Navigation (Mobile Only) */}
-      <nav className="md:hidden fixed bottom-5 left-1/2 -translate-x-1/2 w-[90%] sm:w-[80%] rounded-[2rem] z-[90] bg-[var(--background)]/85 backdrop-blur-2xl border border-white/40 shadow-[0_20px_40px_rgba(0,38,27,0.15)] flex justify-around items-end px-2 pb-3 pt-3">
-        <Link to="/home" className="flex flex-col items-center justify-center text-[#00261b]/60 p-2 hover:text-[#7b5455] transition-all duration-300 active:scale-90 opacity-80 hover:opacity-100 flex-1">
-          <Home size={22} strokeWidth={2} />
-          <span className="font-manrope font-bold text-[9px] tracking-widest uppercase mt-1.5">Home</span>
-        </Link>
-        
-        <a href="#profile" className="flex flex-col items-center justify-center text-[#00261b]/60 p-2 hover:text-[#7b5455] transition-all duration-300 active:scale-90 opacity-80 hover:opacity-100 flex-1">
-          <User size={22} strokeWidth={2} />
-          <span className="font-manrope font-bold text-[9px] tracking-widest uppercase mt-1.5">Profile</span>
-        </a>
-
-        {/* Floating Action Button Style Center Icon */}
-        <div className="flex-1 flex justify-center shrink-0 w-16 -mt-10 relative z-10">
-          <Link to="/my-profile" className="flex flex-col items-center justify-center bg-gradient-to-br from-[#00261b] to-[#214f3f] text-[#bcedd7] rounded-full w-[60px] h-[60px] shadow-[0_15px_30px_rgba(0,38,27,0.25)] border-[4px] border-[var(--background)] hover:-translate-y-2 active:scale-90 transition-all duration-300">
-            <CheckCircle2 size={24} strokeWidth={2.5} />
-          </Link>
-        </div>
-        
-        <a href="#security" className="flex flex-col items-center justify-center text-[#00261b]/60 p-2 hover:text-[#7b5455] transition-all duration-300 active:scale-90 opacity-80 hover:opacity-100 flex-1">
-          <Lock size={22} strokeWidth={2} />
-          <span className="font-manrope font-bold text-[9px] tracking-widest uppercase mt-1.5">Security</span>
-        </a>
-        
-        <button onClick={() => navigate(-1)} className="flex flex-col items-center justify-center text-[#00261b]/60 p-2 hover:text-[#7b5455] transition-all duration-300 active:scale-90 opacity-80 hover:opacity-100 flex-1">
-          <ArrowLeft size={22} strokeWidth={2} />
-          <span className="font-manrope font-bold text-[9px] tracking-widest uppercase mt-1.5">Back</span>
-        </button>
-      </nav>
+      <MobileBottomNav />
       
     </div>
   );

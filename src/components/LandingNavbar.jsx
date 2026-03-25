@@ -31,19 +31,19 @@ const LandingNavbar = () => {
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 font-manrope ${isScrolled
-          ? 'bg-[var(--background)]/90 backdrop-blur-md py-2 border-b border-[#efeeea] shadow-sm'
-          : 'bg-[var(--background)] py-3'
+          ? 'bg-[var(--background)]/90 backdrop-blur-md py-4 border-b border-[#efeeea] shadow-sm'
+          : 'bg-[var(--background)] py-5'
         }`}
     >
       <div className="max-w-[1400px] mx-auto px-6 md:px-10 flex items-center justify-between">
         {/* Left: Logo */}
         <motion.div initial="initial" animate="animate" variants={fadeBlur}>
           <a href="#hero" className="flex items-center gap-2.5 group">
-            <div className="relative w-7 h-7 flex items-center justify-center rounded-lg overflow-hidden shadow-sm border border-gray-100 group-hover:scale-105 transition-transform duration-500">
-              <img src="/icon.jpg" alt="Scribloom Logo" className="w-full h-full object-cover" />
+            <div className="relative w-8 h-8 flex items-center justify-center rounded-lg overflow-hidden shadow-sm border border-gray-100 group-hover:scale-105 transition-transform duration-500">
+              <img src="/icon.png" alt="Scribloom Logo" className="w-full h-full object-cover" />
             </div>
             <div className="flex flex-col">
-              <span className="text-[16px] font-black tracking-tight text-[#111111] leading-none font-newsreader">
+              <span className="text-[22px] font-black tracking-tight text-[#111111] leading-none font-newsreader">
                 Scribloom<span className="text-[#a0d1bc]">.</span>
               </span>
             </div>
@@ -55,15 +55,14 @@ const LandingNavbar = () => {
           initial="initial"
           animate="animate"
           transition={{ staggerChildren: 0.05, delayChildren: 0.2 }}
-          className="hidden lg:flex items-center gap-5"
+          className="hidden lg:flex items-center gap-8"
         >
           {navLinks.map((link) => (
             <motion.div key={link.name} variants={fadeBlur}>
               <a
                 href={link.path}
-                className="text-[12px] font-bold text-[#111111]/70 hover:text-[#111111] transition-colors flex items-center gap-1.5"
+                className="text-[15px] font-bold text-[#111111]/70 hover:text-[#111111] transition-colors flex items-center gap-1.5"
               >
-                {link.icon && <span className="opacity-50">{link.icon}</span>}
                 {link.name}
               </a>
             </motion.div>
@@ -71,14 +70,22 @@ const LandingNavbar = () => {
         </motion.div>
 
         {/* Right: CTA */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <motion.div initial="initial" animate="animate" variants={fadeBlur} transition={{ delay: 0.4 }}>
-            <Link
-              to="/register"
-              className="hidden md:block bg-[#111] text-white px-4 py-1.5 rounded-full text-[11px] font-bold hover:scale-105 transition-transform shadow-lg"
-            >
-              Get Started
-            </Link>
+            <div className="flex items-center gap-5">
+              <Link
+                to="/login"
+                className="lg:hidden text-[11px] font-black uppercase tracking-[0.2em] text-[#111111]/40 hover:text-[#111111] transition-colors"
+              >
+                Sign In
+              </Link>
+              <Link
+                to="/register"
+                className="hidden md:block bg-[#111] text-white px-6 py-2.5 rounded-full text-[13px] font-bold hover:scale-105 transition-transform shadow-lg"
+              >
+                Get Started
+              </Link>
+            </div>
           </motion.div>
 
           {/* Mobile Menu Toggle */}
@@ -86,7 +93,7 @@ const LandingNavbar = () => {
             className="lg:hidden p-1.5 text-[#111] hover:bg-gray-50 rounded-lg"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
       </div>
