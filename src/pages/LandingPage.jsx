@@ -22,7 +22,7 @@ const LandingPage = () => {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "Scribloom",
-    "url": "https://scribloom.com",
+    "url": import.meta.env.VITE_SITE_URL,
     "description": "Cultivating stories in the digital greenhouse. A dynamic community where writers and readers seamlessly merge.",
     "publisher": {
       "@type": "Organization",
@@ -38,7 +38,7 @@ const LandingPage = () => {
         <meta name="keywords" content="blogging platform, read stories, write articles, creative writing, digital greenhouse, Scribloom community, interactive blogs" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://scribloom.com" />
+        <link rel="canonical" href={import.meta.env.VITE_SITE_URL} />
         <script type="application/ld+json">
           {JSON.stringify(structuredData)}
         </script>

@@ -1,7 +1,7 @@
 import axios from 'axios';
-//https://mern-blogwebsite-backend.onrender.com/api/v1
+
 const api = axios.create({
-  baseURL: 'https://mern-blogwebsite-backend-hbir.onrender.com/api/v1',
+  baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
 });
 
@@ -20,7 +20,7 @@ api.interceptors.response.use(
 
       try {
         // Attempt to refresh the token
-        await axios.post('https://mern-blogwebsite-backend.onrender.com/api/v1/auth/refresh-token', {}, {
+        await axios.post(`${import.meta.env.VITE_API_URL}/auth/refresh-token`, {}, {
           withCredentials: true
         });
 
