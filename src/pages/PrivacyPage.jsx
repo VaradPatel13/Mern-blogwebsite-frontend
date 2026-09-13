@@ -18,6 +18,16 @@ const PrivacyPage = () => {
       <Helmet>
         <title>Privacy Policy | Scribloom</title>
         <meta name="description" content="How Scribloom collects, uses, stores, and protects your personal information." />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://scribloom.vercel.app/privacy" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Privacy Policy | Scribloom" />
+        <meta property="og:description" content="How Scribloom collects, uses, stores, and protects your personal information." />
+        <meta property="og:url" content="https://scribloom.vercel.app/privacy" />
+        <meta property="og:site_name" content="Scribloom" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Privacy Policy | Scribloom" />
+        <meta name="twitter:description" content="How Scribloom collects, uses, stores, and protects your personal information." />
       </Helmet>
 
       <div className="max-w-[800px] mx-auto px-6 py-16 lg:py-24">

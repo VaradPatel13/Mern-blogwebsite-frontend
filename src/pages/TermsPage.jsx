@@ -18,6 +18,16 @@ const TermsPage = () => {
       <Helmet>
         <title>Terms of Service | Scribloom</title>
         <meta name="description" content="Terms and conditions governing the use of the Scribloom platform." />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://scribloom.vercel.app/terms" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Terms of Service | Scribloom" />
+        <meta property="og:description" content="Terms and conditions governing the use of the Scribloom platform." />
+        <meta property="og:url" content="https://scribloom.vercel.app/terms" />
+        <meta property="og:site_name" content="Scribloom" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Terms of Service | Scribloom" />
+        <meta name="twitter:description" content="Terms and conditions governing the use of the Scribloom platform." />
       </Helmet>
 
       <div className="max-w-[800px] mx-auto px-6 py-16 lg:py-24">

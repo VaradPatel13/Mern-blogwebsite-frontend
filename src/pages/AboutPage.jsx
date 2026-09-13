@@ -23,9 +23,17 @@ const AboutPage = () => {
     <div className="min-h-screen bg-[var(--background)] font-manrope selection:bg-[#a0d1bc]/30 selection:text-[#00261b]">
       <Helmet>
         <title>About | Scribloom</title>
-        <meta name="description" content="Scribloom is a writing platform built for writers who care about craft. Learn about our mission, team, and the story behind the greenhouse." />
+        <meta name="description" content="Learn about Scribloom — a digital greenhouse for writers and readers. Our mission, team, and the story behind the platform." />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://scribloom.vercel.app/about" />
+        <meta property="og:type" content="website" />
         <meta property="og:title" content="About | Scribloom" />
-        <meta property="og:description" content="A digital greenhouse for writers and readers to cultivate compelling stories together." />
+        <meta property="og:description" content="Learn about Scribloom — a digital greenhouse for writers and readers. Our mission, team, and the story behind the platform." />
+        <meta property="og:url" content="https://scribloom.vercel.app/about" />
+        <meta property="og:site_name" content="Scribloom" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="About | Scribloom" />
+        <meta name="twitter:description" content="Learn about Scribloom — a digital greenhouse for writers and readers. Our mission, team, and the story behind the platform." />
       </Helmet>
 
       <div className="max-w-[800px] mx-auto px-6 py-16 lg:py-24">

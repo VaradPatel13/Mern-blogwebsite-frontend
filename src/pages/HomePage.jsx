@@ -28,8 +28,34 @@ const HomePage = () => {
         className="bg-[var(--background)] min-h-screen selection:bg-[#a0d1bc]/30 selection:text-[#00261b]"
     >
       <Helmet>
-        <title>Scribloom | Digital Archives</title>
+        <title>Scribloom | Digital Archives for Writers and Readers</title>
+        <meta name="description" content="A digital greenhouse for writers and readers. Discover essays, stories, and long-form journalism from independent voices." />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://scribloom.vercel.app/home" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Scribloom | Digital Archives for Writers and Readers" />
+        <meta property="og:description" content="A digital greenhouse for writers and readers. Discover essays, stories, and long-form journalism from independent voices." />
+        <meta property="og:url" content="https://scribloom.vercel.app/home" />
+        <meta property="og:site_name" content="Scribloom" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Scribloom" />
+        <meta name="twitter:description" content="A digital greenhouse for writers and readers." />
       </Helmet>
+
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "Scribloom",
+          "url": "https://scribloom.vercel.app",
+          "description": "A digital greenhouse for writers and readers to cultivate compelling stories.",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://scribloom.vercel.app/search?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        })}
+      </script>
 
       <div className="sticky top-16 md:top-[72px] z-[45] bg-[var(--background)]">
           <CategorySlider

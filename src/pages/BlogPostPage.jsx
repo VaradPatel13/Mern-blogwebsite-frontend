@@ -168,7 +168,56 @@ const BlogPostPage = () => {
         <Helmet>
           <title>{blog.title} | Scribloom</title>
           <meta name="description" content={plainTextSummary} />
+          <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+          <link rel="canonical" href={`https://scribloom.vercel.app/blog/${blog.slug}`} />
+
+          {/* Open Graph */}
+          <meta property="og:type" content="article" />
+          <meta property="og:title" content={blog.title} />
+          <meta property="og:description" content={plainTextSummary} />
+          <meta property="og:image" content={blog.coverImage} />
+          <meta property="og:url" content={`https://scribloom.vercel.app/blog/${blog.slug}`} />
+          <meta property="og:site_name" content="Scribloom" />
+          <meta property="article:published_time" content={blog.createdAt} />
+          <meta property="article:modified_time" content={blog.updatedAt || blog.createdAt} />
+          {blog.createdBy && <meta property="article:author" content={blog.createdBy.fullName} />}
+          {blog.category && <meta property="article:section" content={blog.category.name} />}
+
+          {/* Twitter Card */}
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content={blog.title} />
+          <meta name="twitter:description" content={plainTextSummary} />
+          <meta name="twitter:image" content={blog.coverImage} />
         </Helmet>
+
+        {/* JSON-LD Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "headline": blog.title,
+            "description": plainTextSummary,
+            "image": blog.coverImage,
+            "url": `https://scribloom.vercel.app/blog/${blog.slug}`,
+            "datePublished": blog.createdAt,
+            "dateModified": blog.updatedAt || blog.createdAt,
+            "author": {
+              "@type": "Person",
+              "name": blog.createdBy?.fullName || "Scribloom Writer",
+              "url": `https://scribloom.vercel.app/profile/${blog.createdBy?.username}`
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "Scribloom",
+              "url": "https://scribloom.vercel.app",
+              "logo": { "@type": "ImageObject", "url": "https://scribloom.vercel.app/logo.png" }
+            },
+            "mainEntityOfPage": { "@type": "WebPage", "@id": `https://scribloom.vercel.app/blog/${blog.slug}` },
+            "articleSection": blog.category?.name || "Uncategorized",
+            "wordCount": wordCount,
+            "timeRequired": `PT${minutesRead}M`
+          })}
+        </script>
 
         {/* Top Progress Bar */}
         <div className="fixed top-0 left-0 w-full h-1 z-50 bg-[#e4e2de]">

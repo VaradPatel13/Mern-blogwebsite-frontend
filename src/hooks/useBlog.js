@@ -27,18 +27,18 @@ const useBlog = (slug) => {
         const blogData = blogResponse.data;
         setBlog(blogData);
 
-        const [allBlogsResponse, commentsResponse] = await Promise.all([
+        const [allBlogsResponse, commentsResponse] = await Promise.allSettled([
           getAllBlogs(),
-          getCommentsForBlog(blogData._id),
+          getCommentsForBlog(blogData._id).catch(() => ({ success: false, data: { docs: [] } })),
         ]);
 
-        if (allBlogsResponse.success) {
+        if (allBlogsResponse.status === 'fulfilled' && allBlogsResponse.value.success) {
           setRelatedBlogs(
-            allBlogsResponse.data.docs.filter(b => b._id !== blogData._id).slice(0, 3)
+            allBlogsResponse.value.data.docs.filter(b => b._id !== blogData._id).slice(0, 3)
           );
         }
-        if (commentsResponse.success) {
-          setComments(commentsResponse.data.docs);
+        if (commentsResponse.status === 'fulfilled' && commentsResponse.value.success) {
+          setComments(commentsResponse.value.data.docs);
         }
       } catch (err) {
         setError(err.message || 'Could not fetch the blog post.');

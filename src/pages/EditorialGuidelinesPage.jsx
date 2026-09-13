@@ -17,7 +17,17 @@ const EditorialGuidelinesPage = () => {
     <div className="min-h-screen bg-[var(--background)] font-manrope selection:bg-[#a0d1bc]/30 selection:text-[#00261b]">
       <Helmet>
         <title>Editorial Guidelines | Scribloom</title>
-        <meta name="description" content="Standards and expectations for writers publishing on Scribloom. Quality, integrity, and community." />
+        <meta name="description" content="Standards and expectations for writers publishing on Scribloom." />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://scribloom.vercel.app/editorial-guidelines" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Editorial Guidelines | Scribloom" />
+        <meta property="og:description" content="Standards and expectations for writers publishing on Scribloom." />
+        <meta property="og:url" content="https://scribloom.vercel.app/editorial-guidelines" />
+        <meta property="og:site_name" content="Scribloom" />
+        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:title" content="Editorial Guidelines | Scribloom" />
+        <meta name="twitter:description" content="Standards and expectations for writers publishing on Scribloom." />
       </Helmet>
 
       <div className="max-w-[800px] mx-auto px-6 py-16 lg:py-24">
