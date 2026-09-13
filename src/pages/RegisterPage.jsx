@@ -161,7 +161,7 @@ const RegisterPage = () => {
               <input
                 id="email"
                 type="email"
-                placeholder="hello@scribloom.com"
+                placeholder="you@example.com"
                 value={formData.email}
                 onChange={handleChange}
                 required

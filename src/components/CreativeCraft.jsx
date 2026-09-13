@@ -143,7 +143,7 @@ const CreativeCraft = () => {
               variants={segmentVariants}
               className="mt-2 text-[#00261b]/60 font-medium text-[13px] md:text-[15px] leading-relaxed font-manrope max-w-[420px]"
             >
-              Experience a clutter-free environment designed to let your ideas flow. Scribloom strips away the noise so you can focus on what matters most: your craft. 
+               Experience a clutter-free environment designed to let your ideas flow. Scribloom strips away the noise so you can focus on what matters most: your craft. 
             </motion.p>
           </motion.div>
 

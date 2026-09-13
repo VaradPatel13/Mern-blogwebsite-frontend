@@ -17,10 +17,10 @@ const Footer = () => {
               Scribloom. Cultivating stories in the digital greenhouse.
             </p>
             <div className="mt-4">
-              <button className="flex items-center gap-2.5 px-6 py-3 rounded-full text-[11px] font-bold uppercase tracking-[0.15em] bg-[#eae8e4] text-[#1a382c] hover:bg-[#d5d2cc] transition-colors group">
+              <Link to="/register" className="flex items-center gap-2.5 px-6 py-3 rounded-full text-[11px] font-bold uppercase tracking-[0.15em] bg-[#eae8e4] text-[#1a382c] hover:bg-[#d5d2cc] transition-colors group">
                 <Leaf size={14} className="fill-[#1a382c]" strokeWidth={2} />
                 Join the Garden
-              </button>
+              </Link>
             </div>
           </div>
 
@@ -32,11 +32,11 @@ const Footer = () => {
                 Manifesto
               </h4>
               <div className="flex flex-col gap-5 text-[16px] text-[#416a59] font-normal font-newsreader">
-                <Link to="#" className="hover:text-[#1a382c] transition-colors">About</Link>
-                <Link to="#" className="hover:text-[#1a382c] transition-colors">Archive</Link>
-                <Link to="#" className="hover:text-[#1a382c] transition-colors">Editorial Guidelines</Link>
-                <Link to="#" className="hover:text-[#1a382c] transition-colors">Privacy</Link>
-                <Link to="#" className="hover:text-[#1a382c] transition-colors">Terms</Link>
+                <Link to="/about" className="hover:text-[#1a382c] transition-colors">About</Link>
+                <Link to="/archive" className="hover:text-[#1a382c] transition-colors">Archive</Link>
+                <Link to="/editorial-guidelines" className="hover:text-[#1a382c] transition-colors">Editorial Guidelines</Link>
+                <Link to="/privacy" className="hover:text-[#1a382c] transition-colors">Privacy</Link>
+                <Link to="/terms" className="hover:text-[#1a382c] transition-colors">Terms</Link>
               </div>
             </div>
 
@@ -59,7 +59,7 @@ const Footer = () => {
           <p>© {new Date().getFullYear()} Scribloom. Cultivating stories in the digital greenhouse.</p>
           <div className="flex items-center gap-4 uppercase tracking-[0.25em] text-[9px] font-bold text-[#b5b4b1]">
              <span className="w-8 h-[1px] bg-[#efeeea]"></span>
-             EST. MMXIV
+              EST. MMXXIV
              <span className="w-8 h-[1px] bg-[#efeeea]"></span>
           </div>
         </div>

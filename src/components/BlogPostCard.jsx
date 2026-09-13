@@ -21,11 +21,12 @@ const BlogPostCard = ({ post }) => {
                 {/* Image Wrap */}
                 <div className="w-full aspect-[16/10] overflow-hidden rounded-[1rem] relative">
                     <img
-                        src={post.coverImage || "https://images.unsplash.com/photo-1559757175-5700dde675bc?auto=format&fit=crop&q=80&w=800"}
+                        src={post.coverImage || "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=800"}
                         alt={post.title}
                         loading="lazy"
                         width="800"
                         height="500"
+                        onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=800"; }}
                         className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-[#00261b]/0 group-hover:bg-[#00261b]/5 transition-colors duration-500"></div>

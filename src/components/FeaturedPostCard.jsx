@@ -18,10 +18,11 @@ const FeaturedPostCard = ({ post }) => {
     >
         {/* Background Image */}
         <img
-            src={post.coverImage || "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=1600"}
+            src={post.coverImage || "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=1600"}
             alt=""
             loading="eager"
             fetchPriority="high"
+            onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=1600"; }}
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-105"
         />
         

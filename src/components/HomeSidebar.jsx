@@ -1,20 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getAllCategories } from '../services/categoryService';
-import { getAllTags } from '../services/tagService';
-import { Hash, Sparkles, Sprout, BookOpen, Layers, Zap } from 'lucide-react';
+import { getTrendingCategories } from '../services/categoryService';
+import { getTrendingTags } from '../services/tagService';
+import { useToast } from '@/components/ui/toast';
+import { Hash, Sparkles, Sprout, BookOpen, Layers, Zap, TrendingUp } from 'lucide-react';
 
 const HomeSidebar = () => {
   const [categories, setCategories] = useState([]);
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [catRes, tagRes] = await Promise.all([
-          getAllCategories(),
-          getAllTags()
+          getTrendingCategories(5),
+          getTrendingTags(5)
         ]);
         if (catRes.success) setCategories(catRes.data);
         if (tagRes.success) setTags(tagRes.data);
@@ -38,7 +40,7 @@ const HomeSidebar = () => {
 
   return (
     <aside className="hidden lg:flex flex-col gap-10 w-full font-manrope">
-        {/* Explore Section */}
+        {/* Trending Categories */}
         <div className="flex flex-col gap-6">
             <div>
                 <h2 className="text-[28px] font-black text-[#111] font-newsreader leading-tight">Explore</h2>
@@ -52,38 +54,71 @@ const HomeSidebar = () => {
                 </button>
 
                 <div className="mt-2 space-y-1">
-                    {categories.slice(0, 4).map(cat => (
-                        <Link 
-                            key={cat._id} 
-                            to={`/category/${cat.slug}`}
-                            className="flex items-center gap-3 px-5 py-3 text-[11px] font-black text-[#111]/60 uppercase tracking-widest hover:text-[#111] hover:bg-[#efeeea]/50 rounded-full transition-all"
-                        >
-                            <span className="text-[#111]/20">{getTopicIcon(cat.name)}</span>
-                            #{cat.name}
-                        </Link>
-                    ))}
+                    {loading ? (
+                        [...Array(4)].map((_, i) => (
+                            <div key={i} className="flex items-center gap-3 px-5 py-3">
+                                <div className="w-3.5 h-3.5 bg-[#eae8e4] rounded animate-pulse" />
+                                <div className="h-3 w-24 bg-[#eae8e4] rounded animate-pulse" />
+                            </div>
+                        ))
+                    ) : categories.length > 0 ? (
+                        categories.map(cat => (
+                            <Link 
+                                key={cat._id} 
+                                to={`/category/${cat.slug}`}
+                                className="flex items-center justify-between px-5 py-3 text-[11px] font-black text-[#111]/60 uppercase tracking-widest hover:text-[#111] hover:bg-[#efeeea]/50 rounded-full transition-all group"
+                            >
+                                <span className="flex items-center gap-3">
+                                    <span className="text-[#111]/20">{getTopicIcon(cat.name)}</span>
+                                    #{cat.name}
+                                </span>
+                                <span className="text-[9px] font-bold text-[#111]/25 group-hover:text-[#111]/50 transition-colors tabular-nums">
+                                    {cat.blogCount} {cat.blogCount === 1 ? 'post' : 'posts'}
+                                </span>
+                            </Link>
+                        ))
+                    ) : (
+                        <p className="px-5 py-3 text-[11px] text-[#111]/30">No categories yet</p>
+                    )}
                 </div>
             </div>
 
-            <button className="w-full py-4 bg-[#001f18] text-white rounded-full text-[13px] font-black hover:bg-black transition-all shadow-xl shadow-black/5 mt-2 transition-transform hover:scale-[1.02]">
+            <button 
+              onClick={() => toast({ title: "Coming Soon", description: "Newsletter subscriptions will be available soon." })}
+              className="w-full py-4 bg-[#001f18] text-white rounded-full text-[13px] font-black hover:bg-black transition-all shadow-xl shadow-black/5 mt-2 transition-transform hover:scale-[1.02]"
+            >
                 Subscribe
             </button>
         </div>
 
         {/* Trending Tags */}
         <div className="flex flex-col gap-6 pt-6 border-t border-[#efeeea]">
-            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#111]/30">Trending Tags</h4>
+            <div className="flex items-center justify-between">
+                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#111]/30">Trending Tags</h4>
+                <TrendingUp size={12} className="text-[#111]/20" />
+            </div>
             
             <div className="flex flex-col gap-3">
-                {tags.slice(0, 4).map(tag => (
-                    <Link 
-                        key={tag._id} 
-                        to={`/tag/${tag.slug}`}
-                        className="text-[12px] font-bold text-[#111]/40 hover:text-[#111] transition-colors"
-                    >
-                        #{tag.name}
-                    </Link>
-                ))}
+                {loading ? (
+                    [...Array(4)].map((_, i) => (
+                        <div key={i} className="h-3 w-20 bg-[#eae8e4] rounded animate-pulse" />
+                    ))
+                ) : tags.length > 0 ? (
+                    tags.map(tag => (
+                        <Link 
+                            key={tag._id} 
+                            to={`/tag/${tag.slug}`}
+                            className="flex items-center justify-between text-[12px] font-bold text-[#111]/40 hover:text-[#111] transition-colors group"
+                        >
+                            <span>#{tag.name}</span>
+                            <span className="text-[9px] font-bold text-[#111]/20 group-hover:text-[#111]/40 transition-colors tabular-nums">
+                                {tag.blogCount}
+                            </span>
+                        </Link>
+                    ))
+                ) : (
+                    <p className="text-[11px] text-[#111]/30">No tags yet</p>
+                )}
             </div>
         </div>
     </aside>

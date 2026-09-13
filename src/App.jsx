@@ -18,13 +18,21 @@ import NotFoundPage from './pages/NotFoundPage';
 import SearchPage from './pages/SearchPage';
 import ForgotPassword from './pages/ForgotPasswordPage';
 import ResetPassword from './pages/ResetPassword';
+import AboutPage from './pages/AboutPage';
+import ArchivePage from './pages/ArchivePage';
+import EditorialGuidelinesPage from './pages/EditorialGuidelinesPage';
+import PrivacyPage from './pages/PrivacyPage';
+import TermsPage from './pages/TermsPage';
 
 import PublicRoute from './components/PublicRoute'; 
+import ScrollToTop from './components/ScrollToTop';
 import { CookiesProvider } from 'react-cookie'; 
 import DashboardLayout from './layouts/DashboardLayout';
 
 function App() {
   return (
+      <>
+      <ScrollToTop />
       <Routes>
 
         {/* Public / Standard Pages with Global Nav & Footer */}
@@ -38,6 +46,11 @@ function App() {
           <Route path="/category/:slug" element={<CategoryPage />} />
           <Route path="/profile/:username" element={<ProfilePage />} />
           <Route path="/search" element={<SearchPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/archive" element={<ArchivePage />} />
+          <Route path="/editorial-guidelines" element={<EditorialGuidelinesPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
 
@@ -54,6 +67,7 @@ function App() {
         <Route path="/reset-password/:token" element={<ResetPassword />} />
 
       </Routes>
+      </>
   );
 }
 

@@ -11,6 +11,15 @@ const getAllTags = async () => {
   }
 };
 
+const getTrendingTags = async (limit = 5) => {
+  try {
+    const response = await api.get(`/tags/trending?limit=${limit}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Failed to fetch trending tags' };
+  }
+};
+
 const createTag = async (name) => {
   try {
     const response = await api.post('/tags', { name });
@@ -20,4 +29,4 @@ const createTag = async (name) => {
   }
 };
 
-export { getAllTags , createTag };
+export { getAllTags, getTrendingTags, createTag };

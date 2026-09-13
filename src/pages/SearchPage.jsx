@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
-import { searchSite } from '../services/searchService';
+import { searchBlogs } from '../services/searchService';
 import BlogPostCard from '../components/BlogPostCard';
-import { Search, ArrowLeft } from 'lucide-react';
+import { Search, ArrowLeft, SlidersHorizontal, ChevronLeft, ChevronRight, ArrowUpDown } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 
 const SearchResultSkeleton = () => (
-  <div className="animate-pulse grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+  <div className="animate-pulse grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-16">
     {[1, 2, 3, 4, 5, 6].map(i => (
       <div key={i} className="flex flex-col gap-4">
         <div className="aspect-[16/10] bg-[#eae8e4] rounded-[24px]"></div>
@@ -18,31 +18,115 @@ const SearchResultSkeleton = () => (
   </div>
 );
 
+const sortOptions = [
+  { value: "relevance", label: "Relevance" },
+  { value: "recent", label: "Most Recent" },
+  { value: "popular", label: "Most Popular" }
+];
+
 const SearchPage = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get('q');
-  const [results, setResults] = useState({ blogs: [], users: [] });
+  const currentPage = parseInt(searchParams.get('page') || '1', 10);
+  const sortBy = searchParams.get('sortBy') || 'relevance';
+
+  const [results, setResults] = useState({ blogs: [], total: 0, page: 1, totalPages: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  const updateParams = useCallback((updates) => {
+    const newParams = new URLSearchParams(searchParams);
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === null || value === undefined || value === '') {
+        newParams.delete(key);
+      } else {
+        newParams.set(key, value);
+      }
+    });
+    setSearchParams(newParams, { replace: true });
+  }, [searchParams, setSearchParams]);
 
   const fetchResults = useCallback(async () => {
     if (!query) { setLoading(false); return; }
     setLoading(true);
     setError('');
     try {
-      const response = await searchSite(query);
+      const response = await searchBlogs({
+        query,
+        page: currentPage,
+        limit: 12,
+        sortBy
+      });
       if (response.success) setResults(response.data);
     } catch (err) {
       setError(err.message || 'Failed to fetch search results.');
     } finally {
       setLoading(false);
     }
-  }, [query]);
+  }, [query, currentPage, sortBy]);
 
   useEffect(() => {
     fetchResults();
   }, [fetchResults]);
+
+  const handlePageChange = (newPage) => {
+    updateParams({ page: newPage });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSortChange = (newSort) => {
+    updateParams({ sortBy: newSort, page: 1 });
+  };
+
+  const renderPageNumbers = () => {
+    const { totalPages } = results;
+    if (totalPages <= 1) return null;
+
+    const pages = [];
+    const maxVisible = 5;
+    let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+    let end = Math.min(totalPages, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    if (start > 1) {
+      pages.push(
+        <button key={1} onClick={() => handlePageChange(1)}
+          className="w-10 h-10 rounded-xl text-[11px] font-bold text-[#414944]/60 hover:bg-[#eae8e4] transition-all">
+          1
+        </button>
+      );
+      if (start > 2) pages.push(<span key="dots-start" className="text-[#414944]/30">...</span>);
+    }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(
+        <button key={i} onClick={() => handlePageChange(i)}
+          className={`w-10 h-10 rounded-xl text-[11px] font-bold transition-all ${
+            i === currentPage
+              ? 'bg-[#00261b] text-white shadow-md'
+              : 'text-[#414944]/60 hover:bg-[#eae8e4]'
+          }`}>
+          {i}
+        </button>
+      );
+    }
+
+    if (end < totalPages) {
+      if (end < totalPages - 1) pages.push(<span key="dots-end" className="text-[#414944]/30">...</span>);
+      pages.push(
+        <button key={totalPages} onClick={() => handlePageChange(totalPages)}
+          className="w-10 h-10 rounded-xl text-[11px] font-bold text-[#414944]/60 hover:bg-[#eae8e4] transition-all">
+          {totalPages}
+        </button>
+      );
+    }
+
+    return pages;
+  };
 
   return (
     <div className="min-h-screen bg-[var(--background)] font-manrope selection:bg-[#a0d1bc]/30 selection:text-[#00261b]">
@@ -58,9 +142,8 @@ const SearchPage = () => {
           <Link
             to="/home"
             className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-[#00261b]/40 hover:text-[#00261b] transition-colors mb-10 group"
-            aria-label="Back to home"
           >
-            <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" aria-hidden="true" />
+            <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
             Return to Garden
           </Link>
 
@@ -68,7 +151,7 @@ const SearchPage = () => {
             <div className="flex-1 max-w-3xl">
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-10 h-10 bg-[#eae8e4] rounded-2xl flex items-center justify-center shrink-0">
-                  <Search size={18} className="text-[#00261b]" aria-hidden="true" />
+                  <Search size={18} className="text-[#00261b]" />
                 </div>
                 <span className="text-[10px] font-black uppercase tracking-[0.25em] text-[#00261b]/40">
                   Archive Search
@@ -89,7 +172,7 @@ const SearchPage = () => {
                   e.preventDefault();
                   const q = e.target.q.value.trim();
                   if (q) {
-                    navigate(`/search?q=${encodeURIComponent(q)}`);
+                    navigate(`/search?q=${encodeURIComponent(q)}&sortBy=${sortBy}`);
                   }
                 }}
                 className="relative group"
@@ -126,10 +209,7 @@ const SearchPage = () => {
           {loading ? (
             <SearchResultSkeleton />
           ) : error ? (
-            <div
-              role="alert"
-              className="p-8 bg-[#ffdad6]/30 border border-[#fecbcb] text-[#ba1a1a] rounded-[2rem] font-bold text-sm"
-            >
+            <div role="alert" className="p-8 bg-[#ffdad6]/30 border border-[#fecbcb] text-[#ba1a1a] rounded-[2rem] font-bold text-sm">
               {error}
             </div>
           ) : !query ? (
@@ -147,20 +227,68 @@ const SearchPage = () => {
                 to="/home"
                 className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-[#00261b] border-b-2 border-[#00261b] pb-1 hover:text-[#396756] hover:border-[#396756] transition-colors group"
               >
-                <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" aria-hidden="true" />
+                <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
                 Back to all stories
               </Link>
             </div>
           ) : (
             <div>
-              <p className="text-[12px] font-black uppercase tracking-[0.2em] text-[#00261b]/40 mb-8">
-                {results.blogs.length} bloom{results.blogs.length !== 1 ? 's' : ''} found
-              </p>
+              {/* Results Header */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                <p className="text-[12px] font-black uppercase tracking-[0.2em] text-[#00261b]/40">
+                  {results.total} bloom{results.total !== 1 ? 's' : ''} found
+                </p>
+
+                {/* Sort Dropdown */}
+                <div className="flex items-center gap-2">
+                  <ArrowUpDown size={12} className="text-[#00261b]/30" />
+                  <div className="flex bg-[#f5f3ef] rounded-xl p-1 border border-[#c0c8c3]/20">
+                    {sortOptions.map(opt => (
+                      <button
+                        key={opt.value}
+                        onClick={() => handleSortChange(opt.value)}
+                        className={`px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${
+                          sortBy === opt.value
+                            ? 'bg-[#00261b] text-white shadow-sm'
+                            : 'text-[#414944]/50 hover:text-[#00261b]'
+                        }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Blog Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-16">
                 {results.blogs.map(blog => (
                   <BlogPostCard key={blog._id} post={blog} />
                 ))}
               </div>
+
+              {/* Pagination */}
+              {results.totalPages > 1 && (
+                <div className="flex items-center justify-center gap-2 mt-16 pt-8 border-t border-[#c0c8c3]/20">
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage <= 1}
+                    className="w-10 h-10 rounded-xl flex items-center justify-center text-[#414944]/60 hover:bg-[#eae8e4] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+
+                  {renderPageNumbers()}
+
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage >= results.totalPages}
+                    className="w-10 h-10 rounded-xl flex items-center justify-center text-[#414944]/60 hover:bg-[#eae8e4] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </main>

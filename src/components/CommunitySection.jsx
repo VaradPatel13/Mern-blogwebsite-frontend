@@ -76,7 +76,7 @@ const CommunitySection = () => {
               transition={{ delay: 0.5, duration: 1, ease: [0.34, 1.56, 0.64, 1] }}
               className="text-[#00261b]/60 font-medium text-[13px] md:text-[15px] max-w-[420px] leading-relaxed font-manrope mt-2"
             >
-              Dynamic community where writers and readers seamlessly merge. Scribloom brings together creators and enthusiasts to share stories.
+               Dynamic community where writers and readers seamlessly merge. Scribloom brings together creators and enthusiasts to share stories.
             </motion.div>
         </div>
 

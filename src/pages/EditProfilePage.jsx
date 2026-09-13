@@ -3,16 +3,15 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { updateUserDetails, updateUserAvatar, changePassword, sendMobileOtp, verifyMobileOtp, getCurrentUser } from '../services/uesrService';
 import { useToast } from "@/components/ui/toast";
-import { Camera, User, Lock, Smartphone, CheckCircle2, ChevronRight, Loader2, Shield, ArrowLeft, Home, Edit3 } from 'lucide-react';
+import { Camera, User, Lock, Smartphone, CheckCircle2, ChevronRight, Loader2, Shield, ArrowLeft, Eye, EyeOff, LogIn, Pencil } from 'lucide-react';
 import ImageUpload from '../components/ImageUpload';
 import MobileBottomNav from '../components/MobileBottomNav';
 
 const EditProfilePage = () => {
-  const { user, login } = useAuth();
+  const { user, isAuthenticated, loading: authLoading, login } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  // State for each form section
   const [detailsData, setDetailsData] = useState({
     fullName: user?.fullName || '',
     username: user?.username || '',
@@ -21,19 +20,48 @@ const EditProfilePage = () => {
     oldPassword: '',
     newPassword: '',
   });
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
   const [avatarFile, setAvatarFile] = useState(null);
 
-  // State for OTP flow
   const [mobileNumber, setMobileNumber] = useState(user?.mobileNumber || '');
   const [otp, setOtp] = useState('');
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [mobileLoading, setMobileLoading] = useState(false);
 
-  // Loading and error states for each form
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [avatarLoading, setAvatarLoading] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [error, setError] = useState('');
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+        <div className="w-28 h-28 rounded-full bg-[#eae8e4] animate-pulse"></div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center px-4">
+        <div className="text-center">
+          <div className="w-20 h-20 bg-[#eae8e4] rounded-full flex items-center justify-center mx-auto mb-6 border border-[#c0c8c3]/20">
+            <Lock size={28} className="text-[#c0c8c3]" />
+          </div>
+          <h2 className="text-3xl font-newsreader font-bold text-[#00261b] mb-3 tracking-tight">Sign in required</h2>
+          <p className="text-[#414944] font-medium mb-8 max-w-sm">Please sign in to access account settings.</p>
+          <Link
+            to="/login"
+            className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#00261b] text-white font-manrope font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-[#214f3f] hover:-translate-y-1 transition-all shadow-lg"
+          >
+            <LogIn size={16} /> Sign in
+          </Link>
+        </div>
+        <MobileBottomNav />
+      </div>
+    );
+  }
 
   const handleDetailsChange = (e) => {
     setDetailsData({ ...detailsData, [e.target.name]: e.target.value });
@@ -262,7 +290,7 @@ const EditProfilePage = () => {
                        disabled={detailsLoading}
                        className="w-full sm:w-auto px-10 py-4 rounded-xl bg-[#00261b] text-[#bcedd7] hover:text-white font-manrope font-bold uppercase tracking-widest text-xs transition-all shadow-lg shadow-[#00261b]/20 hover:-translate-y-1 hover:shadow-xl active:translate-y-0 active:scale-[0.98] flex items-center justify-center gap-3"
                      >
-                       {detailsLoading ? <Loader2 size={16} className="animate-spin" /> : <Edit3 size={16} />} Save Biological Traits
+                       {detailsLoading ? <Loader2 size={16} className="animate-spin" /> : <Pencil size={16} />} Save Biological Traits
                      </button>
                   </div>
                 </form>
@@ -343,25 +371,35 @@ const EditProfilePage = () => {
                 <form onSubmit={handlePasswordSubmit} className="flex flex-col gap-6">
                   <div className="flex flex-col gap-2 relative group">
                     <label className="text-[10px] uppercase tracking-widest font-black text-[#414944]/70 absolute -top-3 left-3 bg-[#eae8e4] px-1.5 z-10 transition-colors group-focus-within:text-[#00261b] rounded-sm">Current Key</label>
-                    <input 
-                      type="password" 
-                      name="oldPassword"
-                      value={passwordData.oldPassword}
-                      onChange={handlePasswordChange}
-                      placeholder="••••••••" 
-                      className="bg-[var(--background)] border-2 border-[#c0c8c3] focus:ring-0 focus:border-[#00261b] transition-all font-manrope font-bold text-lg p-3.5 rounded-xl outline-none" 
-                    />
+                    <div className="relative">
+                      <input 
+                        type={showOldPassword ? "text" : "password"} 
+                        name="oldPassword"
+                        value={passwordData.oldPassword}
+                        onChange={handlePasswordChange}
+                        placeholder="••••••••" 
+                        className="bg-[var(--background)] border-2 border-[#c0c8c3] focus:ring-0 focus:border-[#00261b] transition-all font-manrope font-bold text-lg p-3.5 rounded-xl outline-none w-full pr-10" 
+                      />
+                      <button type="button" onClick={() => setShowOldPassword(!showOldPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#414944]/40 hover:text-[#414944] transition-colors">
+                        {showOldPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
                   </div>
                   <div className="flex flex-col gap-2 relative group">
                     <label className="text-[10px] uppercase tracking-widest font-black text-[#414944]/70 absolute -top-3 left-3 bg-[#eae8e4] px-1.5 z-10 transition-colors group-focus-within:text-[#00261b] rounded-sm">New Ascendant Key</label>
-                    <input 
-                      type="password" 
-                      name="newPassword"
-                      value={passwordData.newPassword}
-                      onChange={handlePasswordChange}
-                      placeholder="••••••••" 
-                      className="bg-[var(--background)] border-2 border-[#c0c8c3] focus:ring-0 focus:border-[#00261b] transition-all font-manrope font-bold text-lg p-3.5 rounded-xl outline-none" 
-                    />
+                    <div className="relative">
+                      <input 
+                        type={showNewPassword ? "text" : "password"} 
+                        name="newPassword"
+                        value={passwordData.newPassword}
+                        onChange={handlePasswordChange}
+                        placeholder="••••••••" 
+                        className="bg-[var(--background)] border-2 border-[#c0c8c3] focus:ring-0 focus:border-[#00261b] transition-all font-manrope font-bold text-lg p-3.5 rounded-xl outline-none w-full pr-10" 
+                      />
+                      <button type="button" onClick={() => setShowNewPassword(!showNewPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#414944]/40 hover:text-[#414944] transition-colors">
+                        {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
                   </div>
                   <button 
                     type="submit" 

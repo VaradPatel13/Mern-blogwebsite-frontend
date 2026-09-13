@@ -2,9 +2,9 @@
 
 import api from '../api/api';
 
-const getAllBlogs = async () => {
+const getAllBlogs = async (page = 1, limit = 8) => {
   try {
-    const response = await api.get('/blogs');
+    const response = await api.get('/blogs', { params: { page, limit } });
     return response.data;
   } catch (error) {
     throw error.response?.data || { message: 'Failed to fetch blogs' };

@@ -11,6 +11,15 @@ const getAllCategories = async () => {
   }
 };
 
+const getTrendingCategories = async (limit = 5) => {
+  try {
+    const response = await api.get(`/categories/trending?limit=${limit}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: 'Failed to fetch trending categories' };
+  }
+};
+
 const getBlogsByCategory = async (slug) => {
     try {
         const response = await api.get(`/categories/${slug}/blogs`);
@@ -29,4 +38,4 @@ const createCategory = async (name) => {
     }
 };
 
-export { getAllCategories, getBlogsByCategory , createCategory };
+export { getAllCategories, getTrendingCategories, getBlogsByCategory , createCategory };

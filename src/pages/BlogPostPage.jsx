@@ -208,7 +208,7 @@ const BlogPostPage = () => {
         {blog.coverImage && (
           <div className="max-w-7xl mx-auto px-4 md:px-6 mb-16 md:mb-24">
             <div className="relative aspect-[4/3] md:aspect-[21/9] rounded-2xl overflow-hidden group bg-[#eae8e4] shadow-[0_20px_40px_rgba(0,38,27,0.06)]">
-              <img src={blog.coverImage} alt={blog.title} className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-[1.03]" />
+              <img src={blog.coverImage} alt={blog.title} onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=1200"; }} className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-[1.03]" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#00261b]/20 to-transparent"></div>
             </div>
           </div>
@@ -323,9 +323,9 @@ const BlogPostPage = () => {
                   <Link to={`/blog/${related.slug}`} key={related._id} className="group block bg-[var(--background)] rounded-[2rem] p-4 sm:p-5 transition-transform duration-500 hover:-translate-y-2 shadow-sm hover:shadow-[0_20px_40px_rgba(0,38,27,0.06)] border border-[#e4e2de]">
                     <div className="aspect-[4/3] w-full rounded-[1.5rem] overflow-hidden mb-6 md:mb-8 bg-[#e4e2de] shadow-inner">
                       {related.coverImage ? (
-                        <img src={related.coverImage} alt={related.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-[0.34,1.56,0.64,1]" />
+                        <img src={related.coverImage} alt={related.title} onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=800"; }} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-[0.34,1.56,0.64,1]" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-[#eae8e4] text-[#00261b]/20">Empty Bloom</div>
+                        <img src="https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=800" alt={related.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-[0.34,1.56,0.64,1]" />
                       )}
                     </div>
                     <div className="px-2 pb-4">

@@ -51,7 +51,7 @@ const DashboardLayout = () => {
               Editorial Studio
             </p>
             <p className="text-[#0a251c] font-bold text-[15px]">
-              {user?.fullName || "Good"}
+              {user?.fullName || "Writer"}
             </p>
           </div>
 
